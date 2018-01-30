@@ -28,6 +28,7 @@ import java.io.Serializable;
 /**
  * This interface describes the methods that are required for a data type to be handled by the Flink
  * runtime. Specifically, this interface contains the serialization and copying methods.
+ * 该接口描述了flink处理的数据类型所需要的方法。特别的,该接口包含了序列化和复制方法。
  * <p>
  * The methods in this class are assumed to be stateless, such that it is effectively thread safe. Stateful
  * implementations of the methods may lead to unpredictable side effects and will compromise both stability and
@@ -46,6 +47,7 @@ public abstract class TypeSerializer<T> implements Serializable {
 
 	/**
 	 * Gets whether the type is an immutable type.
+	 * 获取该类型是否是不可变的
 	 * 
 	 * @return True, if the type is immutable.
 	 */
@@ -54,9 +56,13 @@ public abstract class TypeSerializer<T> implements Serializable {
 	/**
 	 * Creates a deep copy of this serializer if it is necessary, i.e. if it is stateful. This
 	 * can return itself if the serializer is not stateful.
+	 * 如果有必要,或者是有状态的,就创建该序列化器的深拷贝。
+	 * 如果是无状态的,就返回自身
 	 *
 	 * We need this because Serializers might be used in several threads. Stateless serializers
 	 * are inherently thread-safe while stateful serializers might not be thread-safe.
+	 * 由于序列化器会在多个线程使用,所以需要该方法。
+	 * 无状态的序列化器是线程安全的,而有状态的序列化器则可能不是线程安全的。
 	 */
 	public abstract TypeSerializer<T> duplicate();
 

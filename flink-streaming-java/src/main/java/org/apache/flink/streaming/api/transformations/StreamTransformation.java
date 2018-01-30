@@ -37,6 +37,8 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * {@link org.apache.flink.streaming.api.datastream.DataStream}. Every
  * {@link org.apache.flink.streaming.api.datastream.DataStream} has an underlying
  * {@code StreamTransformation} that is the origin of said DataStream.
+ * 一个StreamTransformation描述了创建一个DataStream的操作。
+ * 每一个DataStream都有一个关联的StreamTransformation,是该DataStream的起源
  *
  * <p>API operations such as {@link org.apache.flink.streaming.api.datastream.DataStream#map} create
  * a tree of {@code StreamTransformation}s underneath. When the stream program is to be executed

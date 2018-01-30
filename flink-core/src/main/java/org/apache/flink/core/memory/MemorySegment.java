@@ -29,30 +29,42 @@ import java.nio.ReadOnlyBufferException;
 
 /**
  * This class represents a piece of memory managed by Flink.
+ * 这个类描述了被flink管理的一小块内存。
  * The segment may be backed by heap memory (byte array) or by off-heap memory.
+ * 内存块的内部可能是堆内存(字节数组), 或者对外内存。
  *
  * <p>The methods for individual memory access are specialized in the classes
+ * 对于个性化内存操作方法, 在下面类中有所实现。
  * {@link org.apache.flink.core.memory.HeapMemorySegment} and
  * {@link org.apache.flink.core.memory.HybridMemorySegment}.
  * All methods that operate across two memory segments are implemented in this class,
  * to transparently handle the mixing of memory segment types.
+ * 跨内存块操作的所有方法都在该类中实现, 显式的操作数据块的混合。
  *
  * <p>This class fulfills conceptually a similar purpose as Java's {@link java.nio.ByteBuffer}.
+ * 这个类与ByteBuffer的出发点相似。
  * We add this specialized class for various reasons:
+ * 新增该类处于如下几个原因:
  * <ul>
  *     <li>It offers additional binary compare, swap, and copy methods.</li>
+ *     		提供了字节比较、交换、拷贝等方法
  *     <li>It uses collapsed checks for range check and memory segment disposal.</li>
  *     <li>It offers absolute positioning methods for bulk put/get methods, to guarantee
  *         thread safe use.</li>
+ *         对put、get方法,提供了相对的位置方法, 线程安全
  *     <li>It offers explicit big-endian / little-endian access methods, rather than tracking internally
  *         a byte order.</li>
  *     <li>It transparently and efficiently moves data between on-heap and off-heap variants.</li>
+ *     		在堆内存和堆外内存之间进行高效的数据copy
  * </ul>
  *
  * <p><i>Comments on the implementation</i>:
+ * 备注:
  * We make heavy use of operations that are supported by native
  * instructions, to achieve a high efficiency. Multi byte types (int, long, float, double, ...)
  * are read and written with "unsafe" native commands.
+ * 使用了大量的本地指令, 以获取高效。
+ * 多字节都是通过 unsafe 的本地命令进行读写操作
  *
  * <p>Below is an example of the code generated for the {@link HeapMemorySegment#putLongBigEndian(int, long)}
  * function by the just-in-time compiler. The code is grabbed from an Oracle JVM 7 using the
@@ -98,6 +110,7 @@ public abstract class MemorySegment {
 
 	/**
 	 * The unsafe handle for transparent memory copied (heap / off-heap).
+	 * 进行堆内外数据拷贝的unsafe句柄
 	 */
 	@SuppressWarnings("restriction")
 	protected static final sun.misc.Unsafe UNSAFE = MemoryUtils.UNSAFE;
@@ -118,6 +131,7 @@ public abstract class MemorySegment {
 
 	/**
 	 * The heap byte array object relative to which we access the memory.
+	 * 堆内字节数组对象, 也就是实际操作的内存
 	 *
 	 * <p>Is non-<tt>null</tt> if the memory is on the heap, and is <tt>null</tt>, if the memory if
 	 * off the heap. If we have this buffer, we must never void this reference, or the memory
@@ -1281,6 +1295,7 @@ public abstract class MemorySegment {
 
 	/**
 	 * Swaps bytes between two memory segments, using the given auxiliary buffer.
+	 * 使用给定的辅助buffer, 交换两个segment中的字节
 	 *
 	 * @param tempBuffer The auxiliary buffer in which to put data during triangle swap.
 	 * @param seg2 Segment to swap bytes with
