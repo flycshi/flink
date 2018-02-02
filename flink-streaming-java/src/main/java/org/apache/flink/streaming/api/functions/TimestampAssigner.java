@@ -24,9 +24,12 @@ import org.apache.flink.api.common.functions.Function;
  * A {@code TimestampAssigner} assigns event time timestamps to elements.
  * These timestamps are used by all functions that operate on event time,
  * for example event time windows.
+ * 给元素指定事件时间戳。
+ * 这个时间戳被所欲操作eventTime的函数使用,比如event time windows
  *
  * <p>Timestamps are represented in milliseconds since the Epoch
  * (midnight, January 1, 1970 UTC).
+ * 毫秒
  *
  * @param <T> The type of the elements to which this assigner assigns timestamps.
  */

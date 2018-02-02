@@ -18,6 +18,8 @@ import org.apache.flink.annotation.PublicEvolving;
  * Must be implemented by stoppable functions, eg, source functions of streaming jobs. The method {@link #stop()} will
  * be called when the job received the STOP signal. On this signal, the source function must stop emitting new data and
  * terminate gracefully.
+ * 当job收到stop信号时,该方法会被调用。
+ * 接受到信号后,数据源必须停止发射新数据,并且优雅中断。
  */
 @PublicEvolving
 public interface StoppableFunction {
@@ -25,12 +27,17 @@ public interface StoppableFunction {
 	 * Stops the source. In contrast to {@code cancel()} this is a request to the source function to shut down
 	 * gracefully. Pending data can still be emitted and it is not required to stop immediately -- however, in the near
 	 * future. The job will keep running until all emitted data is processed completely.
+	 * 将源停止。
+	 * 相比较于cancel,这个请求是让数据源函数优雅退出。
+	 * pending的数据仍然会被发送,并且不是要求里面停止,而是在不久的将来。
+	 * job会一直保持运行直至所有发射的数据被完全处理完。
 	 * <p>
 	 * Most streaming sources will have a while loop inside the {@code run()} method. You need to ensure that the source
 	 * will break out of this loop. This can be achieved by having a volatile field "isRunning" that is checked in the
 	 * loop and that is set to false in this method.
 	 * <p>
 	 * <strong>The call to {@code stop()} should not block and not throw any exception.</strong>
+	 * 调用该方法,不应该被阻塞,且不能抛出异常。
 	 */
 	void stop();
 }

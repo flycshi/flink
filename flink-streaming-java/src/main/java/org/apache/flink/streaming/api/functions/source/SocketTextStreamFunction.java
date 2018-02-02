@@ -35,6 +35,9 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * A source function that reads strings from a socket. The source will read bytes from the socket
  * stream and convert them to characters, each byte individually. When the delimiter character is
  * received, the function will output the current string, and begin a new string.
+ * 从socket中读取字符串的源函数。
+ * 该源会从socket中读取字节,并转化为字符。
+ * 当分隔符到达时,该函数会输出当前字符串,并开始收集一个新的字符串。
  *
  * <p>The function strips trailing <i>carriage return</i> characters (\r) when the delimiter is the
  * newline character (\n).
