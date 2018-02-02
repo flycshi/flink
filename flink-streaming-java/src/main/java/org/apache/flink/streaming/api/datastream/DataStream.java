@@ -99,6 +99,7 @@ import java.util.List;
 
 /**
  * A DataStream represents a stream of elements of the same type. A DataStream
+ * 一个DataStream描述了一个相同类型元素的流。一个DataStream可以通过应用一个transformation转换为其他的DataStream。
  * can be transformed into another DataStream by applying a transformation as
  * for example:
  * <ul>
@@ -515,6 +516,10 @@ public class DataStream<T> {
 	 * MapFunction call returns exactly one element. The user can also extend
 	 * {@link RichMapFunction} to gain access to other features provided by the
 	 * {@link org.apache.flink.api.common.functions.RichFunction} interface.
+	 * 在一个DataStream上应用一个map转换。
+	 * 转换为DataStream的每个元素调用一次MapFunction。
+	 * 每个MapFunction调用返回一个元素。
+	 * 用户也可以通过继承RichMapFunction来获取由RichFunction提供的其他特性。
 	 *
 	 * @param mapper
 	 *            The MapFunction that is called for each element of the

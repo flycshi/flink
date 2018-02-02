@@ -27,8 +27,11 @@ import org.apache.flink.streaming.runtime.tasks.StreamTask;
 
 /**
  * A Stream Status element informs stream tasks whether or not they should continue to expect records and watermarks
+ * 一个流状态元素表明流任务是否还在期望从上游获取record或者watermarks。
  * from the input stream that sent them. There are 2 kinds of status, namely {@link StreamStatus#IDLE} and
+ * 有两类,IDLE、ACTIVE
  * {@link StreamStatus#ACTIVE}. Stream Status elements are generated at the sources, and may be propagated through
+ * 流状态元素在数据源处产生,可能会在topology的任务间传输。
  * the tasks of the topology. They directly infer the current status of the emitting task; a {@link SourceStreamTask} or
  * {@link StreamTask} emits a {@link StreamStatus#IDLE} if it will temporarily halt to emit any records or watermarks
  * (i.e. is idle), and emits a {@link StreamStatus#ACTIVE} once it resumes to do so (i.e. is active). Tasks are
@@ -45,6 +48,9 @@ import org.apache.flink.streaming.runtime.tasks.StreamTask;
  *         Kafka Consumer which can generate watermarks directly within the source) will be emitted while the task is
  *         idle. This guarantee should be enforced on sources through
  *         {@link org.apache.flink.streaming.api.functions.source.SourceFunction.SourceContext} implementations.</li>
+ *         数据源任务: 一个数据源任务,如果在一段不确定的时间内,不会发送record,就任务其处于IDLE状态了。
+ *         比如: kafka消费者,如果没有可分配的分区可以读取, 或者从分配的分区中没有record可以读取。
+ *         一旦操作符监测到要重新开始发送数据了,就会被重新设置为active。
  *
  *     <li>Downstream tasks: a downstream task is considered to be idle if all its input streams are idle, i.e. the last
  *         received Stream Status element from all input streams is a {@link StreamStatus#IDLE}. As long as one of its

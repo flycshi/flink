@@ -31,12 +31,20 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamElement;
  * that buffer elements, such as window operators, must forward a watermark after emission of
  * elements that is triggered by the arriving watermark.
  *
+ * 一个水位记录,就是告诉操作符,收到它,就表明不会有时间戳比水位时间戳小的元素到达了。
+ * 水位在数据源处被发射,然后在topology中的操作符之间传输。
+ * 操作符需要自己发射水位到下游的操作符。
+ * 不缓存元素的操作符可以传递他们收到的水位。
+ * 对于缓存元素的操作符,比如窗口操作,被新到达的watermark触发了元素的发射后,必须向下游发送一个watermark
+ *
  * <p>In some cases a watermark is only a heuristic and operators should be able to deal with
  * late elements. They can either discard those or update the result and emit updates/retractions
  * to downstream operations.
  *
  * <p>When a source closes it will emit a final watermark with timestamp {@code Long.MAX_VALUE}.
  * When an operator receives this it will know that no more input will be arriving in the future.
+ * 当一个数据源关闭时,会发送一个最终的时间戳为Long.MAX_VALUE的水位。
+ * 当一个操作符接收到这个水位时,就知道不会再有数据进来了。
  */
 @PublicEvolving
 public final class Watermark extends StreamElement {

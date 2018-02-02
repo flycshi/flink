@@ -34,6 +34,7 @@ import java.util.List;
 
 /**
  * Class representing the operators in the streaming programs, with all their properties.
+ * 描述流程序中操作符的类,以及所有属性。
  */
 @Internal
 public class StreamNode implements Serializable {
@@ -47,6 +48,7 @@ public class StreamNode implements Serializable {
 	/**
 	 * Maximum parallelism for this stream node. The maximum parallelism is the upper limit for
 	 * dynamic scaling and the number of key groups used for partitioned state.
+	 * 这个流节点的最大并行度。
 	 */
 	private int maxParallelism;
 	private ResourceSpec minResources = ResourceSpec.DEFAULT;

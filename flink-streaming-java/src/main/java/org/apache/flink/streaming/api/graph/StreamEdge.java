@@ -28,6 +28,8 @@ import java.util.List;
  * An edge in the streaming topology. One edge like this does not necessarily
  * gets converted to a connection between two job vertices (due to
  * chaining/optimization).
+ * 流拓扑中的一个边界。
+ *
  */
 @Internal
 public class StreamEdge implements Serializable {

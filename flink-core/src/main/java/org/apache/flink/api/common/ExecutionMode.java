@@ -23,6 +23,7 @@ import org.apache.flink.annotation.Public;
 /**
  * The execution mode specifies how a batch program is executed in terms
  * of data exchange: pipelining or batched.
+ * 执行模式 指定了 在数据交换周期内,一个批处理程序如何执行。
  */
 @Public
 public enum ExecutionMode {
@@ -31,10 +32,13 @@ public enum ExecutionMode {
 	 * Executes the program in a pipelined fashion (including shuffles and broadcasts),
 	 * except for data exchanges that are susceptible to deadlocks when pipelining.
 	 * These data exchanges are performed in a batch manner.
+	 * 以流水线的方式执行程序(包括shuffle和broadcast),但除了用流水线处理时会导致死锁的数据交换。
+	 * 这些数据交换将会以批处理的方式执行。
 	 *
 	 * An example of situations that are susceptible to deadlocks (when executed in a
 	 * pipelined manner) are data flows that branch (one data set consumed by multiple
 	 * operations) and re-join later:
+	 * 在流处理执行中会导致死锁的一个场景就是数据流被分叉(一个数据集被多个操作符消费),然后在重新join
 	 * <pre>{@code
 	 * DataSet data = ...;
 	 * DataSet mapped1 = data.map(new MyMapper());
@@ -48,15 +52,19 @@ public enum ExecutionMode {
 	 * Executes the program in a pipelined fashion (including shuffles and broadcasts),
 	 * <strong>including</strong> data exchanges that are susceptible to deadlocks when
 	 * executed via pipelining.
+	 * 以流水线执行程序(包括洗牌和广播),同时也包含流水线执行中可能导致死锁的数据交换。
 	 *
 	 * Usually, {@link #PIPELINED} is the preferable option, which pipelines most
 	 * data exchanges and only uses batch data exchanges in situations that are
 	 * susceptible to deadlocks.
+	 * 通常,PIPELINED是比较好的选项,对于大多数的数据交换都是流水线操作,只有在可能导致死锁的场景下才会用批处理进行数据交换。
 	 *
 	 * This option should only be used with care and only in situations where the
 	 * programmer is sure that the program is safe for full pipelining and that
 	 * Flink was too conservative when choosing the batch exchange at a certain
 	 * point.
+	 * 这个选项需要小心使用,并且仅在程序猿确信对于整个流水线都是安全的场景下,并且flink在某些点上选择批处理交换太保守时,才可使用。
+	 *
 	 */
 	PIPELINED_FORCED,
 

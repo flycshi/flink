@@ -81,6 +81,8 @@ import static org.apache.flink.util.Preconditions.checkArgument;
 /**
  * Base class for all stream operators. Operators that contain a user function should extend the class
  * {@link AbstractUdfStreamOperator} instead (which is a specialized subclass of this class).
+ * 所有流操作符的基类。
+ * 包含一个用户函数的操作符,应该继承 AbstractUdfStreamOperator
  *
  * <p>For concrete implementations, one of the following two interfaces must also be implemented, to
  * mark the operator as unary or binary:

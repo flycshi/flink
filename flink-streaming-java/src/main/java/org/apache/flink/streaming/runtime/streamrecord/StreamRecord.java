@@ -21,6 +21,8 @@ import org.apache.flink.annotation.Internal;
 
 /**
  * One value in a data stream. This stores the value and an optional associated timestamp.
+ * 数据流中的一个value
+ * 存储了value值和一个可配置的时间戳
  *
  * @param <T> The type encapsulated with the stream record.
  */

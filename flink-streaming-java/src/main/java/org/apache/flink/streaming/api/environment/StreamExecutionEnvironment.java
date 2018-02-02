@@ -93,9 +93,13 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * The StreamExecutionEnvironment is the context in which a streaming program is executed. A
  * {@link LocalStreamEnvironment} will cause execution in the current JVM, a
  * {@link RemoteStreamEnvironment} will cause execution on a remote setup.
+ * StreamExecutionEnvironment 是一个流程序执行的上下文。
+ * 一个 LocalStreamEnvironment 将在本地jvm中执行。
+ * 一个 RemoteStreamEnvironment 将在远程设置中执行。
  *
  * <p>The environment provides methods to control the job execution (such as setting the parallelism
  * or the fault tolerance/checkpointing parameters) and to interact with the outside world (data access).
+ * environment 提供了控制job执行的各种方法,比如设置并行度,或者故障恢复参数,还提供了与外界交互的方法,比如获取数据。
  *
  * @see org.apache.flink.streaming.api.environment.LocalStreamEnvironment
  * @see org.apache.flink.streaming.api.environment.RemoteStreamEnvironment
@@ -103,13 +107,22 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 @Public
 public abstract class StreamExecutionEnvironment {
 
-	/** The default name to use for a streaming job if no other name has been specified. */
+	/**
+	 * The default name to use for a streaming job if no other name has been specified.
+	 * 如果没有设置其他名称,则流任务所使用的默认名称。
+	 */
 	public static final String DEFAULT_JOB_NAME = "Flink Streaming Job";
 
-	/** The time characteristic that is used if none other is set. */
+	/**
+	 * The time characteristic that is used if none other is set.
+	 * 时间特征默认采用ProcessingTime
+	 */
 	private static final TimeCharacteristic DEFAULT_TIME_CHARACTERISTIC = TimeCharacteristic.ProcessingTime;
 
-	/** The default buffer timeout (max delay of records in the network stack). */
+	/**
+	 * The default buffer timeout (max delay of records in the network stack).
+	 * 默认的缓存超时(在网络栈中最大的延迟记录数)
+	 */
 	private static final long DEFAULT_NETWORK_BUFFER_TIMEOUT = 100L;
 
 	/**
@@ -117,12 +130,18 @@ public abstract class StreamExecutionEnvironment {
 	 */
 	private static StreamExecutionEnvironmentFactory contextEnvironmentFactory;
 
-	/** The default parallelism used when creating a local environment. */
+	/**
+	 * The default parallelism used when creating a local environment.
+	 * 当创建一个本地环境是的默认并行度,也就是cpu核数。
+	 */
 	private static int defaultLocalParallelism = Runtime.getRuntime().availableProcessors();
 
 	// ------------------------------------------------------------------------
 
-	/** The execution configuration for this environment. */
+	/**
+	 * The execution configuration for this environment.
+	 * 环境的执行配置
+	 */
 	private final ExecutionConfig config = new ExecutionConfig();
 
 	/** Settings that control the checkpointing behavior. */
@@ -498,6 +517,9 @@ public abstract class StreamExecutionEnvironment {
 	 * zero effectively disables fault tolerance. A value of {@code -1}
 	 * indicates that the system default value (as defined in the configuration)
 	 * should be used.
+	 * 设置失败任务重新执行的次数。
+	 * 0 标识禁止故障恢复。
+	 * -1 表示使用系统默认值。
 	 *
 	 * @param numberOfExecutionRetries
 	 * 		The number of times the system will try to re-execute failed tasks.

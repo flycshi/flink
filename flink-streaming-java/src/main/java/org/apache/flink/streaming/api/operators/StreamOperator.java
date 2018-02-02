@@ -30,16 +30,20 @@ import java.io.Serializable;
 
 /**
  * Basic interface for stream operators. Implementers would implement one of
+ * 流操作符的基础接口。
  * {@link org.apache.flink.streaming.api.operators.OneInputStreamOperator} or
  * {@link org.apache.flink.streaming.api.operators.TwoInputStreamOperator} to create operators
  * that process elements.
+ * 可以实现 OneInputStreamOperator 或者 TwoInputStreamOperator 两个中的一个,来创建一个处理操作符,进行处理数据。
  *
  * <p>The class {@link org.apache.flink.streaming.api.operators.AbstractStreamOperator}
  * offers default implementation for the lifecycle and properties methods.
+ * AbstractStreamOperator 这个抽象类提供了生命周期与属性相关方法的默认实现。
  *
  * <p>Methods of {@code StreamOperator} are guaranteed not to be called concurrently. Also, if using
  * the timer service, timer callbacks are also guaranteed not to be called concurrently with
  * methods on {@code StreamOperator}.
+ * StreamOperator 的方法需要保证不在同一时间调用。
  *
  * @param <OUT> The output type of the operator
  */
@@ -52,6 +56,7 @@ public interface StreamOperator<OUT> extends Serializable {
 
 	/**
 	 * Initializes the operator. Sets access to the context and the output.
+	 * 初始化操作符
 	 */
 	void setup(StreamTask<?, ?> containingTask, StreamConfig config, Output<StreamRecord<OUT>> output);
 

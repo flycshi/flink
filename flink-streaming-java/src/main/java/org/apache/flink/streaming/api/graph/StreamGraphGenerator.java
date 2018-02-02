@@ -152,6 +152,9 @@ public class StreamGraphGenerator {
 
 			// if the max parallelism hasn't been set, then first use the job wide max parallelism
 			// from theExecutionConfig.
+			/**
+			 * 如果最大并行度没有设置, 则首先获取job最大并行度
+			 */
 			int globalMaxParallelismFromConfig = env.getConfig().getMaxParallelism();
 			if (globalMaxParallelismFromConfig > 0) {
 				transform.setMaxParallelism(globalMaxParallelismFromConfig);
@@ -614,10 +617,14 @@ public class StreamGraphGenerator {
 	/**
 	 * Determines the slot sharing group for an operation based on the slot sharing group set by
 	 * the user and the slot sharing groups of the inputs.
+	 * 基于用户设置的槽位共享组和输入的槽位共享组,来决定出操作符的槽位共享组。
 	 *
 	 * <p>If the user specifies a group name, this is taken as is. If nothing is specified and
 	 * the input operations all have the same group name then this name is taken. Otherwise the
 	 * default group is choosen.
+	 * 1、如果用户指定了组名,则直接拿走
+	 * 2、如果什么都没有指定,并且输入操作符都具有相同的组名,则拿走
+	 * 3、否则组名就是"default"
 	 *
 	 * @param specifiedGroup The group specified by the user.
 	 * @param inputIds The IDs of the input operations.

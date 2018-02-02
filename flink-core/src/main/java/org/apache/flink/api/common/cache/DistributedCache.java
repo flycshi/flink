@@ -18,6 +18,10 @@
 package org.apache.flink.api.common.cache;
 
 
+import org.apache.flink.annotation.Public;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.fs.Path;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,13 +31,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.apache.flink.annotation.Public;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.core.fs.Path;
-
 /**
  * DistributedCache provides static methods to write the registered cache files into job configuration or decode
  * them from job configuration. It also provides user access to the file locally.
+ * DistributedCache 提供了静态方法,可以将注册的缓存文件写入到job的配置中,或者从job的配置中解析出来。
+ * 也提供了访问本地文件的方法。
  */
 @Public
 public class DistributedCache {

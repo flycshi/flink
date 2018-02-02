@@ -27,8 +27,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * This class defines methods to generate RestartStrategyConfigurations. These configurations are
  * used to create RestartStrategies at runtime.
+ * 定义了方法来产生 RestartStrategyConfigurations
+ * 这些配置被用来在运行时创建 RestartStrategies
  *
  * The RestartStrategyConfigurations are used to decouple the core module from the runtime module.
+ * RestartStrategyConfigurations 是用来将 核心模块与运行时模块 解耦的
  */
 @PublicEvolving
 public class RestartStrategies {

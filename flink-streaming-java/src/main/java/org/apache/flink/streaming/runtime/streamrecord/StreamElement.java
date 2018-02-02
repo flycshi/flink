@@ -24,6 +24,8 @@ import org.apache.flink.streaming.runtime.streamstatus.StreamStatus;
 
 /**
  * An element in a data stream. Can be a record or a Watermark.
+ * 数据流中的一个元素。
+ * 可以是一个 record , 或者是一个 Watermark
  */
 @Internal
 public abstract class StreamElement {

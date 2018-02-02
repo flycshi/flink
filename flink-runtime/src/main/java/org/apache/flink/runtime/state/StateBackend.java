@@ -31,20 +31,26 @@ import java.io.IOException;
  * A <b>State Backend</b> defines how the state of a streaming application is stored and
  * checkpointed. Different State Backends store their state in different fashions, and use
  * different data structures to hold the state of a running application.
+ * 一个 StateBackend 定义了一个流应用的状态是如何存储和检查的。
+ * 不同的 StateBackend 以不同的形式来存储他们的状态, 使用不同的数据结构来保存运行中应用的状态。
  *
  * <p>For example, the {@link org.apache.flink.runtime.state.memory.MemoryStateBackend memory state backend}
  * keeps working state in the memory of the TaskManager and stores checkpoints in the memory of the
  * JobManager. The backend is lightweight and without additional dependencies, but not highly available
  * and supports only small state.
+ * 比如 MemoryStateBackend 将工作状态保存在 TaskManager 的内存中, 将 checkpoint 存储在 JobManager 的内存中。
+ * 这是个轻量级的 backend,也没有什么额外的依赖,但是是非高可用的,且只支持状态数据较少的情况。
  *
  * <p>The {@link org.apache.flink.runtime.state.filesystem.FsStateBackend file system state backend}
  * keeps working state in the memory of the TaskManager and stores state checkpoints in a filesystem
  * (typically a replicated highly-available filesystem, like <a href="https://hadoop.apache.org/">HDFS</a>,
  * <a href="https://ceph.com/">Ceph</a>, <a href="https://aws.amazon.com/documentation/s3/">S3</a>,
  * <a href="https://cloud.google.com/storage/">GCS</a>, etc).
+ * FsStateBackend 将工作状态保存在 TaskManager 的内存中,将checkpoint存在文件系统中(一般是拥有备份的高可用文件系统),比如hdfs等。
  * 
  * <p>The {@code RocksDBStateBackend} stores working state in <a href="http://rocksdb.org/">RocksDB</a>,
  * and checkpoints the state by default to a filesystem (similar to the {@code FsStateBackend}).
+ * RocksDBStateBackend 存储工作状态在 RocksDB 中, 默认把 checkpoint 存在文件系统中,类似 FsStateBackend
  * 
  * <h2>Raw Bytes Storage and Backends</h2>
  * 
