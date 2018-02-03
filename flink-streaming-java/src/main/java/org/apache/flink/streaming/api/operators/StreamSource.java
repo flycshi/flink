@@ -31,6 +31,7 @@ import java.util.concurrent.ScheduledFuture;
 
 /**
  * {@link StreamOperator} for streaming sources.
+ * 流源头的操作符
  *
  * @param <OUT> Type of the output elements
  * @param <SRC> Type of the source function of this stream source operator

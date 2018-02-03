@@ -30,7 +30,6 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamElement;
  * do not internally buffer elements can always forward the watermark that they receive. Operators
  * that buffer elements, such as window operators, must forward a watermark after emission of
  * elements that is triggered by the arriving watermark.
- *
  * 一个水位记录,就是告诉操作符,收到它,就表明不会有时间戳比水位时间戳小的元素到达了。
  * 水位在数据源处被发射,然后在topology中的操作符之间传输。
  * 操作符需要自己发射水位到下游的操作符。

@@ -26,6 +26,7 @@ import org.apache.flink.api.common.typeutils.TypeSerializer;
 /**
  * A special type information signifying that the type extraction failed. It contains
  * additional error information.
+ * 一个特殊的TypeInformation子类，标识类型提取失败。它包含了额外的错误信息。
  */
 public class MissingTypeInfo extends TypeInformation<InvalidTypesException> {
 

@@ -33,7 +33,10 @@ import java.util.Collections;
  * TypeInformation is the core class of Flink's type system. Flink requires a type information
  * for all types that are used as input or return type of a user function. This type information
  * class acts as the tool to generate serializers and comparators, and to perform semantic checks
- * such as whether the fields that are uses as join/grouping keys actually exist. 
+ * such as whether the fields that are uses as join/grouping keys actually exist.
+ * TypeInformation 是flink类型系统的核心类。
+ * flink为用作输入的所有类型或者用户函数的返回类型都需要一个TypeInformation。
+ * TypeInformation既是产生序列化器和比较器的工具，又具有语义检测的功能，比如用来进行join/grouping的字段是否真的存在等。
  * <p>
  * The type information also bridges between the programming languages object model and a
  * logical flat schema. It maps fields from the types to to columns (fields) in a flat schema.
@@ -41,7 +44,10 @@ import java.util.Collections;
  * often, entire types are mapped to one field. It is important to notice that the schema must
  * hold for all instances of a type. For that reason, elements in lists and arrays are not
  * assigned to individual fields, but the lists and arrays are considered to be one field in total,
- * to account for different lengths in the arrays.  
+ * to account for different lengths in the arrays.
+ * TypeInformation 在编程语言对象模型和逻辑平面模式之间架起了桥梁。
+ * 它将类型字段映射到平面模式下的列。
+ *
  * <ul>
  *   <li>Basic types are indivisible and are considered a single field.</li>
  *   <li>Arrays and collections are one field</li>

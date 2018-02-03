@@ -26,6 +26,8 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
  * about their produced data type. This method acts as an alternative to the reflection analysis
  * that is otherwise performed and is useful in situations where the produced data type may vary
  * depending on parametrization.
+ * 这个接口可以被函数和输入格式实现，来告诉框架，他们的生产数据类型。
+ * 该方法可以作为反射分析的一种选择，在生产数据类型依赖参数时，是比较有用的。
  */
 @Public
 public interface ResultTypeQueryable<T> {

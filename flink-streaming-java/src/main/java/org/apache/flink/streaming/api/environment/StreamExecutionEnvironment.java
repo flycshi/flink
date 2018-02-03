@@ -1451,6 +1451,8 @@ public abstract class StreamExecutionEnvironment {
 	 * {@link DataStream}. Only in very special cases does the user need to
 	 * support type information. Otherwise use
 	 * {@link #addSource(org.apache.flink.streaming.api.functions.source.SourceFunction)}
+	 * 添加一个自带类型信息的数据源，然后打开一个DataStream。
+	 * 只有在特别的情况下，用户才需要自己指定类型信息。
 	 *
 	 * @param function
 	 * 		the user defined function
