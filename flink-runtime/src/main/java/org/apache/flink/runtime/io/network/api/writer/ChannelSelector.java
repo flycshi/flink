@@ -23,6 +23,7 @@ import org.apache.flink.core.io.IOReadableWritable;
 /**
  * The {@link ChannelSelector} determines to which logical channels a record
  * should be written to.
+ * 用来决定record应该写入到哪个逻辑通道中。
  *
  * @param <T> the type of record which is sent through the attached output gate
  */
@@ -31,6 +32,7 @@ public interface ChannelSelector<T extends IOReadableWritable> {
 	/**
 	 * Returns the logical channel indexes, to which the given record should be
 	 * written.
+	 * 返回记录应该被写入的逻辑通道的索引，
 	 *
 	 * @param record      the record to the determine the output channels for
 	 * @param numChannels the total number of output channels which are attached to respective output gate

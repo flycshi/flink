@@ -22,9 +22,11 @@ import org.apache.flink.annotation.Public;
 
 /**
  * The base interface for all user-defined functions.
+ * 所有用户自定义函数的基础接口。
  * 
  * <p>This interface is empty in order to allow extending interfaces to
  * be SAM (single abstract method) interfaces that can be implemented via Java 8 lambdas.</p>
+ * 这个接口是空的
  */
 @Public
 public interface Function extends java.io.Serializable {

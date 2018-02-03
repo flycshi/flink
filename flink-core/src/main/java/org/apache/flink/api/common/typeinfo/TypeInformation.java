@@ -46,17 +46,25 @@ import java.util.Collections;
  * assigned to individual fields, but the lists and arrays are considered to be one field in total,
  * to account for different lengths in the arrays.
  * TypeInformation 在编程语言对象模型和逻辑平面模式之间架起了桥梁。
- * 它将类型字段映射到平面模式下的列。
+ * 它将类型中的字段映射到平板模式下的列。
+ * 一个类型的所欲偶字段并不是映射成平面模式中的一个独立的字段，而是整个类型映射成一个字段。
+ * 需要特别注意的是，一个模式必须能够包含一个类型的所有实例。
+ * 介于此，list和array中的元素，不会被分配给独立的字段，而是作为一个整体字段，具有不同的长度。
  *
  * <ul>
  *   <li>Basic types are indivisible and are considered a single field.</li>
+ *   基础类型是不可分割的，被认为是一个单独的字段。
  *   <li>Arrays and collections are one field</li>
+ *   数组和集合是一个字段。
  *   <li>Tuples and case classes represent as many fields as the class has fields</li>
+ *   tuple和case类，具有多少字段，就表示为多少个字段。
  * </ul>
  * <p>
  * To represent this properly, each type has an <i>arity</i> (the number of fields it contains
  * directly), and a <i>total number of fields</i> (number of fields in the entire schema of this
  * type, including nested types).
+ * 为了适当的表示，每个类型有一个表示它直接包含多少字段个数的值，叫arity，
+ * 以及整个模式下的字段个数，包含了内嵌的字段。
  * <p>
  * Consider the example below:
  * <pre>{@code
@@ -86,6 +94,8 @@ public abstract class TypeInformation<T> implements Serializable {
 	 * Checks if this type information represents a basic type.
 	 * Basic types are defined in {@link BasicTypeInfo} and are primitives, their boxing types,
 	 * Strings, Date, Void, ...
+	 * 检测该TypeInformation是否表示一个基础类型。
+	 * 基础类型在BasicTypeInfo有所定义。
 	 *  
 	 * @return True, if this type information describes a basic type, false otherwise.
 	 */
@@ -103,6 +113,7 @@ public abstract class TypeInformation<T> implements Serializable {
 	
 	/**
 	 * Gets the arity of this type - the number of fields without nesting.
+	 * 返回类型的个数 - 没有嵌套的字段数量，都被摊平了。
 	 * 
 	 * @return Gets the number of fields in this type without nesting.
 	 */
