@@ -297,6 +297,7 @@ public abstract class StreamTransformation<T> {
 	/**
 	 * Sets an ID for this {@link StreamTransformation}. This is will later be hashed to a uidHash which is then used to
 	 * create the JobVertexID (that is shown in logs and the web ui).
+	 * 为该 StreamTransformation 设置一个id。会被hash为一个hashid，用来构建 JobVertexID（用来在日志和web ui中显示）
 	 *
 	 * <p>The specified ID is used to assign the same operator ID across job
 	 * submissions (for example when starting a job from a savepoint).

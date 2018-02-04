@@ -331,9 +331,11 @@ public class StreamGraph extends StreamingPlan {
 	/**
 	 * Adds a new virtual node that is used to connect a downstream vertex to an input with a
 	 * certain partitioning.
+	 * 添加一个虚拟节点，它是用来将一个下游节点与一个输入，通过特定的分区策略进行连接。
 	 *
 	 * <p>When adding an edge from the virtual node to a downstream node the connection will be made
 	 * to the original node, but with the partitioning given here.
+	 * 当从虚拟节点向下游节点添加一个边界时，连接会通向原始节点，但是加入了这里指定的分区
 	 *
 	 * @param originalId ID of the node that should be connected to.
 	 * @param virtualId ID of the virtual node.
@@ -413,6 +415,10 @@ public class StreamGraph extends StreamingPlan {
 
 			// If no partitioner was specified and the parallelism of upstream and downstream
 			// operator matches use forward partitioning, use rebalance otherwise.
+			/**
+			 * 如果没有指定分区器，并且上游节点和下游节点的操作符的并行度也是一样的话，就采用forward分区
+			 * 否则，采用rebalance分区
+			 */
 			if (partitioner == null && upstreamNode.getParallelism() == downstreamNode.getParallelism()) {
 				partitioner = new ForwardPartitioner<Object>();
 			} else if (partitioner == null) {

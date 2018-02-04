@@ -153,7 +153,7 @@ public class StreamGraphGenerator {
 			// if the max parallelism hasn't been set, then first use the job wide max parallelism
 			// from theExecutionConfig.
 			/**
-			 * 如果最大并行度没有设置, 则首先获取job最大并行度
+			 * 如果最大并行度没有设置, 如果job设置了最大并行度，则获取job最大并行度
 			 */
 			int globalMaxParallelismFromConfig = env.getConfig().getMaxParallelism();
 			if (globalMaxParallelismFromConfig > 0) {
@@ -236,6 +236,7 @@ public class StreamGraphGenerator {
 	 *
 	 * <p>For this we create a virtual node in the {@code StreamGraph} that holds the partition
 	 * property. @see StreamGraphGenerator
+	 * 在 StreamGraph 中创建一个虚拟节点。
 	 */
 	private <T> Collection<Integer> transformPartition(PartitionTransformation<T> partition) {
 		StreamTransformation<T> input = partition.getInput();
@@ -524,12 +525,14 @@ public class StreamGraphGenerator {
 	 *
 	 * <p>This recursively transforms the inputs, creates a new {@code StreamNode} in the graph and
 	 * wired the inputs to this new node.
+	 * 递归转化输入，创建一个StreamNode，并且将输入连接到该节点。
 	 */
 	private <IN, OUT> Collection<Integer> transformOneInputTransform(OneInputTransformation<IN, OUT> transform) {
 
 		Collection<Integer> inputIds = transform(transform.getInput());
 
 		// the recursive call might have already transformed this
+		// 在递归调用过程中，有可能已经被转化过。
 		if (alreadyTransformed.containsKey(transform)) {
 			return alreadyTransformed.get(transform);
 		}
