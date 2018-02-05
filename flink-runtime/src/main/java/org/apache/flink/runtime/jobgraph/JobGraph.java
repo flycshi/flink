@@ -46,6 +46,8 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * The JobGraph represents a Flink dataflow program, at the low level that the JobManager accepts.
  * All programs from higher level APIs are transformed into JobGraphs.
+ * JobGraph 描述了一个flink的数据流程序, JobManager 接受的low level。
+ * 所有从高级api编写的程序都需要转化成 JobGraph。
  *
  * <p>The JobGraph is a graph of vertices and intermediate results that are connected together to
  * form a DAG. Note that iterations (feedback edges) are currently not encoded inside the JobGraph
