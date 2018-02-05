@@ -197,6 +197,9 @@ public class StreamGraph extends StreamingPlan {
 			addNode(vertexID, slotSharingGroup, OneInputStreamTask.class, operatorObject, operatorName);
 		}
 
+		/**
+		 * 确定输入和输出的序列化器
+		 */
 		TypeSerializer<IN> inSerializer = inTypeInfo != null && !(inTypeInfo instanceof MissingTypeInfo) ? inTypeInfo.createSerializer(executionConfig) : null;
 
 		TypeSerializer<OUT> outSerializer = outTypeInfo != null && !(outTypeInfo instanceof MissingTypeInfo) ? outTypeInfo.createSerializer(executionConfig) : null;

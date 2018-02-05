@@ -17,29 +17,32 @@
  */
 package org.apache.flink.util;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-
 import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.api.common.functions.InvalidTypesException;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+
 
 /**
  * An {@link OutputTag} is a typed and named tag to use for tagging side outputs
  * of an operator.
+ * 一个 OutputTag 是一个 类型 并且 被命名的tag, 用来标识一个操作符的侧输出。
  *
  * <p>An {@code OutputTag} must always be an anonymous inner class so that Flink can derive
  * a {@link TypeInformation} for the generic type parameter.
+ * 一个 OutputTag 必须总是隐式内部类, 这样 flink 可以获取一般参数类型的 TypeInfomation
  *
  * <p>Example:
  * <pre>{@code
- * OutputTag<Tuple2<String, Long>> info = new OutputTag<Tuple2<String, Long>>("late-data"){});
+ * OutputTag<Tuple2<String, Long>> info = new OutputTag<Tuple2<String, Long>>("late-data"){};
  * }</pre>
  *
  * @param <T> the type of elements in the side-output stream.
+ *           在侧输出流中的元素类型
  */
 @PublicEvolving
 public class OutputTag<T> implements Serializable {

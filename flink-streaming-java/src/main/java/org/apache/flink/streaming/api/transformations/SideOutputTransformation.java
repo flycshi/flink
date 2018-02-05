@@ -32,6 +32,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * This transformation represents a selection of a side output of an upstream operation with a
  * given {@link OutputTag}.
+ * 这个转换描述的是一个上游操作流的一个侧输出,并带有OutputTag
  *
  * <p>This does not create a physical operation, it only affects how upstream operations are
  * connected to downstream operations.
