@@ -83,11 +83,17 @@ public class StreamGraph extends StreamingPlan {
 
 	private boolean chaining;
 
+	/** 节点id与节点的映射关系 */
 	private Map<Integer, StreamNode> streamNodes;
+	/** 源头节点的id */
 	private Set<Integer> sources;
+	/** 输出节点的id */
 	private Set<Integer> sinks;
+	/** 虚拟节点的id, 与[select节点id, select的字段集合] 之间的映射关系 */
 	private Map<Integer, Tuple2<Integer, List<String>>> virtualSelectNodes;
+	/** 虚拟节点的id, 与[真实节点id, OutputTag] 之间的映射关系 */
 	private Map<Integer, Tuple2<Integer, OutputTag>> virtualSideOutputNodes;
+	/** 虚拟节点的id, 与 [真实节点id, StreamPartitioner] 之间的映射关系 */
 	private Map<Integer, Tuple2<Integer, StreamPartitioner<?>>> virtualPartitionNodes;
 
 	protected Map<Integer, String> vertexIDtoBrokerID;

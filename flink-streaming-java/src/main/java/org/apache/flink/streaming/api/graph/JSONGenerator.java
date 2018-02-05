@@ -81,6 +81,10 @@ public class JSONGenerator {
 		Integer vertexID = toVisit.get(0);
 		StreamNode vertex = streamGraph.getStreamNode(vertexID);
 
+		/**
+		 * 节点的id是否在source的id集合中,
+		 * 或者该节点的边界集合与所有节点的集合进行比较,这个比较,搞毛,怎么比较,类型都不一样???
+		 */
 		if (streamGraph.getSourceIDs().contains(vertexID)
 				|| Collections.disjoint(vertex.getInEdges(), toVisit)) {
 
