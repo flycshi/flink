@@ -27,11 +27,16 @@ import java.util.Arrays;
  * This class is used to transfer (via serialization) objects whose classes are not available
  * in the system class loader. When those objects are deserialized without access to their
  * special class loader, the deserialization fails with a {@code ClassNotFoundException}.
+ * 这个类是用来传输那些在系统类加载器中不存在的类的对象的。
+ * 当这些对象没有使用它们特定的类加载器进行反序列化时，反序列化会失败，并抛出 ClassNotFoundException
  *
  * To work around that issue, the SerializedValue serialized data immediately into a byte array.
  * When send through RPC or another service that uses serialization, only the byte array is
  * transferred. The object is deserialized later (upon access) and requires the accessor to
  * provide the corresponding class loader.
+ * 为了解决这个问题，SerializedValue 会立即将数据序列化成一个字节数组。
+ * 当通过rpc或者其他使用序列化的服务发送时，只有字节数组会被传输。
+ * 对象在被取用时，才会进行反序列化，并且需要取用者提供相应的类加载器。
  *
  * @param <T> The type of the value held.
  */

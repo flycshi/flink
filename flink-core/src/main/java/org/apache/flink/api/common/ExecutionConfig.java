@@ -38,22 +38,32 @@ import static org.apache.flink.util.Preconditions.checkArgument;
 /**
  * A config to define the behavior of the program execution. It allows to define (among other
  * options) the following settings:
+ * 一个用来定义程序执行行为的配置。
+ * 允许定义如下设置：
  *
  * <ul>
  *     <li>The default parallelism of the program, i.e., how many parallel tasks to use for
  *         all functions that do not define a specific value directly.</li>
+ *         默认并行度， 在没有指定并行度时的默认值
  *     <li>The number of retries in the case of failed executions.</li>
+ *     		执行失败时的重试次数
  *     <li>The delay between delay between execution retries.</li>
+ *     		两次重试执行之间的间隔
  *     <li>The {@link ExecutionMode} of the program: Batch or Pipelined.
  *         The default execution mode is {@link ExecutionMode#PIPELINED}</li>
+ *         程序的执行模式，默认是 PIPELINED
  *     <li>Enabling or disabling the "closure cleaner". The closure cleaner pre-processes
  *         the implementations of functions. In case they are (anonymous) inner classes,
  *         it removes unused references to the enclosing class to fix certain serialization-related
  *         problems and to reduce the size of the closure.</li>
+ *         "closure cleaner" 开启或禁止。 "closure cleaner" 会预处理具体的函数实现。
+ *         如果是个内部类，闭包清理会将闭包类的无用引用给移除掉，即可以解决依赖序列号的问题，也可以减小闭包的大小。
  *     <li>The config allows to register types and serializers to increase the efficiency of
  *         handling <i>generic types</i> and <i>POJOs</i>. This is usually only needed
  *         when the functions return not only the types declared in their signature, but
  *         also subclasses of those types.</li>
+ *         配置允许注册类型和序列化器来增加处理一般类型和POJO的效率。
+ *         当函数返回的不仅有申明的类型，还有其子类时，才会需要。
  *     <li>The {@link CodeAnalysisMode} of the program: Enable hinting/optimizing or disable
  *         the "static code analyzer". The static code analyzer pre-interprets user-defined functions in order to
  *         get implementation insights for program improvements that can be printed to the log or

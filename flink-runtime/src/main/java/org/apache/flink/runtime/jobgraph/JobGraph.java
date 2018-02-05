@@ -52,9 +52,12 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * <p>The JobGraph is a graph of vertices and intermediate results that are connected together to
  * form a DAG. Note that iterations (feedback edges) are currently not encoded inside the JobGraph
  * but inside certain special vertices that establish the feedback channel amongst themselves.
+ * JobGraph 是由一组节点和中间结果集，相互连接，形成的DAG图。
+ * 需要注意的时，迭代时不在JobGraph中编码的，而是建立在节点内部的。
  *
  * <p>The JobGraph defines the job-wide configuration settings, while each vertex and intermediate result
  * define the characteristics of the concrete operation and intermediate data.
+ * JobGraph 定义了工作工作范围边界的设置，而每个节点和中间结果集则定义了具体的操作和中间数据的特征。
  */
 public class JobGraph implements Serializable {
 
@@ -75,10 +78,14 @@ public class JobGraph implements Serializable {
 	private final String jobName;
 
 	/** The number of seconds after which the corresponding ExecutionGraph is removed at the
-	 * job manager after it has been executed. */
+	 * job manager after it has been executed.
+	 * 在 ExecutionGraph 被任务管理器执行后，被从任务管理器中删除的秒数。
+	 */
 	private long sessionTimeout = 0;
 
-	/** flag to enable queued scheduling */
+	/** flag to enable queued scheduling
+	 * 是否允许被排队调度的标识
+	 */
 	private boolean allowQueuedScheduling;
 
 	/** The mode in which the job is scheduled */
