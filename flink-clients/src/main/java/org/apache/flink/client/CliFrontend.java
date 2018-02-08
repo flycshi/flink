@@ -18,35 +18,12 @@
 
 package org.apache.flink.client;
 
-import org.apache.flink.api.common.ExecutionConfig;
-import org.apache.flink.api.common.InvalidProgramException;
-import org.apache.flink.api.common.JobExecutionResult;
-import org.apache.flink.api.common.JobID;
-import org.apache.flink.api.common.JobSubmissionResult;
+import org.apache.commons.cli.CommandLine;
+import org.apache.flink.api.common.*;
 import org.apache.flink.api.common.accumulators.AccumulatorHelper;
-import org.apache.flink.client.cli.CancelOptions;
-import org.apache.flink.client.cli.CliArgsException;
-import org.apache.flink.client.cli.CliFrontendParser;
-import org.apache.flink.client.cli.CommandLineOptions;
-import org.apache.flink.client.cli.CustomCommandLine;
-import org.apache.flink.client.cli.DefaultCLI;
-import org.apache.flink.client.cli.Flip6DefaultCLI;
-import org.apache.flink.client.cli.InfoOptions;
-import org.apache.flink.client.cli.ListOptions;
-import org.apache.flink.client.cli.ProgramOptions;
-import org.apache.flink.client.cli.RunOptions;
-import org.apache.flink.client.cli.SavepointOptions;
-import org.apache.flink.client.cli.StopOptions;
-import org.apache.flink.client.program.ClusterClient;
-import org.apache.flink.client.program.PackagedProgram;
-import org.apache.flink.client.program.ProgramInvocationException;
-import org.apache.flink.client.program.ProgramMissingJobException;
-import org.apache.flink.client.program.ProgramParametrizationException;
-import org.apache.flink.configuration.ConfigConstants;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.configuration.GlobalConfiguration;
-import org.apache.flink.configuration.IllegalConfigurationException;
-import org.apache.flink.configuration.JobManagerOptions;
+import org.apache.flink.client.cli.*;
+import org.apache.flink.client.program.*;
+import org.apache.flink.configuration.*;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.optimizer.DataStatistics;
 import org.apache.flink.optimizer.Optimizer;
@@ -67,10 +44,11 @@ import org.apache.flink.util.ExceptionUtils;
 import org.apache.flink.util.FlinkException;
 import org.apache.flink.util.Preconditions;
 import org.apache.flink.util.StringUtils;
-
-import org.apache.commons.cli.CommandLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -80,21 +58,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.FiniteDuration;
 
 import static org.apache.flink.runtime.messages.JobManagerMessages.DisposeSavepoint;
 import static org.apache.flink.runtime.messages.JobManagerMessages.DisposeSavepointFailure;
@@ -127,6 +94,11 @@ public class CliFrontend {
 		//	to prefix all options with y/yarn.
 		//	Tips: DefaultCLI must be added at last, because getActiveCustomCommandLine(..) will get the
 		//	      active CustomCommandLine in order and DefaultCLI isActive always return true.
+		/**
+		 * YARN 会话命令行接口, 这里做特殊初始化, 在所有选项前加上 y/yarn 前缀。
+		 * Tips: DefaultCLI 必须最后添加, 因为 getActiveCustomCommandLine(..) 会顺序获取被激活的 CustomCommandLine ,
+		 * 而 DefaultCLI 总是返回 true 的。
+		 */
 		final String flinkYarnSessionCLI = "org.apache.flink.yarn.cli.FlinkYarnSessionCli";
 		final String flinkYarnCLI = "org.apache.flink.yarn.cli.FlinkYarnCLI";
 		try {

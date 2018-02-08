@@ -18,17 +18,16 @@
 
 package org.apache.flink.runtime.util;
 
+import org.apache.flink.util.OperatingSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Properties;
-
-import org.apache.flink.util.OperatingSystem;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class that gives access to the execution environment of the JVM, like
@@ -261,6 +260,7 @@ public class EnvironmentInformation {
 	/**
 	 * Logs a information about the environment, like code revision, current user, java version,
 	 * and JVM parameters.
+	 * 打印环境信息,如代码版本、当前用户、java版本、jvm参数
 	 *
 	 * @param log The logger to log the information to.
 	 * @param componentName The component name to mention in the log.

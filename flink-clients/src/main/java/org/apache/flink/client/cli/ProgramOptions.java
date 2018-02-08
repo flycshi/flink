@@ -44,8 +44,10 @@ import static org.apache.flink.client.cli.CliFrontendParser.SAVEPOINT_PATH_OPTIO
  */
 public abstract class ProgramOptions extends CommandLineOptions {
 
+	/** jar路径 */
 	private final String jarFilePath;
 
+	/** 启动类 */
 	private final String entryPointClass;
 
 	private final List<URL> classpaths;
