@@ -30,12 +30,15 @@ import java.util.Collection;
 
 /**
  * A {@code WindowAssigner} assigns zero or more {@link Window Windows} to an element.
+ * 一个 WindowAssigner 给一个元素指派0或者多个窗口
  *
  * <p>In a window operation, elements are grouped by their key (if available) and by the windows to
  * which it was assigned. The set of elements with the same key and window is called a pane.
  * When a {@link Trigger} decides that a certain pane should fire the
  * {@link org.apache.flink.streaming.api.functions.windowing.WindowFunction} is applied
  * to produce output elements for that pane.
+ * 在一个窗口操作中,元素会基于key,以及它被指定的窗口进行聚合操作。
+ * 具有相同key和窗口的元素集合叫做一个窗格。
  *
  * @param <T> The type of elements that this WindowAssigner can assign windows to.
  * @param <W> The type of {@code Window} that this assigner assigns.

@@ -18,17 +18,18 @@
 
 package org.apache.flink.runtime.jobmanager.scheduler;
 
+import org.apache.flink.runtime.instance.SlotSharingGroupAssignment;
+import org.apache.flink.runtime.jobgraph.JobVertexID;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.apache.flink.runtime.instance.SlotSharingGroupAssignment;
-import org.apache.flink.runtime.jobgraph.JobVertexID;
 
 /**
  * A slot sharing units defines which different task (from different job vertices) can be
  * deployed together within a slot. This is a soft permission, in contrast to the hard constraint
  * defined by a co-location hint.
+ * 一个槽位共享单元, 定义了来自不同节点的不同任务可以部署在同一个slot中。这是一个软限定,是相对于co-location定义的硬限定的。
  */
 public class SlotSharingGroup implements java.io.Serializable {
 	

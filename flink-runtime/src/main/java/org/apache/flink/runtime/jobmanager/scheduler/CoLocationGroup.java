@@ -18,17 +18,18 @@
 
 package org.apache.flink.runtime.jobmanager.scheduler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.flink.runtime.jobgraph.JobVertex;
 import org.apache.flink.util.AbstractID;
 import org.apache.flink.util.Preconditions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Co-location group is a group of JobVertices, where the <i>i-th</i> subtask of one vertex
  * has to be executed on the same TaskManager as the <i>i-th</i> subtask of all
  * other JobVertices in the same group.
+ * 一个联合组是一组任务节点,每一个节点的第i个子任务需要和组内所有其他节点的第i个子任务,在同一个TaskManager中执行。
  * 
  * <p>The co-location group is used for example to make sure that the i-th subtasks for iteration
  * head and iteration tail are scheduled to the same TaskManager.</p>

@@ -47,22 +47,41 @@ public class JobVertex implements java.io.Serializable {
 	// Members that define the structure / topology of the graph
 	// --------------------------------------------------------------------------------------------
 
-	/** The ID of the vertex. */
+	/**
+	 * The ID of the vertex.
+	 * 节点id
+	 */
 	private final JobVertexID id;
 
-	/** The alternative IDs of the vertex. */
+	/**
+	 * The alternative IDs of the vertex.
+	 * 节点的别名id ?
+	 */
 	private final ArrayList<JobVertexID> idAlternatives = new ArrayList<>();
 
-	/** The IDs of all operators contained in this vertex. */
+	/**
+	 * The IDs of all operators contained in this vertex.
+	 * 节点中包含的所有操作符的id
+	 */
 	private final ArrayList<OperatorID> operatorIDs = new ArrayList<>();
 
-	/** The alternative IDs of all operators contained in this vertex. */
+	/**
+	 * The alternative IDs of all operators contained in this vertex.
+	 * 节点中包含的所有操作符的别名id ?
+	 */
 	private final ArrayList<OperatorID> operatorIdsAlternatives = new ArrayList<>();
 
-	/** List of produced data sets, one per writer */
+	/**
+	 * List of produced data sets, one per writer
+	 * 产生的数据集的集合,一个wirter一个
+	 */
 	private final ArrayList<IntermediateDataSet> results = new ArrayList<IntermediateDataSet>();
 
-	/** List of edges with incoming data. One per Reader. */
+	/**
+	 * List of edges with incoming data. One per Reader.
+	 * 输入数据的edge集合
+	 * 一个reader一个
+	 */
 	private final ArrayList<JobEdge> inputs = new ArrayList<JobEdge>();
 
 	/** Number of subtasks to split this task into at runtime.*/
@@ -71,34 +90,58 @@ public class JobVertex implements java.io.Serializable {
 	/** Maximum number of subtasks to split this taks into a runtime. */
 	private int maxParallelism = -1;
 
-	/** The minimum resource of the vertex */
+	/**
+	 * The minimum resource of the vertex
+	 * 节点的最少资源
+	 */
 	private ResourceSpec minResources = ResourceSpec.DEFAULT;
 
-	/** The preferred resource of the vertex */
+	/**
+	 * The preferred resource of the vertex
+	 * 节点的最优资源
+	 */
 	private ResourceSpec preferredResources = ResourceSpec.DEFAULT;
 
-	/** Custom configuration passed to the assigned task at runtime. */
+	/**
+	 * Custom configuration passed to the assigned task at runtime.
+	 * 运行时给指定task传入的自定义配置
+	 */
 	private Configuration configuration;
 
 	/** The class of the invokable. */
 	private String invokableClassName;
 
-	/** Indicates of this job vertex is stoppable or not. */
+	/**
+	 * Indicates of this job vertex is stoppable or not.
+	 * 节点是否可stop的标识
+	 */
 	private boolean isStoppable = false;
 
-	/** Optionally, a source of input splits */
+	/**
+	 * Optionally, a source of input splits
+	 * 可选项, 输入分片的一个源
+	 */
 	private InputSplitSource<?> inputSplitSource;
 
-	/** The name of the vertex. This will be shown in runtime logs and will be in the runtime environment */
+	/**
+	 * The name of the vertex. This will be shown in runtime logs and will be in the runtime environment
+	 * 节点名称, 这个会在运行时的日志以及运行时的环境中显示
+	 */
 	private String name;
 
-	/** Optionally, a sharing group that allows subtasks from different job vertices to run concurrently in one slot */
+	/**
+	 * Optionally, a sharing group that allows subtasks from different job vertices to run concurrently in one slot
+	 * 可选项, 属于同一个共享组内的子任务, 可以在一个slot中并发的执行。
+	 */
 	private SlotSharingGroup slotSharingGroup;
 
 	/** The group inside which the vertex subtasks share slots */
 	private CoLocationGroup coLocationGroup;
 
-	/** Optional, the name of the operator, such as 'Flat Map' or 'Join', to be included in the JSON plan */
+	/**
+	 * Optional, the name of the operator, such as 'Flat Map' or 'Join', to be included in the JSON plan
+	 * 可选项, 操作符的名称, 比如 'Flat Map' 或者 'Join', 用来在计划的json串中标识
+	 */
 	private String operatorName;
 
 	/** Optional, the description of the operator, like 'Hash Join', or 'Sorted Group Reduce',

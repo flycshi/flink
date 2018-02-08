@@ -33,16 +33,22 @@ import java.io.Serializable;
 /**
  * A {@code Trigger} determines when a pane of a window should be evaluated to emit the
  * results for that part of the window.
+ * 一个 Trigger 决定何时,一个窗口的一个窗格应该被评估,并发射这部分窗口的结果。
  *
  * <p>A pane is the bucket of elements that have the same key (assigned by the
  * {@link org.apache.flink.api.java.functions.KeySelector}) and same {@link Window}. An element can
  * be in multiple panes if it was assigned to multiple windows by the
  * {@link org.apache.flink.streaming.api.windowing.assigners.WindowAssigner}. These panes all
  * have their own instance of the {@code Trigger}.
+ * 一个窗格是具有相同key和window的元素集合。
+ * 一个元素如果被分配到多个窗口,则可以在多个窗格。
+ * 这些窗格都拥有自己的Trigger实例。
  *
  * <p>Triggers must not maintain state internally since they can be re-created or reused for
  * different keys. All necessary state should be persisted using the state abstraction
  * available on the {@link TriggerContext}.
+ * Trigger 不能在内部维持状态信息,因为它可以被不同的key重新创建或者重用。
+ * 所有必须的状态,应该在。。。
  *
  * <p>When used with a {@link org.apache.flink.streaming.api.windowing.assigners.MergingWindowAssigner}
  * the {@code Trigger} must return {@code true} from {@link #canMerge()} and

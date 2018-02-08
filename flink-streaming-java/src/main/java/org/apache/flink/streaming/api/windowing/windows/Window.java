@@ -23,9 +23,11 @@ import org.apache.flink.annotation.PublicEvolving;
 /**
  * A {@code Window} is a grouping of elements into finite buckets. Windows have a maximum timestamp
  * which means that, at some point, all elements that go into one window will have arrived.
+ * 一个window是一组元素的有限集合。窗口有一个最大的时间戳,即在这个时间点,属于该窗口的所有元素都需要到达。
  *
  * <p>Subclasses should implement {@code equals()} and {@code hashCode()} so that logically
  * same windows are treated the same.
+ * 子类需要实现equals和hashCode方法,这样逻辑一样的窗口就可以被相同对待。
  */
 @PublicEvolving
 public abstract class Window {
