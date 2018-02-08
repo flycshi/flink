@@ -97,6 +97,7 @@ public final class GlobalConfiguration {
 		}
 
 		// get Flink yaml configuration file
+		/** 获取flink的配置文件，就是conf目录下的flink-conf.yaml文件 */
 		final File yamlConfigFile = new File(confDirFile, FLINK_CONF_FILENAME);
 
 		if (!yamlConfigFile.exists()) {

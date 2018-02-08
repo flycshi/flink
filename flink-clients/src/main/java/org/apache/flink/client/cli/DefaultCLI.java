@@ -36,6 +36,7 @@ import static org.apache.flink.client.CliFrontend.setJobManagerAddressInConfig;
 
 /**
  * The default CLI which is used for interaction with standalone clusters.
+ * 用来与独立集群交互的默认客户端。
  */
 public class DefaultCLI implements CustomCommandLine<StandaloneClusterClient> {
 

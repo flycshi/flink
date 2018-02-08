@@ -68,6 +68,7 @@ import static org.apache.flink.runtime.messages.JobManagerMessages.DisposeSavepo
 
 /**
  * Implementation of a simple command line frontend for executing programs.
+ * 执行程序的一个简单命令行前段的实现。
  */
 public class CliFrontend {
 
@@ -87,6 +88,7 @@ public class CliFrontend {
 
 	// --------------------------------------------------------------------------------------------
 
+	/** 自定义命令行集合 */
 	private static final List<CustomCommandLine<?>> customCommandLines = new ArrayList<>(3);
 
 	static {
@@ -119,8 +121,10 @@ public class CliFrontend {
 
 	// --------------------------------------------------------------------------------------------
 
+	/** 从flink-conf.yaml文件中读取的配置key-value对 */
 	private final Configuration config;
 
+	/** flink的配置文件所在路径 */
 	private final String configurationDirectory;
 
 	private final FiniteDuration clientTimeout;
@@ -1087,6 +1091,10 @@ public class CliFrontend {
 	// --------------------------------------------------------------------------------------------
 
 	public static String getConfigurationDirectoryFromEnv() {
+		/**
+		 * 1、在启动脚本中，会调用 config.sh 这个脚本，里面会配置各种环境边境变量，其中就有 FLINK_CONF_DIR 的值
+		 * 2、如果没有配置，则从 ../conf 或者 conf 目录是否存在
+		 */
 		String location = System.getenv(ConfigConstants.ENV_FLINK_CONF_DIR);
 
 		if (location != null) {
@@ -1151,8 +1159,10 @@ public class CliFrontend {
 
 	/**
 	 * Loads a class from the classpath that implements the CustomCommandLine interface.
-	 * @param className The fully-qualified class name to load.
-	 * @param params The constructor parameters
+	 * 从classpath中加载一个实现了自定义命令行接口的类。
+	 *
+	 * @param className The fully-qualified class name to load. 全限定类名
+	 * @param params The constructor parameters	构造器参数
 	 */
 	private static CustomCommandLine<?> loadCustomCommandLine(String className, Object... params) throws IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException, NoSuchMethodException {
 

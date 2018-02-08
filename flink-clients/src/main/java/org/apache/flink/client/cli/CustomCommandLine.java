@@ -29,6 +29,7 @@ import java.util.List;
 
 /**
  * Custom command-line interface to load hooks for the command-line interface.
+ * 自定义命令行接口，用来为命令行接口加载钩子。
  */
 public interface CustomCommandLine<ClusterType extends ClusterClient> {
 

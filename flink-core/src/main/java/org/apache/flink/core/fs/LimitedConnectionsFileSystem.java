@@ -47,17 +47,23 @@ import static org.apache.flink.util.Preconditions.checkState;
 /**
  * A file system that limits the number of concurrently open input streams,
  * output streams, and total streams for a target file system.
+ * 一个文件系统，限制了并发打开的输入流、输出流、以及一个目标文件系统的所有流的个数。
+ * 其实就是具备限制连接数的文件系统。
  *
  * <p>This file system can wrap another existing file system in cases where
  * the target file system cannot handle certain connection spikes and connections
  * would fail in that case. This happens, for example, for very small HDFS clusters
  * with few RPC handlers, when a large Flink job tries to build up many connections during
  * a checkpoint.
+ * 这个文件系统可以在其他已经存在的文件系统上包裹一层，在目标文件系统不能处理某些连接，并且连接会失败的情况下。
+ * 比如，对于一个配置了较少的rpc句柄的很小的hdfs集群，当一个大的flink任务试图在checkpoing时建立很多连接时，就会发生上述现象。
  *
  * <p>The filesystem may track the progress of streams and close streams that have been
  * inactive for too long, to avoid locked streams of taking up the complete pool.
  * Rather than having a dedicated reaper thread, the calls that try to open a new stream
  * periodically check the currently open streams once the limit of open streams is reached.
+ * 文件系统会跟踪流的处理进度，并及时关闭那些长时间没有响应的流，这样来禁止锁住的流占用了所有的池子。
+ * 没有采用一个特定的线程来做这个回收，而是试图打开一个新的流的调用，会周期检查当前打开的流是否已经达到了上限。
  */
 @Internal
 public class LimitedConnectionsFileSystem extends FileSystem {

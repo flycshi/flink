@@ -90,6 +90,7 @@ import scala.concurrent.duration.FiniteDuration;
 
 /**
  * Encapsulates the functionality necessary to submit a program to a remote cluster.
+ * 封装了提交程序到远程集群的必须功能。
  */
 public abstract class ClusterClient {
 

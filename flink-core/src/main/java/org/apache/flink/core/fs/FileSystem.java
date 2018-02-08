@@ -58,16 +58,25 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * distributed file systems, or local file systems. The abstraction by this file system is very simple,
  * and the set of available operations quite limited, to support the common denominator of a wide
  * range of file systems. For example, appending to or mutating existing files is not supported.
+ * flink使用的所有文件系统的抽象基类。
+ * 这个类可以被继承去实现分布式文件系统，或者本地文件系统。
+ * 这个文件系统的抽象很简单，有效的操作集合也相当有限，为一个宽泛的文件系统提供了共同的支持。
+ * 比如对于一个已经存在的文件，追加和修改时不支持的。
  *
  * <p>Flink implements and supports some file system types directly (for example the default
  * machine-local file system). Other file system types are accessed by an implementation that bridges
  * to the suite of file systems supported by Hadoop (such as for example HDFS).
+ * flink直接就实现和支持一些文件系统类型，比如默认的机器本地文件系统。
+ * 其他文件系统类型，通过连接hadoop支持的文件系统套件的一个实现(比如 HDFS)来进行存取
  *
  * <h2>Scope and Purpose</h2>
+ * 范围和目标
  *
  * <p>The purpose of this abstraction is used to expose a common and well defined interface for
  * access to files. This abstraction is used both by Flink's fault tolerance mechanism (storing
  * state and recovery data) and by reusable built-in connectors (file sources / sinks).
+ * 这个抽象的目的是用来暴露一个公共的、定义好的接口进行文件的访问。
+ * 这个抽象被flink的容灾机制(存储状态和恢复数据)、和重复使用的内建连接器(文件源/出口)所使用。
  *
  * <p>The purpose of this abstraction is <b>not</b> to give user programs an abstraction with
  * extreme flexibility and control across all possible file systems. That mission would be a folly,
@@ -75,22 +84,32 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * large. It is expected that user programs that need specialized functionality of certain file systems
  * in their functions, operations, sources, or sinks instantiate the specialized file system adapters
  * directly.
+ * 这个抽象的目的不是给用户程序在所有可能的文件系统中提供极端灵活和控制的抽象。
+ * 这样的想法是愚蠢的，即使最常见的文件系统之家也有比较大的差别。
+ * 在functions, operations, sources, or sinks中，需要特定文件系统的特定功能的用户程序，可以直接实例化指定的文件系统的适配器。
  *
  * <h2>Data Persistence Contract</h2>
+ * 数据持久化约定
  *
  * <p>The FileSystem's {@link FSDataOutputStream output streams} are used to persistently store data,
  * both for results of streaming applications and for fault tolerance and recovery. It is therefore
  * crucial that the persistence semantics of these streams are well defined.
+ * FSDataOutputStream 输出流的文件系统被用来给流应用的结果、容灾、回复做持久化存储数据，。
+ * 这些流的持久化语言定义好是很重要的。
  *
  * <h3>Definition of Persistence Guarantees</h3>
+ * 持久化保障的定义
  *
  * <p>Data written to an output stream is considered persistent, if two requirements are met:
+ * 写入到一个输出流的数据满足如下两点就被认为持久化了：
  *
  * <ol>
  *     <li><b>Visibility Requirement:</b> It must be guaranteed that all other processes, machines,
  *     virtual machines, containers, etc. that are able to access the file see the data consistently
  *     when given the absolute file path. This requirement is similar to the <i>close-to-open</i>
  *     semantics defined by POSIX, but restricted to the file itself (by its absolute path).</li>
+ *     可见性要求：需要保证，所有其他的处理、机器、虚拟机、容器等，在给定绝对文件路径时，能够访问文件并访问到一致的数据。
+ *     这个要求和POSIX定义的close-to-open语言相似，但是仅限于文件自身(通过决定路径)
  *
  *     <li><b>Durability Requirement:</b> The file system's specific durability/persistence requirements
  *     must be met. These are specific to the particular file system. For example the
@@ -98,17 +117,24 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  *     hardware and operating system, while replicated distributed file systems (like HDFS)
  *     typically guarantee durability in the presence of at most <i>n</i> concurrent node failures,
  *     where <i>n</i> is the replication factor.</li>
+ *     持久化要求：文件系统的特定持久化需求必须满足。各文件系统的要求各不相同。
+ *     比如 LocalFileSystem 对于硬件和操作系统的崩溃不提供任何持久化保障，
+ *     而像HDFS的副本分布式文件系统一般可以保障在最多n个节点同时故障时的持久化，其中n是副本个数。
  * </ol>
  *
  * <p>Updates to the file's parent directory (such that the file shows up when
  * listing the directory contents) are not required to be complete for the data in the file stream
  * to be considered persistent. This relaxation is important for file systems where updates to
  * directory contents are only eventually consistent.
+ * 文件父目录的更新(当列出目录内容时显示的文件)，对于文件流中被认为持久化的数据，是不要求完整的。
+ * 这个宽松要求，对于更新目录内容只要最终一致的文件系统，是很重要的。
  *
  * <p>The {@link FSDataOutputStream} has to guarantee data persistence for the written bytes
  * once the call to {@link FSDataOutputStream#close()} returns.
+ * FSDataOutputStream 需要保证在 close 方法返回时，被写入的数据已经被持久化。
  *
  * <h3>Examples</h3>
+ * 例子
  *
  * <ul>
  *     <li>For <b>fault-tolerant distributed file systems</b>, data is considered persistent once
@@ -116,37 +142,51 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  *     to a quorum of machines (<i>durability requirement</i>). In addition the absolute file path
  *     must be visible to all other machines that will potentially access the file (<i>visibility
  *     requirement</i>).
+ *     对于容灾分布式文件系统，当数据被文件系统接收并确认，就任务被持久化了，一般是被复制到了大多数的机器上(持久化要求)。
+ *     另外绝对的文件路径必须对有可能访问文件的所有其他机器都可见(可见性要求)。
  *
  *     <p>Whether data has hit non-volatile storage on the storage nodes depends on the specific
  *     guarantees of the particular file system.
+ *     数据是否在能在存储节点上拥有不丢失的存储，依赖特定文件系统的特定策略。
  *
  *     <p>The metadata updates to the file's parent directory are not required to have reached
  *     a consistent state. It is permissible that some machines see the file when listing the parent
  *     directory's contents while others do not, as long as access to the file by its absolute path
  *     is possible on all nodes.</li>
+ *     文件父目录的元数据更新不需要达到一致性状态。
+ *     在列出父目录内容时，允许某些机器可以看到文件，而某些看不到，只要通过文件的绝对路径可以访问到文件就可以。
  *
  *     <li>A <b>local file system</b> must support the POSIX <i>close-to-open</i> semantics.
  *     Because the local file system does not have any fault tolerance guarantees, no further
  *     requirements exist.
+ *     一个本地文件系统必须支持POSIX的close-to-open语义。
+ *     因为本地文件系统没有任何容灾保障，也没有更多的要求存在。
  *
  *     <p>The above implies specifically that data may still be in the OS cache when considered
  *     persistent from the local file system's perspective. Crashes that cause the OS cache to loose
  *     data are considered fatal to the local machine and are not covered by the local file system's
  *     guarantees as defined by Flink.
+ *     上面的意思是，当文件系统以为数据已经持久化时，数据有可能还在操作系统的缓存中。
+ *     由于操作系统缓存而丢失数据的崩溃被认为是本地机器的致命故障，这个是没法由flink定义的本地文件系统的保障来保证的。
  *
  *     <p>That means that computed results, checkpoints, and savepoints that are written only to
  *     the local filesystem are not guaranteed to be recoverable from the local machine's failure,
  *     making local file systems unsuitable for production setups.</li>
+ *     也就是计算结果、检查点、保存点，这些只被写入本地文件系统的数据，在本地机器故障时，是不能保障被恢复的，也就是本地文件系统是不适合生产环境的。
  * </ul>
  *
  * <h2>Updating File Contents</h2>
+ * 更新文件内容
  *
  * <p>Many file systems either do not support overwriting contents of existing files at all, or do
  * not support consistent visibility of the updated contents in that case. For that reason,
  * Flink's FileSystem does not support appending to existing files, or seeking within output streams
  * so that previously written data could be overwritten.
+ * 很多文件系统要么就直接不支持覆盖已经存在文件的内容，要么不支持更新内容的一致性可见性。
+ * 出于这个原因，flink的文件系统不支持追加已存在文件，或者在输出流中随机访问，以防数据被复写。
  *
  * <h2>Overwriting Files</h2>
+ * 覆盖文件
  *
  * <p>Overwriting files is in general possible. A file is overwritten by deleting it and creating
  * a new file. However, certain filesystems cannot make that change synchronously visible
@@ -154,20 +194,27 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * For example <a href="https://aws.amazon.com/documentation/s3/">Amazon S3</a> guarantees only
  * <i>eventual consistency</i> in the visibility of the file replacement: Some machines may see
  * the old file, some machines may see the new file.
+ * 覆盖文件是很常见的。一个文件被覆盖是通过先删除，然后再创建一个新的文件。但是，某些文件系统无法做到然让这个变化对那些访问这个文件的所有人都是同步的。
+ * 比如 Amazon S3 在替换文件的可见性上只保障最终一致性：一些机器可能看到旧的文件，一些机器可能看到新的文件。
  *
  * <p>To avoid these consistency issues, the implementations of failure/recovery mechanisms in
  * Flink strictly avoid writing to the same file path more than once.
+ * 为了避免这些一致性问题，flink的容灾/回复机制的实现都是严格禁止多次向同一个文件路径写数据的。
  *
  * <h2>Thread Safety</h2>
+ * 线程安全
  *
  * <p>Implementations of {@code FileSystem} must be thread-safe: The same instance of FileSystem
  * is frequently shared across multiple threads in Flink and must be able to concurrently
  * create input/output streams and list file metadata.
+ * 文件系统的实现必须线程安全：flink中，文件系统的相同实例经常在多个线程之间共享，并且必须能够并发的创建输入/输出流，以及列出文件元数据。
  *
  * <p>The {@link FSDataOutputStream} and {@link FSDataOutputStream} implementations are strictly
  * <b>not thread-safe</b>. Instances of the streams should also not be passed between threads
  * in between read or write operations, because there are no guarantees about the visibility of
  * operations across threads (many operations do not create memory fences).
+ * FSDataOutputStream 的实现是非线程安全的。
+ * 流的实例不应该在线程间共享进行读写操作，因为无法保证跨线程操作的可见性(很多操作是没有创建内存栅栏的)。
  *
  * <h2>Streams Safety Net</h2>
  *
@@ -176,9 +223,13 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * The safety net ensures that all streams created from the FileSystem are closed when the
  * application task finishes (or is canceled or failed). That way, the task's threads do not
  * leak connections.
+ * 当一个应用通过 FileSystem#get(URI) 或者 Path#getFileSystem() 获取一个文件系统时，文件系统实例化了一个安全网。
+ * 安全网确保所有从文件系统创建的流，在应用任务完成(或者取消，或者失败)时都会被关闭。
+ * 也就是任务线程不会泄露连接。
  *
  * <p>Internal runtime code can explicitly obtain a FileSystem that does not use the safety
  * net via {@link FileSystem#getUnguardedFileSystem(URI)}.
+ * 内部运行时代码可以显式地通过 FileSystem#getUnguardedFileSystem(URI) 获得不使用安全网络的文件系统
  *
  * @see FSDataInputStream
  * @see FSDataOutputStream
@@ -189,16 +240,26 @@ public abstract class FileSystem {
 	/**
 	 * The possible write modes. The write mode decides what happens if a file should be created,
 	 * but already exists.
+	 * 可能的写模式。
+	 * 写模式决定了，如果一个文件需要被创建，但是已经存在时，将如何处理。
 	 */
 	public enum WriteMode {
 
-		/** Creates the target file only if no file exists at that path already.
-		 * Does not overwrite existing files and directories. */
+		/**
+		 * Creates the target file only if no file exists at that path already.
+		 * Does not overwrite existing files and directories.
+		 * 只有在路径上不存在文件时才创建目标文件。
+		 * 不覆盖已经存在的文件和目录。
+		 */
 		NO_OVERWRITE,
 
-		/** Creates a new target file regardless of any existing files or directories.
+		/**
+		 * Creates a new target file regardless of any existing files or directories.
 		 * Existing files and directories will be deleted (recursively) automatically before
-		 * creating the new file. */
+		 * creating the new file.
+		 * 不考虑任何存在的文件或者目录，直接创建一个新的目标文件。
+		 * 在创建新的文件之前，已经存在的文件和目录会被自动的递归删除掉。
+		 */
 		OVERWRITE
 	}
 
@@ -239,6 +300,7 @@ public abstract class FileSystem {
 
 	/**
 	 * Initializes the shared file system settings.
+	 * 初始化共享文件系统的设置
 	 *
 	 * <p>The given configuration is passed to each file system factory to initialize the respective
 	 * file systems. Because the configuration of file systems may be different subsequent to the call
@@ -270,6 +332,7 @@ public abstract class FileSystem {
 			}
 
 			// configure the default (fallback) factory
+			// 配置默认的(后备)工厂
 			FALLBACK_FACTORY.configure(config);
 
 			// also read the default file system scheme
@@ -925,6 +988,8 @@ public abstract class FileSystem {
 	 * Loads the factories for the file systems directly supported by Flink.
 	 * Aside from the {@link LocalFileSystem}, these file systems are loaded
 	 * via Java's service framework.
+	 * 加载flink直接支持的文件系统的工厂。
+	 * 除了 LocalFileSystem ， 这些文件系统都是通过java的服务框架加载的。
 	 *
 	 * @return A map from the file system scheme to corresponding file system factory.
 	 */

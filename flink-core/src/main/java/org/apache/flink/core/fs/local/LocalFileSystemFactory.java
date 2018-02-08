@@ -39,6 +39,7 @@ public class LocalFileSystemFactory implements FileSystemFactory {
 	@Override
 	public void configure(Configuration config) {
 		// the local file system takes no configuration, so nothing to do here
+		// 本地文件系统啥都不做
 	}
 
 	@Override
