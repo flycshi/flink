@@ -25,6 +25,7 @@ import java.util.Collection;
 
 /**
  * A {@code WindowAssigner} that can merge windows.
+ * 一个可以合并窗口的 窗口分配器
  *
  * @param <T> The type of elements that this WindowAssigner can assign windows to.
  * @param <W> The type of {@code Window} that this assigner assigns.
@@ -35,6 +36,7 @@ public abstract class MergingWindowAssigner<T, W extends Window> extends WindowA
 
 	/**
 	 * Determines which windows (if any) should be merged.
+	 * 判断出哪些window需要合并
 	 *
 	 * @param windows The window candidates.
 	 * @param callback A callback that can be invoked to signal which windows should be merged.

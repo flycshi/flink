@@ -76,22 +76,34 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * An operator that implements the logic for windowing based on a {@link WindowAssigner} and
  * {@link Trigger}.
+ * 一个操作符, 实现了基于窗口分配和触发器的窗口逻辑。
  *
  * <p>When an element arrives it gets assigned a key using a {@link KeySelector} and it gets
  * assigned to zero or more windows using a {@link WindowAssigner}. Based on this, the element
  * is put into panes. A pane is the bucket of elements that have the same key and same
  * {@code Window}. An element can be in multiple panes if it was assigned to multiple windows by the
  * {@code WindowAssigner}.
+ * 当一个元素到达的时候, 使用KeySelector给它分配一个key, 使用WindowAssigner给它分配0或者多个窗口。
+ * 基于这些, 元素被放入窗格内。
+ * 一个窗格是具有相同key和相同window的元素集合。
+ * 一个元素如果被WindowAssigner分配了多个窗口,则可以在多个窗格内。
  *
  * <p>Each pane gets its own instance of the provided {@code Trigger}. This trigger determines when
  * the contents of the pane should be processed to emit results. When a trigger fires,
  * the given {@link InternalWindowFunction} is invoked to produce the results that are emitted for
  * the pane to which the {@code Trigger} belongs.
+ * 每个窗格拥有自己的被提供的触发器的实例。
+ * 触发器决定了窗格内的内容何时应该被处理并发射结果。
+ * 当一个触发器触发的时候,会为这个触发器属于的窗格,调用指定的InternalWindowFunction去产生一个结果并发射。
  *
  * @param <K> The type of key returned by the {@code KeySelector}.
+ *           KeySelector 返回的key的类型
  * @param <IN> The type of the incoming elements.
+ *            输入元素的类型
  * @param <OUT> The type of elements emitted by the {@code InternalWindowFunction}.
+ *             InternalWindowFunction处理后发射出来的元素的类型
  * @param <W> The type of {@code Window} that the {@code WindowAssigner} assigns.
+ *           WindowAssigner分配的Window的类型
  */
 @Internal
 public class WindowOperator<K, IN, ACC, OUT, W extends Window>

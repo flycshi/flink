@@ -27,6 +27,8 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * The definition of a time interval for windowing. The time characteristic referred
  * to is the default time characteristic set on the execution environment.
+ * 窗口时间间隔的定义。
+ * 关联的时间特征是运行环境中设置的默认时间特征。
  */
 @Public
 public final class Time {

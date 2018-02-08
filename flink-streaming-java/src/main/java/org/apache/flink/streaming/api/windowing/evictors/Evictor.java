@@ -30,6 +30,7 @@ import java.io.Serializable;
  * An {@code Evictor} can remove elements from a pane before/after the evaluation of WindowFunction
  * and after the window evaluation gets triggered by a
  * {@link org.apache.flink.streaming.api.windowing.triggers.Trigger}
+ * 一个 Evictor 可以在 WindowFunction 执行前/后,以及trigger触发后,对一个窗格的元素进行移除。
  *
  * <p>A pane is the bucket of elements that have the same key (assigned by the
  * {@link org.apache.flink.api.java.functions.KeySelector}) and same {@link Window}. An element can

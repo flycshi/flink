@@ -22,6 +22,8 @@ package org.apache.flink.streaming.api.windowing.triggers;
  * Result type for trigger methods. This determines what happens with the window,
  * for example whether the window function should be called, or the window
  * should be discarded.
+ * 触发方法的结果类型。
+ * 这个决定了窗口上将发生什么,比如,窗口函数是否会被调用,或者窗口是否会被丢弃。
  */
 public enum TriggerResult {
 

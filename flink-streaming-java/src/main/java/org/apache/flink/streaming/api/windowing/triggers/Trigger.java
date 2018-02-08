@@ -116,6 +116,7 @@ public abstract class Trigger<T, W extends Window> implements Serializable {
 	/**
 	 * Called when several windows have been merged into one window by the
 	 * {@link org.apache.flink.streaming.api.windowing.assigners.WindowAssigner}.
+	 * 当多个窗口被合并成一个窗口时,该方法会被调用
 	 *
 	 * @param window The new window that results from the merge.
 	 * @param ctx A context object that can be used to register timer callbacks and access state.

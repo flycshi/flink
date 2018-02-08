@@ -34,6 +34,7 @@ import org.apache.flink.util.OutputTag;
 public interface InternalWindowFunction<IN, OUT, KEY, W extends Window> extends Function {
 	/**
 	 * Evaluates the window and outputs none or several elements.
+	 * 计算窗口,并输出0或者多个元素
 	 *
 	 * @param context The context in which the window is being evaluated.
 	 * @param input The elements in the window being evaluated.
