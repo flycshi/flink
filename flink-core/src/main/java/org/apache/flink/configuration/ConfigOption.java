@@ -29,11 +29,16 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * A {@code ConfigOption} describes a configuration parameter. It encapsulates
  * the configuration key, deprecated older versions of the key, and an optional
  * default value for the configuration parameter.
+ * ConfigOption 描述了一个配置参数。
+ * 它封装了配置项的key,丢弃老版本的key,还有一个可选的默认值。
  * 
  * <p>{@code ConfigOptions} are built via the {@link ConfigOptions} class.
  * Once created, a config option is immutable.
+ * ConfigOption 通过 ConfigOptions 类进行构建。
+ * 一旦创建,就是不可变的。
  * 
  * @param <T> The type of value associated with the configuration option.
+ *           配置项的value的类型
  */
 @PublicEvolving
 public class ConfigOption<T> {
@@ -42,22 +47,35 @@ public class ConfigOption<T> {
 
 	// ------------------------------------------------------------------------
 
-	/** The current key for that config option */
+	/**
+	 * The current key for that config option
+	 * 配置选项的当前key
+	 */
 	private final String key;
 
-	/** The list of deprecated keys, in the order to be checked */
+	/**
+	 * The list of deprecated keys, in the order to be checked
+	 * 丢弃的key的集合,以便后续检查
+	 */
 	private final String[] deprecatedKeys;
 
-	/** The default value for this option */
+	/**
+	 * The default value for this option
+	 * 选项的默认值
+	 */
 	private final T defaultValue;
 
-	/** The description for this option */
+	/**
+	 * The description for this option
+	 * 选项的描述
+	 */
 	private final String description;
 
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates a new config option with no deprecated keys.
+	 * 创建一个没有丢弃key的新配置选项
 	 *
 	 * @param key             The current key for that config option
 	 * @param defaultValue    The default value for this option

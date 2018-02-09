@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A simple command line parser (based on Apache Commons CLI) that extracts command
  * line options.
+ * 基于apache命令客户端的一个简单的命令行解析器,用来提取命令选项
  */
 public class CliFrontendParser {
 
@@ -147,8 +148,10 @@ public class CliFrontendParser {
 	private static Options buildGeneralOptions(Options options) {
 		options.addOption(HELP_OPTION);
 		// backwards compatibility: ignore verbose flag (-v)
+		/** 向后兼容: 忽略 verbose 标识 */
 		options.addOption(new Option("v", "verbose", false, "This option is deprecated."));
 		// add general options of all CLIs
+		/** 所有客户端的常用选项都添加进来 */
 		for (CustomCommandLine customCLI : CliFrontend.getCustomCommandLineList()) {
 			customCLI.addGeneralOptions(options);
 		}

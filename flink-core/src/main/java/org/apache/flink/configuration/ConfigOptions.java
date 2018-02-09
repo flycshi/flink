@@ -24,10 +24,13 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * {@code ConfigOptions} are used to build a {@link ConfigOption}.
+ * ConfigOptions 用来构建一个 ConfigOption
  * The option is typically built in one of the following pattern:
+ * 选项一般如下构建:
  * 
  * <pre>{@code
  * // simple string-valued option with a default value
+ * 简单的 字符串value 的选项,配置一个默认值
  * ConfigOption<String> tempDirs = ConfigOptions
  *     .key("tmp.dir")
  *     .defaultValue("/tmp");
@@ -68,14 +71,20 @@ public class ConfigOptions {
 	/**
 	 * The option builder is used to create a {@link ConfigOption}.
 	 * It is instantiated via {@link ConfigOptions#key(String)}.
+	 * 选项构造器用来创建 ConfigOption
+	 * 是通过 ConfigOptions#key(String) 实例化的。
 	 */
 	public static final class OptionBuilder {
 
-		/** The key for the config option */
+		/**
+		 * The key for the config option
+		 * 配置选项的key
+		 */
 		private final String key;
 
 		/**
 		 * Creates a new OptionBuilder.
+		 * 创建一个新的 OptionBuilder 实例
 		 * @param key The key for the config option
 		 */
 		OptionBuilder(String key) {
@@ -111,6 +120,9 @@ public class ConfigOptions {
 
 	// ------------------------------------------------------------------------
 
-	/** Not intended to be instantiated */
+	/**
+	 * Not intended to be instantiated
+	 * 私有构造函数,也就是不需要被实例化操作。
+	 */
 	private ConfigOptions() {}
 }

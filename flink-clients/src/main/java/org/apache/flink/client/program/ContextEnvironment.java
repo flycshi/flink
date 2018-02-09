@@ -32,6 +32,7 @@ import java.util.List;
 
 /**
  * Execution Environment for remote execution with the Client.
+ * 客户端远程执行的执行环境
  */
 public class ContextEnvironment extends ExecutionEnvironment {
 

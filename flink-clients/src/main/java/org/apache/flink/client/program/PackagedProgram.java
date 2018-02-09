@@ -186,6 +186,9 @@ public class PackagedProgram {
 		this.args = args == null ? new String[0] : args;
 
 		// if no entryPointClassName name was given, we try and look one up through the manifest
+		/**
+		 * 如果没有指定启动类,在从jar包中的manifest中找出启动类
+		 */
 		if (entryPointClassName == null) {
 			entryPointClassName = getEntryPointClassNameFromJar(jarFileUrl);
 		}
@@ -196,6 +199,7 @@ public class PackagedProgram {
 		this.userCodeClassLoader = JobWithJars.buildUserCodeClassLoader(getAllLibraries(), classpaths, getClass().getClassLoader());
 
 		// load the entry point class
+		/** 加载启动类 */
 		this.mainClass = loadMainClass(entryPointClassName, userCodeClassLoader);
 
 		// if the entry point is a program, instantiate the class and get the plan
@@ -524,6 +528,9 @@ public class PackagedProgram {
 		}
 
 		try {
+			/**
+			 * 通过反射机制,调用用户编写的启动类
+			 */
 			mainMethod.invoke(null, (Object) args);
 		}
 		catch (IllegalArgumentException e) {

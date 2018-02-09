@@ -41,6 +41,7 @@ import static org.apache.flink.client.cli.CliFrontendParser.SAVEPOINT_PATH_OPTIO
 
 /**
  * Base class for command line options that refer to a JAR file program.
+ * 引用jar文件程序的命令行选项的基类
  */
 public abstract class ProgramOptions extends CommandLineOptions {
 
@@ -69,6 +70,12 @@ public abstract class ProgramOptions extends CommandLineOptions {
 				line.getOptionValues(ARGS_OPTION.getOpt()) :
 				line.getArgs();
 
+		/**
+		 * 用户的jar包路径
+		 * 1、可以通过 -j、--jarfile 直接指定
+		 * 2、通过 -a、--arguments 指定的多个value中的第一个value
+		 * 3、上述都没有指定,则可以通过不带任何参数名的,直接给定jar包路径,但是必须是在第一个
+		 */
 		if (line.hasOption(JAR_OPTION.getOpt())) {
 			this.jarFilePath = line.getOptionValue(JAR_OPTION.getOpt());
 		}
@@ -94,9 +101,16 @@ public abstract class ProgramOptions extends CommandLineOptions {
 		}
 		this.classpaths = classpaths;
 
+		/**
+		 * 通过 -c、--class 指定启动类
+		 */
 		this.entryPointClass = line.hasOption(CLASS_OPTION.getOpt()) ?
 				line.getOptionValue(CLASS_OPTION.getOpt()) : null;
 
+		/**
+		 * 通过 -p、--parallelism 指定并行度
+		 * 如果没有指定,则采用默认的
+		 */
 		if (line.hasOption(PARALLELISM_OPTION.getOpt())) {
 			String parString = line.getOptionValue(PARALLELISM_OPTION.getOpt());
 			try {

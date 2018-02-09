@@ -128,6 +128,7 @@ public class AkkaOptions {
 
 	/**
 	 * Timeout for all blocking calls on the client side.
+	 * 客户端所有阻塞调用的超时时间, 默认60s
 	 */
 	public static final ConfigOption<String> CLIENT_TIMEOUT = ConfigOptions
 		.key("akka.client.timeout")

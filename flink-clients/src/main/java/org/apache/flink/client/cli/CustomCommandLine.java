@@ -35,6 +35,8 @@ public interface CustomCommandLine<ClusterType extends ClusterClient> {
 
 	/**
 	 * Signals whether the custom command-line wants to execute or not.
+	 * 标识自定义命令行是否要执行
+	 *
 	 * @param commandLine The command-line options
 	 * @param configuration The Flink configuration
 	 * @return True if the command-line wants to run, False otherwise
@@ -43,24 +45,32 @@ public interface CustomCommandLine<ClusterType extends ClusterClient> {
 
 	/**
 	 * Gets the unique identifier of this CustomCommandLine.
+	 * 获取自定义命令行的唯一id
+	 *
 	 * @return A unique identifier
 	 */
 	String getId();
 
 	/**
 	 * Adds custom options to the existing run options.
+	 * 在已有的运行选项中添加自定义选项。
+	 *
 	 * @param baseOptions The existing options.
 	 */
 	void addRunOptions(Options baseOptions);
 
 	/**
 	 * Adds custom options to the existing general options.
+	 * 在已有的一般选项中添加自定义选项
+	 *
 	 * @param baseOptions The existing options.
 	 */
 	void addGeneralOptions(Options baseOptions);
 
 	/**
 	 * Retrieves a client for a running cluster.
+	 * 提取一个运行集群的客户端
+	 *
 	 * @param commandLine The command-line parameters from the CliFrontend
 	 * @param config The Flink config
 	 * @param configurationDirectory Directory for configuration files
@@ -74,6 +84,8 @@ public interface CustomCommandLine<ClusterType extends ClusterClient> {
 
 	/**
 	 * Creates the client for the cluster.
+	 * 为集群创建一个客户度
+	 *
 	 * @param applicationName The application name to use
 	 * @param commandLine The command-line options parsed by the CliFrontend
 	 * @param config The Flink config to use

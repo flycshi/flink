@@ -147,6 +147,7 @@ public class CliFrontend {
 		LOG.info("Using configuration directory " + configDirectory.getAbsolutePath());
 
 		// load the configuration
+		/** 从 flink-conf.yaml 中加载配置 */
 		LOG.info("Trying to load configuration file");
 		this.config = GlobalConfiguration.loadConfiguration(configDirectory.getAbsolutePath());
 
@@ -157,7 +158,12 @@ public class CliFrontend {
 				"filesystem scheme from configuration.", e);
 		}
 
+		/** 获取akka客户端超时时间配置, akka.client.timeout 默认值是60s */
 		this.clientTimeout = AkkaUtils.getClientTimeout(config);
+		/**
+		 * 这里又去重新加载了一遍flink-conf.yaml文件,莫名其妙,为啥不直接用上面的config
+		 * 获取配置文件中设置的默认并行度, parallelism.default 参数对应的值,如果没有配置,则采用默认值 1
+		 */
 		this.defaultParallelism = GlobalConfiguration.loadConfiguration().getInteger(
 														ConfigConstants.DEFAULT_PARALLELISM_KEY,
 														ConfigConstants.DEFAULT_PARALLELISM);
@@ -195,6 +201,7 @@ public class CliFrontend {
 
 	/**
 	 * Executions the run action.
+	 * 执行 run 动作
 	 *
 	 * @param args Command line arguments for the run action.
 	 */
@@ -244,6 +251,11 @@ public class CliFrontend {
 
 			LOG.debug(options.getSavepointRestoreSettings().toString());
 
+			/**
+			 * 从启动命令行中提取设置的 parallelism
+			 * 1、集群客户端获取的最大槽位如果不能与-1,且启动命令行中没有设置,则取最大槽位数
+			 * 2、否则,使用flink-conf.yaml中配置的默认并行度
+			 */
 			int userParallelism = options.getParallelism();
 			LOG.debug("User parallelism is set to {}", userParallelism);
 			if (client.getMaxSlots() != -1 && userParallelism == -1) {
@@ -837,8 +849,10 @@ public class CliFrontend {
 		}
 
 		// Get assembler class
+		/** 获取启动类全限定类名 */
 		String entryPointClass = options.getEntryPointClassName();
 
+		/** 根据启动类是否为null,构建program */
 		PackagedProgram program = entryPointClass == null ?
 				new PackagedProgram(jarFile, classpaths, programArgs) :
 				new PackagedProgram(jarFile, classpaths, entryPointClass, programArgs);
@@ -880,6 +894,8 @@ public class CliFrontend {
 
 	/**
 	 * Creates a {@link ClusterClient} object from the given command line options and other parameters.
+	 * 根据给定的命令行选项和其他参数,创建一个 ClusterClient 对象
+	 *
 	 * @param options Command line options
 	 * @param program The program for which to create the client.
 	 * @throws Exception
@@ -1005,11 +1021,19 @@ public class CliFrontend {
 
 	/**
 	 * Parses the command line arguments and starts the requested action.
+	 * 解析命令行参数,并启动请求的动作。
 	 *
-	 * @param args command line arguments of the client.
+	 * @param args command line arguments of the client. 客户端的命令行参数
 	 * @return The return code of the program
 	 */
 	public int parseParameters(String[] args) {
+
+		/**
+		 * args 的例子
+		 * run -c com.function.test.flink.SocketWindowWordCount /Users/test/function-test/target/function-test-1.0-SNAPSHOT.jar --port 9000
+		 *
+		 * 其中需要注意,启动类的入参必须依次放在参数列的最后面
+		 */
 
 		// check for action
 		if (args.length < 1) {
@@ -1019,9 +1043,14 @@ public class CliFrontend {
 		}
 
 		// get action
+		/** 第一个参数标识action,比如上面的例子就是 run */
 		String action = args[0];
 
 		// remove action from parameters
+		/**
+		 * 移除第一个 action 对应的参数
+		 * -c com.function.test.flink.SocketWindowWordCount /Users/test/function-test/target/function-test-1.0-SNAPSHOT.jar --port 9000
+		 */
 		final String[] params = Arrays.copyOfRange(args, 1, args.length);
 
 		// do action

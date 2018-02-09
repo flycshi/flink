@@ -26,6 +26,7 @@ import static org.apache.flink.client.cli.CliFrontendParser.HELP_OPTION;
 /**
  * Base class for all options parsed from the command line.
  * Contains options for printing help and the JobManager address.
+ * 所有从命令行解析配置的基类
  */
 public abstract class CommandLineOptions {
 

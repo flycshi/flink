@@ -18,12 +18,13 @@
 
 package org.apache.flink.configuration;
 
-import static org.apache.flink.configuration.ConfigOptions.key;
-
 import org.apache.flink.annotation.PublicEvolving;
+
+import static org.apache.flink.configuration.ConfigOptions.key;
 
 /**
  * Configuration options for the JobManager.
+ * JobManager 的配置项
  */
 @PublicEvolving
 public class JobManagerOptions {

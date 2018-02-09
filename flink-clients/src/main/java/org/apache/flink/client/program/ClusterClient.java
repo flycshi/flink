@@ -18,6 +18,7 @@
 
 package org.apache.flink.client.program;
 
+import akka.actor.ActorSystem;
 import org.apache.flink.api.common.JobExecutionResult;
 import org.apache.flink.api.common.JobID;
 import org.apache.flink.api.common.JobSubmissionResult;
@@ -63,30 +64,22 @@ import org.apache.flink.runtime.util.LeaderRetrievalUtils;
 import org.apache.flink.util.FlinkException;
 import org.apache.flink.util.Preconditions;
 import org.apache.flink.util.SerializedValue;
-
-import akka.actor.ActorSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
-
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
-
 import scala.Option;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
+
+import javax.annotation.Nullable;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Encapsulates the functionality necessary to submit a program to a remote cluster.
@@ -387,11 +380,18 @@ public abstract class ClusterClient {
 				libraries = prog.getAllLibraries();
 			}
 
+			/**
+			 * 这里就是把前面确定的并行度设置到上下文运行环境中的 ContextEnvironment
+			 * 在不同的flink集群模式下,这时候的parallelism是有可能为0的
+			 */
 			ContextEnvironmentFactory factory = new ContextEnvironmentFactory(this, libraries,
 					prog.getClasspaths(), prog.getUserCodeClassLoader(), parallelism, isDetached(),
 					prog.getSavepointSettings());
 			ContextEnvironment.setAsContext(factory);
 
+			/**
+			 * 上面已经把准备工作都做完了,这里才是开始进行用户编写的启动类指定的地方
+			 */
 			try {
 				// invoke main method
 				prog.invokeInteractiveModeForExecution();
