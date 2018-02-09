@@ -32,6 +32,8 @@ import java.util.UUID;
  * The HighAvailabilityServices give access to all services needed for a highly-available
  * setup. In particular, the services provide access to highly available storage and
  * registries, as well as distributed counters and leader election.
+ * HighAvailabilityServices 允许访问一个高可用设置所需的所有服务。
+ * 特别地,这些服务提供了访问高可用存储和注册中心,以及分布式的计数器和leader选举。
  * 
  * <ul>
  *     <li>ResourceManager leader election and leader retrieval</li>
@@ -53,6 +55,8 @@ public interface HighAvailabilityServices extends AutoCloseable {
 	 * This UUID should be used when no proper leader election happens, but a simple
 	 * pre-configured leader is used. That is for example the case in non-highly-available
 	 * standalone setups.
+	 * 在没有进行leader选举,但又需要一个简单的预定义leader时, 这个UUID会被使用。
+	 * 比如在非高可用的独立集群的情况下。
 	 */
 	UUID DEFAULT_LEADER_ID = new UUID(0, 0);
 
@@ -60,6 +64,7 @@ public interface HighAvailabilityServices extends AutoCloseable {
 	 * This JobID should be used to identify the old JobManager when using the
 	 * {@link HighAvailabilityServices}. With Flip-6 every JobManager will have a distinct
 	 * JobID assigned.
+	 * 当使用 HighAvailabilityServices 时,这个JobID应该被用来标识老的JobManager。
 	 */
 	JobID DEFAULT_JOB_ID = new JobID(0L, 0L);
 
@@ -69,6 +74,7 @@ public interface HighAvailabilityServices extends AutoCloseable {
 
 	/**
 	 * Gets the leader retriever for the cluster's resource manager.
+	 * 获取集群的资源管理器的leader提取器。
 	 */
 	LeaderRetrievalService getResourceManagerLeaderRetriever();
 

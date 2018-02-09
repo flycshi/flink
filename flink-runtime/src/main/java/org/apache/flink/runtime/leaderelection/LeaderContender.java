@@ -23,12 +23,15 @@ import java.util.UUID;
 /**
  * Interface which has to be implemented to take part in the leader election process of the
  * {@link LeaderElectionService}.
+ * 参与LeaderElectionService服务的leader选举过程,所必须实现的接口
  */
 public interface LeaderContender {
 
 	/**
 	 * Callback method which is called by the {@link LeaderElectionService} upon selecting this
 	 * instance as the new leader. The method is called with the new leader session ID.
+	 * 在该实例被选择为新leader时,LeaderElectionService 服务会回调该方法。
+	 * 这个方法被回调时会传入新leader的会话id
 	 *
 	 * @param leaderSessionID New leader session ID
 	 */
@@ -38,12 +41,14 @@ public interface LeaderContender {
 	 * Callback method which is called by the {@link LeaderElectionService} upon revoking the
 	 * leadership of a former leader. This might happen in case that multiple contenders have
 	 * been granted leadership.
+	 * leader角色被回收时会调用该方法。
 	 */
 	void revokeLeadership();
 
 	/**
 	 * Returns the address of the {@link LeaderContender} under which other instances can connect
 	 * to it.
+	 * 返回其他实例可以连接上的leader的地址
 	 *
 	 * @return Address of this contender.
 	 */

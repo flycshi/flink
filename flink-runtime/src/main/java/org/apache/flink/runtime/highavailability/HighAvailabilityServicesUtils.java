@@ -39,6 +39,7 @@ import java.util.concurrent.Executor;
 
 /**
  * Utils class to instantiate {@link HighAvailabilityServices} implementations.
+ * 用来实例化 HighAvailabilityServices 具体实现的工具类
  */
 public class HighAvailabilityServicesUtils {
 

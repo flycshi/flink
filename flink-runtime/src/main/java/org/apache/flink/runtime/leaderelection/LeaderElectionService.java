@@ -22,10 +22,14 @@ import java.util.UUID;
 
 /**
  * Interface for a service which allows to elect a leader among a group of contenders.
+ * 在一组竞选者中选择一个leader的服务的接口
  *
  * Prior to using this service, it has to be started calling the start method. The start method
  * takes the contender as a parameter. If there are multiple contenders, then each contender has
  * to instantiate its own leader election service.
+ * 在使用服务前,必须调用start方法来启动。
+ * start方法的入参是 LeaderContender。
+ * 如果有多个竞选者,每个竞选者需要实例化它自己的leader选举服务。
  *
  * Once a contender has been granted leadership he has to confirm the received leader session ID
  * by calling the method confirmLeaderSessionID. This will notify the leader election service, that
@@ -51,10 +55,13 @@ public interface LeaderElectionService {
 	/**
 	 * Confirms that the new leader session ID has been successfully received by the new leader.
 	 * This method is usually called by the newly appointed {@link LeaderContender}.
+	 * 确认新leader的会话id已经被新leader成功接收到了。
+	 * 这个方法一般被新的 LeaderContender 调用。
 	 *
 	 * The rational behind this method is to establish an order between setting the new leader
 	 * session ID in the {@link LeaderContender} and publishing the new leader session ID to the
 	 * leader retrieval services.
+	 * 背后的逻辑是,在 LeaderContender 中设置新leader的会话id, 和 发布新leader的会话id到leader提取服务之间,建立顺序。
 	 *
 	 * @param leaderSessionID The new leader session ID
 	 */

@@ -23,27 +23,33 @@ import org.apache.flink.runtime.jobgraph.JobGraph;
 
 /**
  * A descriptor to deploy a cluster (e.g. Yarn or Mesos) and return a Client for Cluster communication.
+ * 一个用来部署集群(比如 Yarn 或者 Mesos)的描述符,并返回一个用于和集群通信的客户端。
  */
 public interface ClusterDescriptor<ClientType extends ClusterClient> {
 
 	/**
 	 * Returns a String containing details about the cluster (NodeManagers, available memory, ...).
-	 *
+	 * 返回一个包含了集群详情(NodeManager、有效内存等)的字符串。
 	 */
 	String getClusterDescription();
 
 	/**
 	 * Retrieves an existing Flink Cluster.
+	 * 提取一个存在的flink集群
 	 * @param applicationID The unique application identifier of the running cluster
+	 *                      运行中集群的唯一应用标识
 	 * @return Client for the cluster
+	 * 			集群的客户端
 	 * @throws UnsupportedOperationException if this cluster descriptor doesn't support the operation
+	 * 			如果集群描述符不支持该操作,则返回 UnsupportedOperationException
 	 */
 	ClientType retrieve(String applicationID) throws UnsupportedOperationException;
 
 	/**
 	 * Triggers deployment of a cluster.
-	 * @param clusterSpecification Cluster specification defining the cluster to deploy
-	 * @return Client for the cluster
+	 * 触发一个集群的部署
+	 * @param clusterSpecification Cluster specification defining the cluster to deploy 定义了一个将要部署的集群
+	 * @return Client for the cluster	集群的客户端
 	 * @throws UnsupportedOperationException if this cluster descriptor doesn't support the operation
 	 */
 	ClientType deploySessionCluster(ClusterSpecification clusterSpecification) throws UnsupportedOperationException;

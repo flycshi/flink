@@ -24,12 +24,18 @@ import org.apache.flink.configuration.HighAvailabilityOptions;
 
 /**
  * High availability mode for Flink's cluster execution. Currently supported modes are:
+ * flink集群执行的高可用模式,当前支持的模式有:
  *
  * - NONE: No high availability.
+ * - NONE: 没有高可用
  * - ZooKeeper: JobManager high availability via ZooKeeper
+ * - ZooKeeper: 通过zk实现JobManager的高可用。
  * ZooKeeper is used to select a leader among a group of JobManager. This JobManager
  * is responsible for the job execution. Upon failure of the leader a new leader is elected
  * which will take over the responsibilities of the old leader
+ * zk用来在一组JobManager中选择出一个leader。
+ * JobManager 负责任务的执行。
+ * 在leader失效时,会选举出一个新的leader,会接管老的leader的职责。
  */
 public enum HighAvailabilityMode {
 	NONE,
