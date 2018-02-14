@@ -22,6 +22,7 @@ import java.util.UUID;
 
 /**
  * Wrapper class for a pair of connection address and leader session ID.
+ * 连接地址和leader会话id的包装类
  */
 public class LeaderConnectionInfo {
 

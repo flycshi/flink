@@ -34,12 +34,16 @@ import java.util.UUID;
 
 /**
  * Concrete {@link ActorGateway} implementation which uses Akka to communicate with remote actors.
+ * ActorGateway 的具体实现, 使用akka进行与远程actor的交互。
  */
 public class AkkaActorGateway implements ActorGateway, Serializable {
 
 	private static final long serialVersionUID = 42L;
 
-	// ActorRef of the remote instance
+	/**
+	 * ActorRef of the remote instance
+	 * ActorRef 的远程实例
+	 */
 	private final ActorRef actor;
 
 	// Associated leader session ID, which is used for RequiresLeaderSessionID messages

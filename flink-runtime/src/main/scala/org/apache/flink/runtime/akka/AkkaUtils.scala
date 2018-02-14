@@ -578,6 +578,8 @@ object AkkaUtils {
   /**
    * Utility function to construct a future which tries multiple times to execute itself if it
    * fails. If the maximum number of tries are exceeded, then the future fails.
+    * 工具方法,用来构建一个future, 如果执行失败,会尝试多次执行自己。
+    * 如果最大尝试次数到了,那就失败了。
    *
    * @param target actor which receives the message
    * @param message to be sent to the target actor

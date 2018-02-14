@@ -28,14 +28,18 @@ import java.util.UUID;
 
 /**
  * Interface to abstract the communication with an actor.
+ * 与一个actor交互的抽象接口
  *
  * It allows to avoid direct interaction with an ActorRef.
+ * 它允许避免与ActorRef的直接交互
  */
 public interface ActorGateway extends Serializable {
 
 	/**
 	 * Sends a message asynchronously and returns its response. The response to the message is
 	 * returned as a future.
+	 * 异步发送一个消息,并返回发送结果。
+	 * 消息的回复结果是一个future
 	 *
 	 * @param message Message to be sent
 	 * @param timeout Timeout until the Future is completed with an AskTimeoutException
@@ -45,6 +49,7 @@ public interface ActorGateway extends Serializable {
 
 	/**
 	 * Sends a message asynchronously without a result.
+	 * 异步发送一个没有返回结果的消息
 	 *
 	 * @param message Message to be sent
 	 */
@@ -52,6 +57,7 @@ public interface ActorGateway extends Serializable {
 
 	/**
 	 * Sends a message asynchronously without a result with sender being the sender.
+	 * 异步发送一个没有返回结果的消息, 发送时会带上发送者信息
 	 *
 	 * @param message Message to be sent
 	 * @param sender Sender of the message
@@ -61,6 +67,7 @@ public interface ActorGateway extends Serializable {
 	/**
 	 * Forwards a message. For the receiver of this message it looks as if sender has sent the
 	 * message.
+	 * 对于消息的接收者, 看起来,消息发送者已经发送了这个消息。
 	 *
 	 * @param message Message to be sent
 	 * @param sender Sender of the forwarded message
@@ -71,6 +78,7 @@ public interface ActorGateway extends Serializable {
 	 * Retries to send asynchronously a message up to numberRetries times. The response to this
 	 * message is returned as a future. The message is re-sent if the number of retries is not yet
 	 * exceeded and if an exception occurred while sending it.
+	 * 异步尝试多次发送一个消息。这个消息的回复是一个future。如果重试次数没到上限,或者发送时发生异常,消息会被重新发送。
 	 *
 	 * @param message Message to be sent
 	 * @param numberRetries Number of times to retry sending the message
@@ -86,6 +94,7 @@ public interface ActorGateway extends Serializable {
 
 	/**
 	 * Returns the path of the remote instance.
+	 * 返回远程实例的路径
 	 *
 	 * @return Path of the remote instance.
 	 */
@@ -93,6 +102,7 @@ public interface ActorGateway extends Serializable {
 
 	/**
 	 * Returns the underlying actor with which is communicated
+	 * 返回底层通信的 ActorRef 实例
 	 *
 	 * @return ActorRef of the target actor
 	 */
@@ -100,6 +110,7 @@ public interface ActorGateway extends Serializable {
 
 	/**
 	 * Returns the leaderSessionID associated with the remote actor or null.
+	 * 返回远程actor的 leaderSessionID , 或者返回 null
 	 *
 	 * @return Leader session ID if its associated with this gateway, otherwise null
 	 */

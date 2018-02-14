@@ -46,6 +46,7 @@ import java.util.UUID;
 
 /**
  * Utility class to work with {@link LeaderRetrievalService} class.
+ * 辅助 LeaderRetrievalService 的工具类
  */
 public class LeaderRetrievalUtils {
 
@@ -55,6 +56,8 @@ public class LeaderRetrievalUtils {
 	 * Retrieves the current leader gateway using the given {@link LeaderRetrievalService}. If the
 	 * current leader could not be retrieved after the given timeout, then a
 	 * {@link LeaderRetrievalException} is thrown.
+	 * 使用指定的 LeaderRetrievalService 实例提取当前leader的gateway。
+	 * 如果超过指定的超时时间后, 当前leader还不能被提取,那就抛出一个 LeaderRetrievalException。
 	 *
 	 * @param leaderRetrievalService {@link LeaderRetrievalService} which is used for the leader retrieval
 	 * @param actorSystem ActorSystem which is used for the {@link LeaderRetrievalListener} implementation
@@ -172,6 +175,7 @@ public class LeaderRetrievalUtils {
 	/**
 	 * Helper class which is used by the retrieveLeaderGateway method as the
 	 * {@link LeaderRetrievalListener}.
+	 * LeaderRetrievalListener#retrieveLeaderGateway 方法的辅助类,用来提取Gateway
 	 */
 	public static class LeaderGatewayListener implements LeaderRetrievalListener {
 
@@ -257,6 +261,7 @@ public class LeaderRetrievalUtils {
 	/**
 	 * Gets the recovery mode as configured, based on the {@link ConfigConstants#HA_MODE}
 	 * config key.
+	 * 基于 high-availability 这个key, 从配置中获取ha的模式
 	 * 
 	 * @param config The configuration to read the recovery mode from.
 	 * @return The recovery mode.
