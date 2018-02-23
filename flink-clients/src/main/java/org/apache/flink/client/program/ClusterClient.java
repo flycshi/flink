@@ -89,10 +89,17 @@ public abstract class ClusterClient {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	/** The optimizer used in the optimization of batch programs. */
+	/**
+	 * The optimizer used in the optimization of batch programs.
+	 * 用于批处理程序优化的优化器
+	 */
 	final Optimizer compiler;
 
-	/** The actor system used to communicate with the JobManager. Lazily initialized upon first use */
+	/**
+	 * The actor system used to communicate with the JobManager. Lazily initialized upon first use
+	 * 用来与 JobManager 进行交互的 actor system
+	 * 在第一次使用的时候,才会进行初始化
+	 */
 	protected final LazyActorSystemLoader actorSystemLoader;
 
 	/** Configuration of the client. */
@@ -101,33 +108,49 @@ public abstract class ClusterClient {
 	/** Timeout for futures. */
 	protected final FiniteDuration timeout;
 
-	/** Lookup timeout for the job manager retrieval service. */
+	/**
+	 * Lookup timeout for the job manager retrieval service.
+	 * job manager 提取服务的查询超时时间
+	 */
 	private final FiniteDuration lookupTimeout;
 
-	/** Service factory for high available. */
+	/**
+	 * Service factory for high available.
+	 * HA 的服务工厂
+	 */
 	protected final HighAvailabilityServices highAvailabilityServices;
 
-	/** Flag indicating whether to sysout print execution updates. */
+	/**
+	 * Flag indicating whether to sysout print execution updates.
+	 * 是否打印出执行过程的标识
+	 */
 	private boolean printStatusDuringExecution = true;
 
 	/**
 	 * For interactive invocations, the job results are only available after the ContextEnvironment has
 	 * been run inside the user JAR. We pass the Client to every instance of the ContextEnvironment
 	 * which lets us access the execution result here.
+	 * 对于交互式调用, 只有在用户JAR中运行 ContextEnvironment 之后, 才能获得作业结果。
+	 * 我们将 Client 传递给 ContextEnvironment 的每个实例, 这允许我们在这里访问执行结果。
 	 */
 	private JobExecutionResult lastJobExecutionResult;
 
-	/** Switch for blocking/detached job submission of the client. */
+	/**
+	 * Switch for blocking/detached job submission of the client.
+	 * 客户端提交任务的 阻塞/分离 开关
+	 */
 	private boolean detachedJobSubmission = false;
 
 	// ------------------------------------------------------------------------
-	//                            Construction
+	//                            Construction 构造器
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates a instance that submits the programs to the JobManager defined in the
 	 * configuration. This method will try to resolve the JobManager hostname and throw an exception
 	 * if that is not possible.
+	 * 构造一个实例,用来向配置文件中定义的JobManager提交程序。
+	 * 这个方法会重试解析JobManager的hostname,如果解析失败,会抛出一个异常。
 	 *
 	 * @param flinkConfig The config used to obtain the job-manager's address, and used to configure the optimizer.
 	 *
@@ -171,6 +194,7 @@ public abstract class ClusterClient {
 
 	/**
 	 * Utility class to lazily instantiate an {@link ActorSystem}.
+	 * 延迟初始化一个 ActorSystem 的工具类
 	 */
 	protected static class LazyActorSystemLoader {
 

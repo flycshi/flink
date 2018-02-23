@@ -79,19 +79,34 @@ public class CompletedCheckpoint implements Serializable {
 
 	// ------------------------------------------------------------------------
 
-	/** The ID of the job that the checkpoint belongs to */
+	/**
+	 * The ID of the job that the checkpoint belongs to
+	 * 检查点属于的job的id
+	 */
 	private final JobID job;
 
-	/** The ID (logical timestamp) of the checkpoint */
+	/**
+	 * The ID (logical timestamp) of the checkpoint
+	 * 检查点的ID(逻辑时间戳)
+	 */
 	private final long checkpointID;
 
-	/** The timestamp when the checkpoint was triggered. */
+	/**
+	 * The timestamp when the checkpoint was triggered.
+	 * 检查点被触发时的时间戳
+	 */
 	private final long timestamp;
 
-	/** The duration of the checkpoint (completion timestamp - trigger timestamp). */
+	/**
+	 * The duration of the checkpoint (completion timestamp - trigger timestamp).
+	 * 检查点持续时长(完成时间戳 - 触发时间戳)
+	 */
 	private final long duration;
 
-	/** States of the different operator groups belonging to this checkpoint */
+	/**
+	 * States of the different operator groups belonging to this checkpoint
+	 * 属于该检查点的不同操作符组的状态
+	 */
 	private final Map<OperatorID, OperatorState> operatorStates;
 
 	/** Properties for this checkpoint. */

@@ -150,6 +150,7 @@ public interface HighAvailabilityServices extends AutoCloseable {
 
 	/**
 	 * Creates the BLOB store in which BLOBs are stored in a highly-available fashion.
+	 * 创建 BLOB STORE , blobs 都以HA的方式存储
 	 *
 	 * @return Blob store
 	 * @throws IOException if the blob store could not be created
@@ -162,14 +163,18 @@ public interface HighAvailabilityServices extends AutoCloseable {
 
 	/**
 	 * Closes the high availability services, releasing all resources.
+	 * 关闭HA服务,释放所有资源。
 	 * 
 	 * <p>This method <b>does not delete or clean up</b> any data stored in external stores
 	 * (file systems, ZooKeeper, etc). Another instance of the high availability
 	 * services will be able to recover the job.
+	 * 该方法不会删除和清理存储在外部存储介质(文件系统、zk,等)中的任何数据。
+	 * HA服务的任何实例都可以恢复job。
 	 * 
 	 * <p>If an exception occurs during closing services, this method will attempt to
 	 * continue closing other services and report exceptions only after all services
 	 * have been attempted to be closed.
+	 * 服务关闭过程中如果发生异常, 该方法会尝试继续关闭其他服务, 并且在所有的服务都尝试关闭后才会抛出异常。
 	 *
 	 * @throws Exception Thrown, if an exception occurred while closing these services.
 	 */
@@ -179,13 +184,16 @@ public interface HighAvailabilityServices extends AutoCloseable {
 	/**
 	 * Closes the high availability services (releasing all resources) and deletes
 	 * all data stored by these services in external stores.
+	 * 关闭 HA 服务(释放所有资源), 删除服务存储在外部存储介质中的所有数据。
 	 * 
 	 * <p>After this method was called, the any job or session that was managed by
 	 * these high availability services will be unrecoverable.
+	 * 该方法调用后, 该HA服务管理的任何job和会话都将不可恢复。
 	 * 
 	 * <p>If an exception occurs during cleanup, this method will attempt to
 	 * continue the cleanup and report exceptions only after all cleanup steps have
 	 * been attempted.
+	 * 如果在清理过程中发生异常, 该方法会尝试继续清理,并且只会在所有清理步骤都尝试后,才会报告异常。
 	 * 
 	 * @throws Exception Thrown, if an exception occurred while closing these services
 	 *                   or cleaning up data stored by them.

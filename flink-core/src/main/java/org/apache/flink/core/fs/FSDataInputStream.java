@@ -25,6 +25,7 @@ import java.io.InputStream;
 
 /**
  * Interface for a data input stream to a file on a {@link FileSystem}.
+ * 针对文件系统上文件的数据输入流的接口
  *
  * <p>This extends the {@link java.io.InputStream} with methods for accessing
  * the stream's {@link #getPos() current position} and

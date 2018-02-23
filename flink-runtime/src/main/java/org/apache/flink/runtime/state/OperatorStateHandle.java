@@ -29,11 +29,14 @@ import java.util.Map;
 /**
  * State handle for partitionable operator state. Besides being a {@link StreamStateHandle}, this also provides a
  * map that contains the offsets to the partitions of named states in the stream.
+ * 部分操作符状态的状态句柄。
+ * 另外, 作为一个 StreamStateHandle , 这里也提供了一个包含了offset的映射
  */
 public class OperatorStateHandle implements StreamStateHandle {
 
 	/**
 	 * The modes that determine how an {@link OperatorStateHandle} is assigned to tasks during restore.
+	 * 模式决定了在恢复时,如何给task分配一个OperatorStateHandle
 	 */
 	public enum Mode {
 		SPLIT_DISTRIBUTE, // The operator state partitions in the state handle are split and distributed to one task each.

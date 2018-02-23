@@ -35,9 +35,11 @@ import static org.apache.flink.util.Preconditions.checkState;
 
 /**
  * Abstract base class for non high-availability services.
+ * 非HA服务的抽象基础类。
  *
  * This class returns the standalone variants for the checkpoint recovery factory, the submitted
  * job graph store, the running jobs registry and the blob store.
+ * 这个类返回检查点恢复工厂、提交的job graph存储、运行中job的注册表、以及blob store的独立变量
  */
 public abstract class AbstractNonHaServices implements HighAvailabilityServices {
 	protected final Object lock = new Object();

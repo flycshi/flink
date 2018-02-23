@@ -25,11 +25,13 @@ import java.io.IOException;
 
 /**
  * View on blobs stored in a {@link BlobStore}.
+ * 存储在 BlobStore 中的 blobs 的视图
  */
 public interface BlobView {
 
 	/**
 	 * Copies a blob to a local file.
+	 * 复制一个 blob 到本地文件中
 	 *
 	 * @param jobId     ID of the job this blob belongs to (or <tt>null</tt> if job-unrelated)
 	 * @param blobKey   The blob ID

@@ -36,15 +36,22 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * A BLOB key uniquely identifies a BLOB.
+ * 唯一标识一个BLOB的key
  */
 abstract class BlobKey implements Serializable, Comparable<BlobKey> {
 
 	private static final long serialVersionUID = 3847117712521785209L;
 
-	/** Size of the internal BLOB key in bytes. */
+	/**
+	 * Size of the internal BLOB key in bytes.
+	 * 内部BLOB key的字节大小
+	 */
 	public static final int SIZE = 20;
 
-	/** The byte buffer storing the actual key data. */
+	/**
+	 * The byte buffer storing the actual key data.
+	 * 存储真实的key数据的字节缓存
+	 */
 	private final byte[] key;
 
 	/**
@@ -59,17 +66,20 @@ abstract class BlobKey implements Serializable, Comparable<BlobKey> {
 		/**
 		 * Indicates a permanent BLOB whose lifecycle is that of a job and which is made highly
 		 * available.
+		 * 标识一个持久化的BLOB, 其生命周期与job一致, 并且是HA的
 		 */
 		PERMANENT_BLOB,
 		/**
 		 * Indicates a transient BLOB whose lifecycle is managed by the user and which is not made
 		 * highly available.
+		 * 标识一个临时的BLOB, 其生命周期由用户管理, 并且没有HA的
 		 */
 		TRANSIENT_BLOB
 	}
 
 	/**
 	 * Random component of the key.
+	 * key的随机部分
 	 */
 	private final AbstractID random;
 

@@ -40,14 +40,17 @@ public interface LeaderElectionService {
 
 	/**
 	 * Starts the leader election service. This method can only be called once.
+	 * 启动leader选举服务。这个方法只能被调用一次。
 	 *
-	 * @param contender LeaderContender which applies for the leadership
+	 * @param contender LeaderContender which applies for the leadership leader竞选者
 	 * @throws Exception
 	 */
 	void start(LeaderContender contender) throws Exception;
 
 	/**
 	 * Stops the leader election service.
+	 * 停止leader选举服务
+	 *
 	 * @throws Exception
 	 */
 	void stop() throws Exception;
@@ -61,7 +64,7 @@ public interface LeaderElectionService {
 	 * The rational behind this method is to establish an order between setting the new leader
 	 * session ID in the {@link LeaderContender} and publishing the new leader session ID to the
 	 * leader retrieval services.
-	 * 背后的逻辑是,在 LeaderContender 中设置新leader的会话id, 和 发布新leader的会话id到leader提取服务之间,建立顺序。
+	 * 背后的逻辑是, 在 LeaderContender 中设置新leader的会话id, 和 发布新leader的会话id到leader提取服务之间, 建立顺序。
 	 *
 	 * @param leaderSessionID The new leader session ID
 	 */
@@ -70,6 +73,7 @@ public interface LeaderElectionService {
 	/**
 	 * Returns true if the {@link LeaderContender} with which the service has been started owns
 	 * currently the leadership.
+	 * 如果该服务关联的 LeaderContender 是当前的leader, 则返回true
 	 *
 	 * @return true if the associated {@link LeaderContender} is the leader, otherwise false
 	 */

@@ -40,9 +40,12 @@ import java.util.List;
  * This class encapsulates the state for one parallel instance of an operator. The complete state of a (logical)
  * operator (e.g. a flatmap operator) consists of the union of all {@link OperatorSubtaskState}s from all
  * parallel tasks that physically execute parallelized, physical instances of the operator.
+ * 这个类封装了操作符的一个并行实例的状态。
+ * 逻辑操作符(展开的操作符)的完整状态包含了所有物理执行的并行tasks的OperatorSubtaskState集合。
  *
  * <p>The full state of the logical operator is represented by {@link OperatorState} which consists of
  * {@link OperatorSubtaskState}s.
+ * 逻辑操作符的完整状态由包含了OperatorSubtaskState的OperatorState来表示。
  *
  * <p>Typically, we expect all collections in this class to be of size 0 or 1, because there is up to one state handle
  * produced per state type (e.g. managed-keyed, raw-operator, ...). In particular, this holds when taking a snapshot.
@@ -50,6 +53,12 @@ import java.util.List;
  * Under normal circumstances, the expected size of each collection is still 0 or 1, except for scale-down. In
  * scale-down, one operator subtask can become responsible for the state of multiple previous subtasks. The collections
  * can then store all the state handles that are relevant to build up the new subtask state.
+ * 一般的, 我们希望这个类中的所有集合的size是0或者1, 因为每个状态类型都有一个状态句柄(例如, managedkeyed, raw-operator, ...)。
+ * 特别的, 在拍快照时这些状态保持不变。
+ * 在集合中保留状态句柄的目的是, 这个类可以在恢复状态中重用。
+ * 在正常情况下, 每个集合的期望大小仍然是0或者1, 除了缩减。
+ * 在scale-down时, 操作符的一个子任务可能对之前的多个子任务的状态负责。
+ * 然后集合可以存储所有的相关状态句柄来构建新的子任务状态。
  *
  * <p>There is no collection for legacy state because it is not rescalable.
  */

@@ -24,12 +24,17 @@ import java.io.Serializable;
 
 /**
  * The configuration of a checkpoint, such as whether
+ * 检查点的配置, 比如
  * <ul>
  *     <li>The checkpoint should be persisted</li>
+ *     		检查点是否应该被持久化
  *     <li>The checkpoint must be full, or may be incremental (not yet implemented)</li>
+ *     		检查点必须是 full 或者 incremental (还没有实现)
  *     <li>The checkpoint format must be the common (cross backend) format,
  *     or may be state-backend specific (not yet implemented)</li>
+ *     		检查点格式必须是共用格式
  *     <li>when the checkpoint should be garbage collected</li>
+ *     		检查点是否需要gc
  * </ul>
  */
 public class CheckpointProperties implements Serializable {
@@ -78,10 +83,13 @@ public class CheckpointProperties implements Serializable {
 
 	/**
 	 * Returns whether the checkpoint should be forced.
+	 * checkpoint 是否是强制的
 	 *
 	 * <p>Forced checkpoints ignore the configured maximum number of concurrent
 	 * checkpoints and minimum time between checkpoints. Furthermore, they are
 	 * not subsumed by more recent checkpoints as long as they are pending.
+	 * 强制的 checkpoint 忽略配置的最大并发checkpoint数量, 以及 checkpoint 之间的最小时间。
+	 * 另外, 只要他们在 pending 状态, 他们就不会被最近的检查点所归并。
 	 *
 	 * @return <code>true</code> if the checkpoint should be forced;
 	 * <code>false</code> otherwise.
@@ -95,6 +103,7 @@ public class CheckpointProperties implements Serializable {
 
 	/**
 	 * Returns whether the checkpoint should be persisted externally.
+	 * checkpoint 是否应该被外部持久化
 	 *
 	 * @return <code>true</code> if the checkpoint should be persisted
 	 * externally; <code>false</code> otherwise.
@@ -106,7 +115,7 @@ public class CheckpointProperties implements Serializable {
 	}
 
 	// ------------------------------------------------------------------------
-	// Garbage collection behaviour
+	// Garbage collection behaviour gc行为
 	// ------------------------------------------------------------------------
 
 	/**
@@ -182,6 +191,7 @@ public class CheckpointProperties implements Serializable {
 
 	/**
 	 * Returns whether the checkpoint properties describe a standard savepoint.
+	 * checkpoint 属性是否描述一个标准的 savepoint
 	 *
 	 * @return <code>true</code> if the properties describe a savepoint, <code>false</code> otherwise.
 	 */

@@ -32,21 +32,34 @@ import java.util.Objects;
 /**
  * Simple container class which contains the raw/managed operator state and key-group state handles from all sub
  * tasks of an operator and therefore represents the complete state of a logical operator.
+ * 简单的容器类, 包含了操作符的所有子任务的原始的/托管的操作符状态和键组状态句柄, 因此, 也就表示了逻辑操作符的完整状态。
  */
 public class OperatorState implements CompositeStateHandle {
 
 	private static final long serialVersionUID = -4845578005863201810L;
 
-	/** id of the operator */
+	/**
+	 * id of the operator
+	 * 操作符 id
+	 */
 	private final OperatorID operatorID;
 
-	/** handles to non-partitioned states, subtaskindex -> subtaskstate */
+	/**
+	 * handles to non-partitioned states, subtaskindex -> subtaskstate
+	 * 子任务索引 -> 操作符子任务状态
+	 */
 	private final Map<Integer, OperatorSubtaskState> operatorSubtaskStates;
 
-	/** parallelism of the operator when it was checkpointed */
+	/**
+	 * parallelism of the operator when it was checkpointed
+	 * 当被 checkpoint 时, 操作符的并行度
+	 */
 	private final int parallelism;
 
-	/** maximum parallelism of the operator when the job was first created */
+	/**
+	 * maximum parallelism of the operator when the job was first created
+	 * 当 job 被第一次创建时, 操作符的最大并行度
+	 */
 	private final int maxParallelism;
 
 	public OperatorState(OperatorID operatorID, int parallelism, int maxParallelism) {

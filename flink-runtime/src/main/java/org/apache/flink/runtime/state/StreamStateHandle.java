@@ -25,6 +25,7 @@ import java.io.IOException;
 /**
  * A {@link StateObject} that represents state that was written to a stream. The data can be read
  * back via {@link #openInputStream()}.
+ * 一个 StateObject , 其状态数据被写入一个流中。 数据可以通过 openInputStream 读入。
  */
 public interface StreamStateHandle extends StateObject {
 

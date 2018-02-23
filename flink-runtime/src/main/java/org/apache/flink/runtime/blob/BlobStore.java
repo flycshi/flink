@@ -30,6 +30,7 @@ public interface BlobStore extends BlobView {
 
 	/**
 	 * Copies the local file to the blob store.
+	 * 将本地文件复制到 blob store 中
 	 *
 	 * @param localFile The file to copy
 	 * @param jobId ID of the job this blob belongs to (or <tt>null</tt> if job-unrelated)

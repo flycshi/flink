@@ -24,6 +24,7 @@ import java.util.List;
 
 /**
  * A bounded LIFO-queue of {@link CompletedCheckpoint} instances.
+ * 有界的 后进先出 队列
  */
 public interface CompletedCheckpointStore {
 

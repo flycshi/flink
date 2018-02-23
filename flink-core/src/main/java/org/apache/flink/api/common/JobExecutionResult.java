@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * The result of a job execution. Gives access to the execution time of the job,
  * and to all accumulators created by this job.
+ * 一个 job 执行的结果。
+ * 可以获取 job 的执行时间, 以及所有的累加器
  */
 @Public
 public class JobExecutionResult extends JobSubmissionResult {
