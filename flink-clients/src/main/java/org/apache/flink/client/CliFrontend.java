@@ -210,6 +210,7 @@ public class CliFrontend {
 
 		RunOptions options;
 		try {
+			/** 从输入参数中解析出run所需选项 */
 			options = CliFrontendParser.parseRunCommand(args);
 		}
 		catch (CliArgsException e) {
@@ -243,7 +244,7 @@ public class CliFrontend {
 
 		ClusterClient client = null;
 		try {
-
+			/** 构建出集群客户端 */
 			client = createClient(options, program);
 			client.setPrintStatusDuringExecution(options.getStdoutLogging());
 			client.setDetached(options.getDetachedMode());
@@ -823,6 +824,7 @@ public class CliFrontend {
 
 	/**
 	 * Creates a Packaged program from the given command line options.
+	 * 从给定的命令行选项, 构建一个打包程序。
 	 *
 	 * @return A PackagedProgram (upon success)
 	 * @throws java.io.FileNotFoundException
