@@ -22,6 +22,7 @@ package org.apache.flink.runtime.operators.shipping;
 /**
  * Enumeration defining the different shipping types of the output, such as local forward, re-partitioning by hash,
  * or re-partitioning by range.
+ * 定义了输出的不同ship类型的枚举, 比如 local forward、hash重分区、range重分区。
  */
 public enum ShipStrategyType {
 	

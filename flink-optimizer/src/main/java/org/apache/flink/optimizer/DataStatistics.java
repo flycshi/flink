@@ -18,15 +18,17 @@
 
 package org.apache.flink.optimizer;
 
+import org.apache.flink.api.common.io.statistics.BaseStatistics;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.flink.api.common.io.statistics.BaseStatistics;
 
 /**
  * The collection of access methods that can be used to retrieve statistical information about the
  * data processed in a job. Currently this method acts as an entry point only for obtaining cached
  * statistics.
+ * 用于提取作业中数据处理的统计信息的访问方法的集合。
+ * 目前, 该方法仅作为获取缓存统计的入口。
  */
 public class DataStatistics {
 	
@@ -45,6 +47,7 @@ public class DataStatistics {
 	
 	/**
 	 * Gets the base statistics for the input identified by the given identifier.
+	 * 通过给定的标识符来提取统计结果
 	 *  
 	 * @param inputIdentifier The identifier for the input.
 	 * @return The statistics that were cached for this input.
@@ -57,6 +60,8 @@ public class DataStatistics {
 	
 	/**
 	 * Caches the given statistics. They are later retrievable under the given identifier.
+	 * 缓存给定的统计结果。
+	 * 后续通过给定的标识符来提取。
 	 * 
 	 * @param statistics The statistics to cache.
 	 * @param identifier The identifier which may be later used to retrieve the statistics.

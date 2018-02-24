@@ -24,6 +24,7 @@ import org.apache.flink.annotation.Public;
 
 /**
  * Interface describing the basic statistics that can be obtained from the input.
+ * 描述了可以从输入中获取到的基础统计的接口。
  */
 @Public
 public interface BaseStatistics {

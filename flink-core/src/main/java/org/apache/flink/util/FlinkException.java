@@ -22,6 +22,7 @@ import org.apache.flink.annotation.Public;
 
 /**
  * Base class of all Flink-specific checked exceptions.
+ * 所有flink特指的检查异常的基类
  */
 @Public
 public class FlinkException extends Exception {

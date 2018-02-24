@@ -246,6 +246,9 @@ public abstract class ClusterClient {
 				// start actor system
 				log.info("Starting client actor system.");
 
+				/**
+				 * 获取本机能够与leader进行通信的主机名, 用来构建本机上的actor system
+				 */
 				final InetAddress ownHostname;
 				try {
 					ownHostname = LeaderRetrievalUtils.findConnectingAddress(
@@ -291,11 +294,13 @@ public abstract class ClusterClient {
 
 	// ------------------------------------------------------------------------
 	//  Configuration
+	//  配置
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Configures whether the client should print progress updates during the execution to {@code System.out}.
 	 * All updates are logged via the SLF4J loggers regardless of this setting.
+	 * 配置在执行过程中,客户端是否打印出进度更新
 	 *
 	 * @param print True to print updates to standard out during execution, false to not print them.
 	 */
@@ -312,6 +317,7 @@ public abstract class ClusterClient {
 
 	/**
 	 * Gets the current JobManager address (may change in case of a HA setup).
+	 * 获取当前JobManager的地址(在HA设置中可能会变化)
 	 * @return The address (host and port) of the leading JobManager
 	 */
 	public InetSocketAddress getJobManagerAddress() {
@@ -369,11 +375,14 @@ public abstract class ClusterClient {
 
 	// ------------------------------------------------------------------------
 	//  Program submission / execution
+	//  程序提交和执行
 	// ------------------------------------------------------------------------
 
 	/**
 	 * General purpose method to run a user jar from the CliFrontend in either blocking or detached mode, depending
 	 * on whether {@code setDetached(true)} or {@code setDetached(false)}.
+	 * 从 CliFrontend 运行一个用户的jar, 要么是阻塞的, 要么是分离的, 依赖与 setDetached() 方法的设置。
+	 *
 	 * @param prog the packaged program
 	 * @param parallelism the parallelism to execute the contained Flink job
 	 * @return The result of the execution
@@ -786,10 +795,12 @@ public abstract class ClusterClient {
 
 	// ------------------------------------------------------------------------
 	//  Sessions
+	//  会话
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Tells the JobManager to finish the session (job) defined by the given ID.
+	 * 告诉 JobManager 去完成给定 ID 对于的任务。
 	 *
 	 * @param jobId The ID that identifies the session.
 	 */
@@ -822,6 +833,7 @@ public abstract class ClusterClient {
 
 	// ------------------------------------------------------------------------
 	//  Internal translation methods
+	//  内部转换方法
 	// ------------------------------------------------------------------------
 
 	/**
@@ -866,11 +878,13 @@ public abstract class ClusterClient {
 
 	// ------------------------------------------------------------------------
 	//  Helper methods
+	//  帮助方法
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns the {@link ActorGateway} of the current job manager leader using
 	 * the {@link LeaderRetrievalService}.
+	 * 使用 LeaderRetrievalService 获取当前处于 leader 状态的 job manager 的 ActorGateway 。
 	 *
 	 * @return ActorGateway of the current job manager leader
 	 * @throws Exception
@@ -902,10 +916,12 @@ public abstract class ClusterClient {
 
 	// ------------------------------------------------------------------------
 	//  Abstract methods to be implemented by the cluster specific Client
+	//  集群特定客户端需要实现的抽象方法
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Blocks until the client has determined that the cluster is ready for Job submission.
+	 * 阻塞到客户端认为集群已经可以提交任务时
 	 *
 	 * <p>This is delayed until right before job submission to report any other errors first
 	 * (e.g. invalid job definitions/errors in the user jar)
@@ -925,6 +941,8 @@ public abstract class ClusterClient {
 	/**
 	 * May return new messages from the cluster.
 	 * Messages can be for example about failed containers or container launch requests.
+	 * 可能返回来自集群的新消息。
+	 * 消息可以是关于容器失败或者容器启动请求的。
 	 */
 	protected abstract List<String> getNewMessages();
 
@@ -965,6 +983,7 @@ public abstract class ClusterClient {
 	/**
 	 * The client may define an upper limit on the number of slots to use.
 	 * @return -1 if unknown
+	 * 客户端可能定义一个可用的slot的上限。
 	 */
 	public abstract int getMaxSlots();
 

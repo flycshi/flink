@@ -19,18 +19,20 @@
 
 package org.apache.flink.optimizer.costs;
 
-import java.util.Iterator;
-
 import org.apache.flink.optimizer.CompilerException;
 import org.apache.flink.optimizer.dag.EstimateProvider;
 import org.apache.flink.optimizer.dag.TempMode;
 import org.apache.flink.optimizer.plan.Channel;
 import org.apache.flink.optimizer.plan.PlanNode;
 
+import java.util.Iterator;
+
 /**
  * Abstract base class for a cost estimator. Defines cost estimation methods and implements the basic work
  * method that computes the cost of an operator by adding input shipping cost, input local cost, and
  * driver cost.
+ * 消耗预估器的抽象基类。
+ * 定义了消耗预估方法, 并实现了通过添加输入ship消耗、输入本地消耗、driver消耗来计算操作符消耗的基础工作方法。
  */
 public abstract class CostEstimator {
 	
@@ -67,9 +69,12 @@ public abstract class CostEstimator {
 	/**
 	 * This method computes the cost of an operator. The cost is composed of cost for input shipping,
 	 * locally processing an input, and running the operator.
+	 * 该方法计算了一个操作符的消耗。
+	 * 消耗由输入shipping、本地处理输入、以及运行操作符的消耗。
 	 * 
 	 * It requires at least that all inputs are set and have a proper ship strategy set,
 	 * which is not equal to <tt>NONE</tt>.
+	 * 要求至少已经设置了所有的输入, 并且有完整的ship策略集合,该集合不为null。
 	 * 
 	 * @param n The node to compute the costs for.
 	 */

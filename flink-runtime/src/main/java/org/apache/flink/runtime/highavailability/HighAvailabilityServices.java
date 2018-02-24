@@ -86,6 +86,7 @@ public interface HighAvailabilityServices extends AutoCloseable {
 
 	/**
 	 * Gets the leader retriever for the job JobMaster which is responsible for the given job
+	 * 获取jobID对应的JobMaster的leader提取器
 	 *
 	 * @param jobID The identifier of the job.
 	 * @return Leader retrieval service to retrieve the job manager for the given job

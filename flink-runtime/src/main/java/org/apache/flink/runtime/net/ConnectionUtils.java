@@ -21,32 +21,23 @@ package org.apache.flink.runtime.net;
 import org.apache.flink.runtime.akka.AkkaUtils;
 import org.apache.flink.runtime.leaderretrieval.LeaderRetrievalException;
 import org.apache.flink.runtime.leaderretrieval.LeaderRetrievalListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.UUID;
+import java.net.*;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import scala.concurrent.duration.FiniteDuration;
 
 /**
  * Utilities to determine the network interface and address that should be used to bind the
  * TaskManager communication to.
+ * 用来确定网络接口和地址的工具, 接口和地址是用来绑定需要通信的TaskManager的。
  *
  * <p>Implementation note: This class uses {@code System.nanoTime()} to measure elapsed time, because
  * that is not susceptible to clock changes.
+ * 实现注意: 这个类采用 System.nanoTime() 来度量时间, 因为其受clock变化的影响较小
  */
 public class ConnectionUtils {
 
@@ -58,6 +49,8 @@ public class ConnectionUtils {
 	/**
 	 * The states of address detection mechanism.
 	 * There is only a state transition if the current state failed to determine the address.
+	 * 地址检测机制的状态。
+	 * 如果当前状态检测地址失败, 会有一次状态转变。
 	 */
 	private enum AddressDetectionState {
 		/** Connect from interface returned by InetAddress.getLocalHost(). **/
@@ -89,18 +82,27 @@ public class ConnectionUtils {
 	 * given target, so it only succeeds if the target socket address actually accepts
 	 * connections. The method tries various strategies multiple times and uses an exponential
 	 * backoff timer between tries.
+	 * 找出机器能够连接到目标地址的本地网络地址。
+	 * 这个方法尝试与给定的目标地址建立一个合适的网络连接, 所以只有目标socket地址真实接受连接才是成功的。
+	 * 该方法多次尝试不同策略, 并在尝试之间使用指数回溯计时器。
 	 *
 	 * <p>If no connection attempt was successful after the given maximum time, the method
 	 * will choose some address based on heuristics (excluding link-local and loopback addresses.)
+	 * 如果在给定最大尝试次数后都没有成功, 该方法会选择基于启发式的地址(不包括连接本地和环回地址)
 	 *
 	 * <p>This method will initially not log on info level (to not flood the log while the
 	 * backoff time is still very low). It will start logging after a certain time
 	 * has passes.
+	 * 该方法初始化时不会打印info等级日志(以防回溯时间很短时,将日志淹没了)。
+	 * 在特定时间过去后,才会开始打印日志。
 	 *
 	 * @param targetAddress The address that the method tries to connect to.
+	 *                      方法尝试连接的地址
 	 * @param maxWaitMillis The maximum time that this method tries to connect, before falling
 	 *                       back to the heuristics.
+	 *                      在fall back之前, 该方法尝试连接的最大时间
 	 * @param startLoggingAfter The time after which the method will log on INFO level.
+	 *                      开始打印info等级日志的时间
 	 */
 	public static InetAddress findConnectingAddress(InetSocketAddress targetAddress,
 							long maxWaitMillis, long startLoggingAfter) throws IOException {
@@ -208,6 +210,7 @@ public class ConnectionUtils {
 	/**
 	 * Try to find a local address which allows as to connect to the targetAddress using the given
 	 * strategy.
+	 * 尝试找到一个本地地址, 可以采用指定策略与目标地址进行连接的。
 	 *
 	 * @param strategy Depending on the strategy, the method will enumerate all interfaces, trying to connect
 	 *                 to the target address

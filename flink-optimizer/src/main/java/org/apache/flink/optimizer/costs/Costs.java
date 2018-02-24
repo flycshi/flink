@@ -21,14 +21,19 @@ package org.apache.flink.optimizer.costs;
 
 /**
  * Simple class to represent the costs of an operation. The costs are currently tracking, network, I/O and CPU costs.
+ * 描述操作符消耗的简单类。
+ * 消耗有跟踪、网络、I/O、cpu消耗。
  * 
  * Costs are composed of two parts of cost contributors:
+ * 消耗由两部分组成:
  * <ol>
  *   <li>Quantifiable costs. Those costs are used when estimates are available and track a quantifiable
  *       measure, such as the number of bytes for network or I/O</li>
+ *		 可计量的消耗。这些消耗在可估算的情况下使用, 并跟踪一个可计量的度量, 比如网络和I/O的字节数。
  *   <li>Heuristic costs. Those costs are used when no estimates are available. They can be used to track that
  *       an operator used a special operation which is heuristically considered more expensive than another
  *       operation.</li>
+ *       不可计量消耗。这些消耗是在无法估算的情况下使用的。他们可以用来跟踪使用那些被认为比其他操作更昂贵的特殊操作的操作符。
  * </ol>
  * <p>
  * The quantifiable costs may frequently be unknown, which is represented by a {@code -1} as a value for the unknown
@@ -36,6 +41,9 @@ package org.apache.flink.optimizer.costs;
  * operation to favor during pruning. In that case, the heuristic costs should contain a value to make sure that
  * operators with different strategies are comparable, even in the absence of estimates. The heuristic
  * costs are hence the system's mechanism of realizing pruning heuristics that favor some operations over others.
+ * 可量化的消耗可能经常是未知的, 由-1来标识消耗的未知部分。在这种情况下, 所有操作的消耗都是未知的, 因此在优化时无法确定使用哪个操作。
+ * 在这种情况下, 启发式消耗应该包含一个值, 来确保不同策略的操作符是可比较的, 即使在没有预估的情况下也可以比较。
+ * 因此, 启发式消耗是实现优化的系统机制, 也就是某些操作优于其他操作。
  */
 public class Costs implements Comparable<Costs>, Cloneable {
 
