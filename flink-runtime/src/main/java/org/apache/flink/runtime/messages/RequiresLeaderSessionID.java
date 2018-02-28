@@ -21,5 +21,6 @@ package org.apache.flink.runtime.messages;
 /**
  * Marks messages to be sent wrapped in a
  * {@link org.apache.flink.runtime.messages.JobManagerMessages.LeaderSessionMessage}
+ * 包裹在 LeaderSessionMessage 中的消息标识
  */
 public interface RequiresLeaderSessionID {}

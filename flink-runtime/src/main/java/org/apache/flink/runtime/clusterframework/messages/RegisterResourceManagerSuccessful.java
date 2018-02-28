@@ -31,6 +31,8 @@ import static java.util.Objects.requireNonNull;
  * Message that informs the resource manager that the JobManager accepted its registration.
  * Carries information about the JobManager, and about the TaskManagers that the JobManager
  * still has registered.
+ * 告知resource manager,JobManager已经接受它的注册了的消息。
+ * 携带了JobManager的信息, 以及当前已经注册的TaskManager
  */
 public class RegisterResourceManagerSuccessful implements RequiresLeaderSessionID, Serializable {
 

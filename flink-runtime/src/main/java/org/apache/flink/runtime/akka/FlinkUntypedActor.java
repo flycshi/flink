@@ -33,10 +33,16 @@ import java.util.UUID;
  * they filter out {@link LeaderSessionMessage} with the wrong leader session ID. If a message
  * of type {@link RequiresLeaderSessionID} without being wrapped in a LeaderSessionMessage is
  * detected, then an Exception is thrown.
+ * flink的用java实现的actor的基类。
+ * 继承自这个类的actor, 在debug日志等级激活时, 会自动打印接收到的消息。
+ * 另外, 他们会过滤出携带错误leader session id的LeaderSessionMessage。
+ * 如果一个 RequiresLeaderSessionID 类型的消息, 没有被包裹在一个 LeaderSessionMessage 中的消息被检测到, 会抛出一个异常。
  *
  * <p>In order to implement the actor behavior, an implementing subclass has to override the method
  * handleMessage, which defines how messages are processed. Furthermore, the subclass has to provide
  * a leader session ID option which is returned by getLeaderSessionID.
+ * 为了实现actor行为, 一个实现子类必须覆写 handleMessage 方法, 该方法定义了消息是如何被处理的。
+ * 另外, 子类必须提供一个leader session id选项, 可以通过 getLeaderSessionID 方法获取。
  */
 public abstract class FlinkUntypedActor extends UntypedActor {
 
@@ -48,9 +54,13 @@ public abstract class FlinkUntypedActor extends UntypedActor {
 	 * This method is called by Akka if a new message has arrived for the actor. It logs the
 	 * processing time of the incoming message if the logging level is set to debug. After logging
 	 * the handleLeaderSessionID method is called.
+	 * 如果一个新的消息到达该actor, 该方法会被akka调用。
+	 * 如果log等级被设置为debug, 它会打印消息的处理时间。
+	 * 在打印消息后, 会调用 handleLeaderSessionID 方法
 	 *
 	 * <p>Important: This method cannot be overriden. The actor specific message handling logic is
 	 * implemented by the method handleMessage.
+	 * 重要注意: 该方法不能被覆写。actor的消息处理逻辑通过 handleMessage 方法实现。
 	 *
 	 * @param message Incoming message
 	 * @throws Exception
@@ -77,6 +87,8 @@ public abstract class FlinkUntypedActor extends UntypedActor {
 	 * to the actors leader session ID. If a message of type {@link RequiresLeaderSessionID}
 	 * arrives, then an Exception is thrown, because these messages have to be wrapped in a
 	 * {@link LeaderSessionMessage}.
+	 * 该方法过滤出那些 leader session id 与 actor的 leader session id 不相等的 LeaderSessionMessage。
+	 * 如果一个 RequiresLeaderSessionID 类型的消息达到, 那就抛出一个异常, 因为这些消息需要被包裹在一个 LeaderSessionMessage 中。
 	 *
 	 * @param message Incoming message
 	 * @throws Exception
@@ -117,6 +129,7 @@ public abstract class FlinkUntypedActor extends UntypedActor {
 
 	/**
 	 * This method contains the actor logic which defines how to react to incoming messages.
+	 * 该方法包含了actor的如何处理消息的逻辑。
 	 *
 	 * @param message Incoming message
 	 * @throws Exception
@@ -125,6 +138,8 @@ public abstract class FlinkUntypedActor extends UntypedActor {
 
 	/**
 	 * Returns the current leader session ID associcated with this actor.
+	 * 返回与该actor相关联的当前leader session id
+	 *
 	 * @return
 	 */
 	protected abstract UUID getLeaderSessionID();
@@ -133,6 +148,8 @@ public abstract class FlinkUntypedActor extends UntypedActor {
 	 * This method should be called for every outgoing message. It wraps messages which require
 	 * a leader session ID (indicated by {@link RequiresLeaderSessionID}) in a
 	 * {@link LeaderSessionMessage} with the actor's leader session ID.
+	 * 这个方法应该在每一个输出消息时调用。
+	 * 它将需要一个leader session id的消息(用RequiresLeaderSessionID标识)包裹一层放到一个LeaderSessionMessage中,附带上leader session id。
 	 *
 	 * <p>This method can be overriden to implement a different decoration behavior.
 	 *

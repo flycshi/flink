@@ -96,28 +96,43 @@ import scala.language.postfixOps
  * The job manager is responsible for receiving Flink jobs, scheduling the tasks, gathering the
  * job status and managing the task managers. It is realized as an actor and receives amongst others
  * the following messages:
+  * job manager 的责任是接收flink的job, 调度task, 汇总job状态, 管理 task manager 。
+  * 它被实现为一个 actor , 接收如下消息 :
  *
  *  - [[RegisterTaskManager]] is sent by a TaskManager which wants to register at the job manager.
  *  A successful registration at the instance manager is acknowledged by [[AcknowledgeRegistration]]
+  *  - [[RegisterTaskManager]] 是由想要注册到 job manager 上的 task manager 发送的消息。
+  *  一个成功的注册会被回复 [[AcknowledgeRegistration]]
  *
  *  - [[SubmitJob]] is sent by a client which wants to submit a job to the system. The submit
  *  message contains the job description in the form of the JobGraph. The JobGraph is appended to
  *  the ExecutionGraph and the corresponding ExecutionJobVertices are scheduled for execution on
  *  the TaskManagers.
+  *  - [[SubmitJob]] 是由一个想向系统提交 job 的客户端发送的消息。
+  *  提交的消息中包含了以 JobGraph 的形式对任务的描述。
+  *  JobGraph 被附加到 ExecutionGraph , 相应的 ExecutionJobVertices 被调度在 TaskManager 上执行。
  *
  *  - [[CancelJob]] requests to cancel the job with the specified jobID. A successful cancellation
  *  is indicated by [[CancellationSuccess]] and a failure by [[CancellationFailure]]
+  *  - [[CancelJob]] 请求取消指定 JobID 的 job 。
+  *  一个成功的取消会被标记为 [[CancellationSuccess]] , 一个失败的请求则被标记为 [[CancellationFailure]] 。
  *
  * - [[UpdateTaskExecutionState]] is sent by a TaskManager to update the state of an
  * ExecutionVertex contained in the [[ExecutionGraph]].
  * A successful update is acknowledged by true and otherwise false.
+  * - [[UpdateTaskExecutionState]] 是由一个 TaskManager 更新包含在 [[ExecutionGraph]] 中的一个 ExecutionVertex 的状态而发送的消息。
+  * 一个成功更新的操作会被回复true, 否则回复false。
  *
  * - [[RequestNextInputSplit]] requests the next input split for a running task on a
  * [[TaskManager]]. The assigned input split or null is sent to the sender in the form of the
  * message [[NextInputSplit]].
+  * - [[RequestNextInputSplit]] 为一个 TaskManager 中的一个 running task 请求下一个 input split。
+  * 被分配的 input split 或者 null 以 [[NextInputSplit]] 的消息形式发送给发送者。
  *
  * - [[JobStatusChanged]] indicates that the status of job (RUNNING, CANCELING, FINISHED, etc.) has
  * changed. This message is sent by the ExecutionGraph.
+  * - [[JobStatusChanged]] 标识 job 的状态 (RUNNING, CANCELING, FINISHED, etc.) 发送了变化。
+  * 该消息是由 ExecutionGraph 发送。
  */
 class JobManager(
     protected val flinkConfiguration: Configuration,
@@ -1885,6 +1900,8 @@ class JobManager(
  * Job Manager companion object. Contains the entry point (main method) to run the JobManager in a
  * standalone fashion. Also contains various utility methods to start the JobManager and to
  * look up the JobManager actor reference.
+  * JobManager 的伴生对象。包含在独立集群模式下 JobManager 执行的入口点。
+  * 当然也包含很多工具方法来启动 JobManager , 搜寻 JobManager 的 actor ref 。
  */
 object JobManager {
 
@@ -1906,6 +1923,7 @@ object JobManager {
     JvmShutdownSafeguard.installAsShutdownHook(LOG.logger)
 
     // parsing the command line arguments
+    /** 解析命令行参数 */
     val (configuration: Configuration,
          executionMode: JobManagerMode,
          externalHostName: String,
@@ -1924,6 +1942,10 @@ object JobManager {
     // we want to check that the JobManager hostname is in the config
     // if it is not in there, the actor system will bind to the loopback interface's
     // address and will not be reachable from anyone remote
+    /**
+      * 我们想检查JobManager的主机名是否在配置中。
+      * 如果不在, 那 actor system 会绑定到回路接口地址上, 那将无法从任何远程节点访问到。
+      */
     if (externalHostName == null) {
       val message = "Config parameter '" + JobManagerOptions.ADDRESS.key() +
         "' is missing (hostname/address to bind JobManager to)."
@@ -1972,8 +1994,13 @@ object JobManager {
    * dedicated actor system for the JobManager. Second, its starts all components of the
    * JobManager (including library cache, instance manager, scheduler). Finally, it starts
    * the JobManager actor itself.
+    * 启动并运行JobManager,以及其所有组件。
+    * 首先, 该方法为JobManager启动一个专用的ActorSystem;
+    * 其次, 启动JobManager的所有组件(包括缓存lib, manager实例, 调度器);
+    * 最后, 启动JobManager这个actor自己。
    *
    * This method blocks indefinitely (or until the JobManager's actor system is shut down).
+    * 该方法会一直阻塞(或者直到JobManager的actor system被关闭为止。)
    *
    * @param configuration The configuration object for the JobManager.
    * @param executionMode The execution mode in which to run. Execution mode LOCAL will spawn an
@@ -1988,6 +2015,7 @@ object JobManager {
       listeningPort: Int)
     : Unit = {
 
+    /** 本机 CPU 的核数 */
     val numberProcessors = Hardware.getNumberCPUCores()
 
     val futureExecutor = Executors.newScheduledThreadPool(
@@ -1998,10 +2026,15 @@ object JobManager {
       numberProcessors,
       new ExecutorThreadFactory("jobmanager-io"))
 
+    /** akka 请求超时时间 */
     val timeout = AkkaUtils.getTimeout(configuration)
 
     // we have to first start the JobManager ActorSystem because this determines the port if 0
     // was chosen before. The method startActorSystem will update the configuration correspondingly.
+    /**
+      * 我们必须首先启动 JobManager 的 ActorSystem , 因为如果之前设置的端口为0的话, 需要这里来决定端口号。
+      * startActorSystem 会更新相应的地址和端口配置
+      */
     val jobManagerSystem = startActorSystem(
       configuration,
       listeningAddress,

@@ -26,12 +26,14 @@ public enum JobManagerMode {
 	/**
 	 * Causes the JobManager to operate in single user mode and
 	 * start a local embedded TaskManager.
+	 * 使JobManager以单个用户模式运行，并启动本地嵌入式任务管理器。
 	 */
 	LOCAL,
 
 	/**
 	 * Starts the JobManager in the regular mode where it waits for external TaskManagers
 	 * to connect.
+	 * 以常规模式启动 JobManager, 并等待外部的 TaskManager 的连接。
 	 */
 	CLUSTER
 }

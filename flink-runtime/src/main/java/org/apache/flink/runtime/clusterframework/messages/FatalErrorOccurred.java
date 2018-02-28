@@ -27,10 +27,12 @@ import static java.util.Objects.requireNonNull;
 /**
  * Message sent to the Flink's resource manager in case of a fatal error that
  * cannot be recovered in the running process.
+ * 在发生无法在运行进程中恢复的致命错误时,发送给flink的resource manager的消息。
  * 
  * When master high-availability is enabled, this message should fail the resource
  * manager (for example process kill) such that it gets recovered (restarted or
  * another process takes over).
+ * 当ha模式下, 这个消息应该使得resource manager失败(比如kill掉进程),以便重新恢复(比如重启或者被其他进程替代)
  */
 public class FatalErrorOccurred implements Serializable {
 

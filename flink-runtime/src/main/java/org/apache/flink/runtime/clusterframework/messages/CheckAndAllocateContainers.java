@@ -21,6 +21,7 @@ package org.apache.flink.runtime.clusterframework.messages;
 /**
  * This message signals the resource master to check how many TaskManagers are 
  * desired, how many are available, and to trigger adjustments if needed.
+ * 这个消息通知resource master去检查需要多少个TaskManager, 多少有效, 以及如果需要的话, 触发新建。
  */
 public class CheckAndAllocateContainers implements java.io.Serializable {
 

@@ -30,6 +30,8 @@ import java.util.Collection;
 /**
  * A standalone implementation of the resource manager. Used when the system is started in
  * standalone mode (via scripts), rather than via a resource framework like YARN or Mesos.
+ * Resource manager 的一个独立实现。
+ * 当系统以独立模式启动(通过脚本), 而不是通过一个资管管理框架, 比如yarn或者mesos的时候, 所使用的资管管理器。
  */
 public class StandaloneResourceManager extends FlinkResourceManager<ResourceID> {
 	

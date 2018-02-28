@@ -72,59 +72,98 @@ import static java.util.Objects.requireNonNull;
 /**
  *
  * <h1>Worker allocation steps</h1>
+ * worker 分配步骤
  *
  * <ol>
  *     <li>The resource manager decides to request more workers. This can happen in order
  *         to fill the initial pool, or as a result of the JobManager requesting more workers.</li>
+ *         资源管理器决定请求更多的workers。
+ *         这么做可能是为了填充初始池, 或者由于JobManager请求更多的workers。
  *
  *     <li>The resource master calls {@link #requestNewWorkers(int)}, which triggers requests
  *         for more containers. After that, the {@link #getNumWorkerRequestsPending()}
  *         should reflect the pending requests.</li>
+ *         resource master 调用 requestNewWorkers(int) 方法, 会触发请求更多的容器。
+ *         之后, getNumWorkerRequestsPending() 方法应该反映出悬挂着的请求。
  *
  *     <li>The concrete framework may acquire containers and then trigger to start TaskManagers
  *         in those containers. That should be reflected in {@link #getNumWorkersPendingRegistration()}.</li>
+ *         具体的框架可能获得容器,然后触发启动容器中的TaskManager。 getNumWorkersPendingRegistration 方法中应该有所反映。
  *
  *     <li>At some point, the TaskManager processes will have started and send a registration
  *         message to the JobManager. The JobManager will perform
  *         a lookup with the ResourceManager to check if it really started this TaskManager.
  *         The method {@link #workerStarted(ResourceID)} will be called
  *         to inform about a registered worker.</li>
+ *         在某个时刻, TaskManager进程将启动并发送一个注册消息给JobManager。JobManager将向ResourceManager进行查询,
+ *         以检测它是否真正的启动了这个TaskManager。workerStarted 方法会被调用来通知注册的worker。
  * </ol>
  *
  */
 public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrievable> extends FlinkUntypedActor {
 
-	/** The exit code with which the process is stopped in case of a fatal error */
+	/**
+	 * The exit code with which the process is stopped in case of a fatal error
+	 * 在致命错误情况下进程停止时的退出码
+	 */
 	protected static final int EXIT_CODE_FATAL_ERROR = -13;
 
-	/** The default name of the resource manager actor */
+	/**
+	 * The default name of the resource manager actor
+	 * resource manager actor的默认名称
+	 */
 	public static final String RESOURCE_MANAGER_NAME = "resourcemanager";
 
 	// ------------------------------------------------------------------------
 
-	/** The Flink configuration object */
+	/**
+	 * The Flink configuration object
+	 * flink的配置对象
+	 */
 	protected final Configuration config;
 
-	/** The timeout for actor messages sent to the JobManager / TaskManagers */
+	/**
+	 * The timeout for actor messages sent to the JobManager / TaskManagers
+	 * 向JobManager和TaskManager发送消息的超时时间。
+	 */
 	private final FiniteDuration messageTimeout;
 
-	/** The service to find the right leader JobManager (to support high availability) */
+	/**
+	 * The service to find the right leader JobManager (to support high availability)
+	 * 发现正确的leader JobManager的服务(支持ha)
+	 */
 	private final LeaderRetrievalService leaderRetriever;
 
-	/** Map which contains the workers from which we know that they have been successfully started
-	 * in a container. This notification is sent by the JM when a TM tries to register at it. */
+	/**
+	 * Map which contains the workers from which we know that they have been successfully started in a container.
+	 * 包含了我们知道他们已经成功地从一个容器中启动的worker的map。
+	 * This notification is sent by the JM when a TM tries to register at it.
+	 * 当一个 TaskManager 尝试注册时, 这个通知是由 JobManager 发送的
+	 */
 	private final Map<ResourceID, WorkerType> startedWorkers;
 
-	/** List of listeners for info messages */
+	/**
+	 * List of listeners for info messages
+	 * info消息的监听者列表
+	 */
 	private final Set<ActorRef> infoMessageListeners;
 
-	/** The JobManager that the framework master manages resources for */
+	/**
+	 * The JobManager that the framework master manages resources for
+	 * 管理资源的JobManager
+	 */
 	private ActorRef jobManager;
 
-	/** Our JobManager's leader session */
+	/**
+	 * Our JobManager's leader session
+	 * 我们的JobManager的leader session id
+	 */
 	private UUID leaderSessionID;
 
-	/** The size of the worker pool that the resource master strives to maintain */
+	/**
+	 * The size of the worker pool that the resource master strives to maintain
+	 * 资源主努力维持的工作池的大小
+	 */
 	private int designatedPoolSize;
 
 	// ------------------------------------------------------------------------
@@ -207,13 +246,14 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	 *
 	 * This method receives the actor messages after they have been filtered for
 	 * a match with the leader session.
+	 * 该方法接收已经被过滤过,匹配携带了leader session的actor的消息
 	 *
 	 * @param message The incoming actor message.
 	 */
 	@Override
 	protected void handleMessage(Object message) {
 		try {
-			// --- messages about worker allocation and pool sizes
+			// --- messages about worker allocation and pool sizes  worker分配和池大小的消息
 
 			if (message instanceof CheckAndAllocateContainers) {
 				checkWorkersPool();
@@ -227,14 +267,14 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 				removeRegisteredResource(msg.resourceId());
 			}
 
-			// --- lookup of registered resources
+			// --- lookup of registered resources  搜寻已经注册的资源
 
 			else if (message instanceof NotifyResourceStarted) {
 				NotifyResourceStarted msg = (NotifyResourceStarted) message;
 				handleResourceStarted(sender(), msg.getResourceID());
 			}
 
-			// --- messages about JobManager leader status and registration
+			// --- messages about JobManager leader status and registration  关于JobManager leader的状态和注册的消息
 
 			else if (message instanceof NewLeaderAvailable) {
 				NewLeaderAvailable msg = (NewLeaderAvailable) message;
@@ -249,7 +289,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 				jobManagerLeaderConnected(msg.jobManager(), msg.currentlyRegisteredTaskManagers());
 			}
 
-			// --- end of application
+			// --- end of application	应用结束
 
 			else if (message instanceof StopCluster) {
 				StopCluster msg = (StopCluster) message;
@@ -257,7 +297,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 				sender().tell(decorateMessage(StopClusterSuccessful.getInstance()), ActorRef.noSender());
 			}
 
-			// --- miscellaneous messages
+			// --- miscellaneous messages	其他消息
 
 			else if (message instanceof RegisterInfoMessageListener) {
 				if (jobManager != null) {
@@ -395,11 +435,13 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	// ------------------------------------------------------------------------
 	//  Registration and consolidation with JobManager Leader
+	//  与JobManager的leader进行注册与合作。
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Called as soon as we discover (via leader election) that a JobManager lost leadership
 	 * or a different one gained leadership.
+	 * 只要我们发现(通过leader选择器)一个JobManager丢失了leader权,或者一个不同的人获得了leader权, 则被调用。
 	 *
 	 * @param leaderAddress The address (Akka URL) of the new leader. Null if there is currently no leader.
 	 * @param leaderSessionID The unique session ID marking the leadership session.
@@ -408,13 +450,18 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 		LOG.debug("Received new leading JobManager {}. Connecting.", leaderAddress);
 
 		// disconnect from the current leader (no-op if no leader yet)
+		// 从当前leader断开连接(如果没有leader则不做操作)
 		jobManagerLostLeadership();
 
 		// a null leader session id means that only a leader disconnect
 		// happened, without a new leader yet
+		/**
+		 * 一个 null leader会话id, 意味着leader断连,但是没有新的leader被选择出来
+		 */
 		if (leaderSessionID != null && leaderAddress != null) {
 			// the leaderSessionID implicitly filters out success and failure messages
 			// that come after leadership changed again
+			/** leaderSessionID 会隐式的过滤那些在leader变化后的成功或失败的消息 */
 			this.leaderSessionID = leaderSessionID;
 			triggerConnectingToJobManager(leaderAddress);
 		}
@@ -423,6 +470,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	/**
 	 * Causes the resource manager to announce itself at the new leader JobManager and
 	 * obtains its connection information and currently known TaskManagers.
+	 * 让resource manager在新的leader JobManager中申明自己, 并获取其连接信息和当前已知的TaskManager。
 	 *
 	 * @param leaderAddress The akka actor URL of the new leader JobManager.
 	 */
@@ -549,10 +597,13 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	 * This method causes the resource framework master to <b>synchronously</b>re-examine
 	 * the set of available and pending workers containers, and allocate containers
 	 * if needed.
+	 * 该方法使资源管理框架同步的重新检查可用的和挂起的worker的容器, 并在需要时分配容器。
 	 *
 	 * This method does not automatically release workers, because it is not visible to
 	 * this resource master which workers can be released. Instead, the JobManager must
 	 * explicitly release individual workers.
+	 * 这个方法不会自动释放workers, 因为对于那些workers可以被释放,它是不知道的。
+	 * 相反, JobManager必须显示的释放单个worker。
 	 */
 	private void checkWorkersPool() {
 		int numWorkersPending = getNumWorkerRequestsPending();
@@ -641,9 +692,12 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	/**
 	 * The framework specific code for shutting down the application. This should report the
 	 * application's final status and shut down the resource manager cleanly.
+	 * 框架指定的code,用来关闭应用。
+	 * 这里应该报告应用的最终状态,并完全关闭resource manager
 	 *
 	 * This method also needs to make sure all pending containers that are not registered
 	 * yet are returned.
+	 * 这个方法也需要确保所有处于pending状态的容器,也就是还没有完成注册的,也需要被返回。
 	 *
 	 * @param finalStatus The application status to report.
 	 * @param optionalDiagnostics An optional diagnostics message.
@@ -690,9 +744,13 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	 * the view between resource manager and JobManager. The resource manager gets the list of TaskManagers
 	 * that the JobManager considers available and should return a list or nodes that the
 	 * resource manager considers available.
+	 * 当resource manager在一次失败后启动,并重新连接到leader JobManager, 而JobManager仍然有一些已经注册的workers, 该方法会被调用。
+	 * 这个方法是用来同步 ResourceManager 和 JobManager 之间的资源视图的。
+	 * ResourceManager 获取 JobManager 认为有效的 TaskManager 的列表, 并返回 ResourceManager 认为有效的列表。
 	 *
 	 * After that, the JobManager is informed of loss of all TaskManagers that are not part of the
 	 * returned list.
+	 * 这之后, JobManager 会被通知到哪些 ResourceManager 认为无效的 TaskManager
 	 *
 	 * It is possible that the resource manager initially confirms some TaskManagers to be alive, even
 	 * through they are in an uncertain status, if it later sends necessary failure notifications
