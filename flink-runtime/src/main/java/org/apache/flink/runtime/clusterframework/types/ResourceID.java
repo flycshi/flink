@@ -25,6 +25,7 @@ import java.io.Serializable;
 
 /**
  * Class for Resource Ids assigned at the FlinkResourceManager.
+ * FlinkResourceManager 中分配的 resource id 的类
  */
 public final class ResourceID implements ResourceIDRetrievable, Serializable {
 

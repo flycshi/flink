@@ -22,6 +22,7 @@ import java.util.UUID;
 
 /**
  * Message sent to the Flink resource manager to indicate that a new leader is available.
+ * 发送给flin的资源管理器的消息, 指明一个新的leader是有效的。
  */
 public class NewLeaderAvailable implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;

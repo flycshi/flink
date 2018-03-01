@@ -181,6 +181,9 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 		this.leaderRetriever = requireNonNull(leaderRetriever);
 		this.startedWorkers = new HashMap<>();
 
+		/**
+		 * 通过配置参数 akka.lookup.timeout 获取超时时间设置, 如果没有设置, 则采用默认值。
+		 */
 		FiniteDuration lt;
 		try {
 			lt = AkkaUtils.getLookupTimeout(config);
@@ -197,6 +200,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	// ------------------------------------------------------------------------
 	//  Actor Behavior
+	//  actor的行为
 	// ------------------------------------------------------------------------
 
 	@Override
@@ -204,6 +208,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 		try {
 			// we start our leader retrieval service to make sure we get informed
 			// about JobManager leader changes
+			/** 启动leader提取服务, 确保JobManager的leader变化时, 我们能获得通知。 */
 			leaderRetriever.start(new LeaderRetrievalListener() {
 
 				@Override
@@ -222,6 +227,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 			});
 
 			// framework specific initialization
+			// 框架特定的初始化
 			initialize();
 
 		}
@@ -253,7 +259,8 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	@Override
 	protected void handleMessage(Object message) {
 		try {
-			// --- messages about worker allocation and pool sizes  worker分配和池大小的消息
+			// --- messages about worker allocation and pool sizes
+			//  worker分配和池大小的消息
 
 			if (message instanceof CheckAndAllocateContainers) {
 				checkWorkersPool();
@@ -267,15 +274,22 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 				removeRegisteredResource(msg.resourceId());
 			}
 
-			// --- lookup of registered resources  搜寻已经注册的资源
+			// --- lookup of registered resources
+			//  搜寻已经注册的资源
 
 			else if (message instanceof NotifyResourceStarted) {
 				NotifyResourceStarted msg = (NotifyResourceStarted) message;
 				handleResourceStarted(sender(), msg.getResourceID());
 			}
 
-			// --- messages about JobManager leader status and registration  关于JobManager leader的状态和注册的消息
+			// --- messages about JobManager leader status and registration
+			//  关于JobManager leader的状态和注册的消息
 
+			/**
+			 * 1、首先应该是会收到 NewLeaderAvailable 消息, 触发新leader JobManager的处理;
+			 * 2、如果上述处理连接失败,会给自己发送一个 TriggerRegistrationAtJobManager(自己给自己发的) 消息, 尝试再连接
+			 * 3、如果连接成功,则会收到 RegisterResourceManagerSuccessful(自己给自己发的) 消息, 处理注册成功的状态
+			 */
 			else if (message instanceof NewLeaderAvailable) {
 				NewLeaderAvailable msg = (NewLeaderAvailable) message;
 				newJobManagerLeaderAvailable(msg.leaderAddress(), msg.leaderSessionId());
@@ -289,7 +303,8 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 				jobManagerLeaderConnected(msg.jobManager(), msg.currentlyRegisteredTaskManagers());
 			}
 
-			// --- end of application	应用结束
+			// --- end of application
+			// 	应用结束
 
 			else if (message instanceof StopCluster) {
 				StopCluster msg = (StopCluster) message;
@@ -297,7 +312,8 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 				sender().tell(decorateMessage(StopClusterSuccessful.getInstance()), ActorRef.noSender());
 			}
 
-			// --- miscellaneous messages	其他消息
+			// --- miscellaneous messages
+			// 	其他消息
 
 			else if (message instanceof RegisterInfoMessageListener) {
 				if (jobManager != null) {
@@ -344,6 +360,8 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	 * that the resource master strives to maintain. The actual number of workers
 	 * may be lower (if worker requests are still pending) or higher (if workers have
 	 * not yet been released).
+	 * 获取当前设计的worker池大小, 也就是ResourceManager努力去管理的worker的数量。
+	 * 实际的worker数量可能会少(如果worker的请求还在pending) 或者 多(如果worker还没有被释放)
 	 *
 	 * @return The designated worker pool size.
 	 */
@@ -353,6 +371,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Gets the number of currently started TaskManagers.
+	 * 获取当前已经启动的TaskManager的数量
 	 *
 	 * @return The number of currently started TaskManagers.
 	 */
@@ -362,6 +381,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Gets the currently registered resources.
+	 * 获取当前已经注册的resources
 	 * @return
 	 */
 	public Collection<WorkerType> getStartedTaskManagers() {
@@ -370,6 +390,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Gets the started worker for a given resource ID, if one is available.
+	 * 对给定的resourceId,判断其是否启动了
 	 *
 	 * @param resourceId The resource ID for the worker.
 	 * @return True if already registered, otherwise false
@@ -380,6 +401,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Gets an iterable for all currently started TaskManagers.
+	 * 获取当前所有启动TaskManager的一个迭代器
 	 *
 	 * @return All currently started TaskManagers.
 	 */
@@ -390,6 +412,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	/**
 	 * Tells the ResourceManager that a TaskManager had been started in a container with the given
 	 * resource id.
+	 * 告诉 ResourceManager , 一个 TaskManager 已经在容器中启动, 以及 resource id
 	 *
 	 * @param jobManager The sender (JobManager) of the message
 	 * @param resourceID The resource id of the started TaskManager
@@ -397,6 +420,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	private void handleResourceStarted(ActorRef jobManager, ResourceID resourceID) {
 		if (resourceID != null) {
 			// check if resourceID is already registered (TaskManager may send duplicate register messages)
+			// 检查resourceID是否已经被注册了(TaskManager可能发送了两次注册消息)
 			WorkerType oldWorker = startedWorkers.get(resourceID);
 			if (oldWorker != null) {
 				LOG.debug("Notification that TaskManager {} had been started was sent before.", resourceID);
@@ -419,6 +443,8 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	/**
 	 * Releases the given resource. Note that this does not automatically shrink
 	 * the designated worker pool size.
+	 * 释放指定的资源。
+	 * 需要注意的是, 这个操作不会自动缩小设计的worker池大小。
 	 *
 	 * @param resourceId The TaskManager's resource id.
 	 */
@@ -512,6 +538,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * This method disassociates from the current leader JobManager.
+	 * 该方法取消与当前leader JobManager的关联
 	 */
 	private void jobManagerLostLeadership() {
 		if (jobManager != null) {
@@ -526,6 +553,8 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Callback when we're informed about a new leading JobManager.
+	 * 在被通知一个新的leading JobManager时, 被调用
+	 *
 	 * @param newJobManagerLeader The ActorRef of the new jobManager
 	 * @param workers The existing workers the JobManager has registered.
 	 */
@@ -549,6 +578,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 				try {
 					// ask the framework to tell us which ones we should keep for now
+					// 询问框架, 现在哪些还需要继续保留
 					Collection<WorkerType> consolidated = reacceptRegisteredWorkers(workers);
 					LOG.info("Consolidated {} TaskManagers", consolidated.size());
 
@@ -567,6 +597,11 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 					}
 				}
 
+				/**
+				 * 对于 toHandle 中可能剩余的 ResourceID 要如何处理
+				 * ????????
+				 */
+
 			}
 
 			// trigger initial check for requesting new workers
@@ -581,6 +616,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	// ------------------------------------------------------------------------
 	//  ClusterClient Shutdown
+	//  集群客户端关闭
 	// ------------------------------------------------------------------------
 
 	private void shutdownCluster(ApplicationStatus status, String diagnostics) {
@@ -629,6 +665,8 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	/**
 	 * Sets the designated worker pool size. If this size is larger than the current pool
 	 * size, then the resource manager will try to acquire more TaskManagers.
+	 * 设置配置的worker池大小。
+	 * 如果这个size比当前池大小还要大的话, 资源管理器会尝试获取更多的TaskManager
 	 *
 	 * @param num The number of workers in the pool.
 	 */
@@ -644,6 +682,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	// ------------------------------------------------------------------------
 	//  Callbacks
+	//  回调方法
 	// ------------------------------------------------------------------------
 
 	/**
@@ -651,6 +690,8 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	 * the set of available and pending workers containers, and release or allocate
 	 * containers if needed. The method sends an actor message which will trigger the
 	 * re-examination.
+	 * 该方法会让资源框架master异步去检查有效的和悬挂的worker容器的集合, 如果需要的话, 释放或者分配容器。
+	 * 该方法会发送一个actor消息,该消息会触发重新检查。
 	 */
 	public void triggerCheckWorkers() {
 		self().tell(
@@ -662,6 +703,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	/**
 	 * This method should be called by the framework once it detects that a currently registered
 	 * worker has failed.
+	 * 该方法是在框架检查到当前一个注册的worker失败时,会被回调。
 	 *
 	 * @param resourceID Id of the worker that has failed.
 	 * @param message An informational message that explains why the worker failed.
@@ -678,10 +720,12 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	// ------------------------------------------------------------------------
 	//  Framework specific behavior
+	//  框架特定行为
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Initializes the framework specific components.
+	 * 初始化框架特定组件
 	 *
 	 * @throws Exception Exceptions during initialization cause the resource manager to fail.
 	 *                   If the framework is able to recover this resource manager, it will be
@@ -706,6 +750,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Notifies the resource master of a fatal error.
+	 * 通知ResourceManager一个致命错误
 	 *
 	 * <p><b>IMPORTANT:</b> This should not cleanly shut down this master, but exit it in
 	 * such a way that a high-availability setting would restart this or fail over
@@ -715,6 +760,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Requests to allocate a certain number of new workers.
+	 * 请求分配给定数量的新workers
 	 *
 	 * @param numWorkers The number of workers to allocate.
 	 */
@@ -722,18 +768,24 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Trigger a release of a pending worker.
+	 * 触发一个pending worker的释放
+	 *
 	 * @param resourceID The worker resource id
 	 */
 	protected abstract void releasePendingWorker(ResourceID resourceID);
 
 	/**
 	 * Trigger a release of a started worker.
+	 * 触发释放一个已经启动的worker
+	 *
 	 * @param resourceID The worker resource id
 	 */
 	protected abstract void releaseStartedWorker(WorkerType resourceID);
 
 	/**
 	 * Callback when a worker was started.
+	 * 当一个worker被启动后,调用
+	 *
 	 * @param resourceID The worker resource id
 	 */
 	protected abstract WorkerType workerStarted(ResourceID resourceID);
@@ -763,6 +815,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Gets the number of requested workers that have not yet been granted.
+	 * 获取已经请求的,但是还没有被授权的worker的数量
 	 *
 	 * @return The number pending worker requests. Must never be smaller than 0.
 	 */
@@ -771,6 +824,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 	/**
 	 * Gets the number of containers that have been started, but where the TaskManager
 	 * has not yet registered at the job manager.
+	 * 获取容器已经启动, 但是里面的TaskManager还没有被注册到JobManager的容器的数量
 	 *
 	 * @return The number of started containers pending TaskManager registration.
 	 * Must never be smaller than 0.
@@ -790,6 +844,7 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	// ------------------------------------------------------------------------
 	//  Startup
+	//  启动
 	// ------------------------------------------------------------------------
 
 	/**

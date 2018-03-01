@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 /**
  * A generic acknowledgement message.
+ * 通用ack消息
  */
 public class Acknowledge implements Serializable {
 

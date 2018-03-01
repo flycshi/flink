@@ -25,6 +25,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * Generic message to signal the cluster framework to shut the cluster down.
+ * 通知集群关闭的通用消息格式
  */
 public class StopCluster implements RequiresLeaderSessionID, java.io.Serializable {
 
