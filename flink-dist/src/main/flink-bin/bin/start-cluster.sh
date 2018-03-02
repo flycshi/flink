@@ -30,9 +30,11 @@ if [[ "$FLIP6" == "flip6" ]]; then
 fi
 
 # Start the JobManager instance(s)
+# 启动JobManager实例
 shopt -s nocasematch
 if [[ $HIGH_AVAILABILITY == "zookeeper" ]]; then
     # HA Mode
+    # HA模式
     readMasters
 
     echo "Starting HA cluster with ${#MASTERS[@]} masters."
@@ -52,4 +54,5 @@ fi
 shopt -u nocasematch
 
 # Start TaskManager instance(s)
+# 启动TaskManager实例
 TMSlaves start $FLIP6

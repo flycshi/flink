@@ -33,6 +33,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * A zookeeper based registry for running jobs, highly available.
+ * 一个基于zk的注册表,ha
  */
 public class ZooKeeperRunningJobsRegistry implements RunningJobsRegistry {
 

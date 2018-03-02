@@ -46,6 +46,15 @@ import java.util.UUID;
  * Leader election service for multiple JobManager. The leading JobManager is elected using
  * ZooKeeper. The current leader's address as well as its leader session ID is published via
  * ZooKeeper as well.
+ * 多个JobManager下的leader选举服务。通过zk选举出leading JobManager。
+ * 当前leader的地址以及其session id也都通过zk来发布
+ *
+ * 选举过程如下:
+ * 1、监听 /flink/${cluster-id}/${jobID}/job_manager_lock 目录
+ * 2、精选时, 都会到上述目录下创建一个 EPHEMERAL_SEQUENTIAL 节点
+ * 3、然后获取上述目录下的所有子节点, 从中找出节点编号最小的即为 leader
+ * 4、如果被选择为leader, 则把地址和会话id写入 /flink/${cluster-id}/leader/${jobID}/job_manager_lock
+ *
  */
 public class ZooKeeperLeaderElectionService implements LeaderElectionService, LeaderLatchListener, NodeCacheListener, UnhandledErrorListener {
 
@@ -104,6 +113,7 @@ public class ZooKeeperLeaderElectionService implements LeaderElectionService, Le
 
 	/**
 	 * Returns the current leader session ID or null, if the contender is not the leader.
+	 * 返回当前leader的会话id, 如果竞选者不是leader,则返回null
 	 *
 	 * @return The last leader session ID or null, if the contender is not the leader
 	 */
@@ -317,6 +327,7 @@ public class ZooKeeperLeaderElectionService implements LeaderElectionService, Le
 
 	/**
 	 * Writes the current leader's address as well the given leader session ID to ZooKeeper.
+	 * 将当前leader的地址和会话id写入到zk中
 	 *
 	 * @param leaderSessionID Leader session ID which is written to ZooKeeper
 	 */

@@ -60,6 +60,7 @@ public class ZooKeeperUtils {
 	/**
 	 * Starts a {@link CuratorFramework} instance and connects it to the given ZooKeeper
 	 * quorum.
+	 * 启动一个 CuratorFramework 实例, 连接到指定zk上
 	 *
 	 * @param configuration {@link Configuration} object containing the configuration values
 	 * @return {@link CuratorFramework} instance
@@ -205,6 +206,7 @@ public class ZooKeeperUtils {
 
 	/**
 	 * Creates a {@link ZooKeeperLeaderElectionService} instance.
+	 * 创建一个 ZooKeeperLeaderElectionService 实例
 	 *
 	 * @param client        The {@link CuratorFramework} ZooKeeper client to use
 	 * @param configuration {@link Configuration} object containing the configuration values

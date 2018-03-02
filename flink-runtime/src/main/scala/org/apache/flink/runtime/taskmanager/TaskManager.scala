@@ -80,17 +80,24 @@ import scala.language.postfixOps
 /**
  * The TaskManager is responsible for executing the individual tasks of a Flink job. It is
  * implemented as an actor. The TaskManager has the following phases:
+  * TaskManager 负责执行一个flink job的独立tasks。被实现为一个actor。
+  * TaskManager具有如下阶段:
  *
  * - "Waiting to be registered": In that phase, it periodically
  *   sends a [[RegisterTaskManager]] message to the JobManager.
  *   Upon successful registration, the JobManager replies with an [[AcknowledgeRegistration]]
  *   message. This stops the registration messages and initializes all fields
  *   that require the JobManager's actor reference.
+  * - 等待被注册 : 在这个阶段, 会定期发送一个 [[RegisterTaskManager]] 消息给JobManager。
+  *   在注册成功后, JobManager 会恢复一个 [[AcknowledgeRegistration]] 消息。
+  *   然后就会停止发送注册消息, 并初始化所有需要JobManager的actor引用的字段。
  *
  * - "Operational": Here the TaskManager accepts and processes task messages, like
  *   [[SubmitTask]], [[CancelTask]], [[FailTask]].
  *   If the TaskManager disconnects from the JobManager (because the JobManager is no longer
  *   reachable), the TaskManager gets back to the "waiting to be registered" state.
+  * - 运行状态 : TaskManager 开始接收和处理 task 消息, 比如 [[SubmitTask]], [[CancelTask]], [[FailTask]]
+  *   如果 TaskManager 与 JobManager 断连 (因为 JobManager 不在可连接), TaskManager 会再次回到 等待被注册 状态。
  *
  *
  *  ========== Failure model of the TaskManager ==========
@@ -98,6 +105,8 @@ import scala.language.postfixOps
  *  The TaskManager tries to compensate for task failures as far as possible by marking
  *  the task as failed and removing all its resources. This causes the JobManager to
  *  restart the task (on this same TaskManager or on a different TaskManager).
+  *  TaskManager 在 task 失败时, 会尽可能快的标记 task 为失败状态, 并移除它所有的资源。
+  *  这个操作会让 JobManager 感知到, 并重启 task (在这个 TaskManager 或者在一个不同的 TaskManager 上)。
  *
  *  In certain cases, exceptions indicate that the TaskManager is unable to proceed.
  *  The most robust way to clean up is letting the OS/kernel do it, so we will trigger
@@ -105,18 +114,27 @@ import scala.language.postfixOps
  *  will be restarted, producing a clean state.
  *  To achieve this, we kill the TaskManager actor. The watch dog actor (process reaper)
  *  will recognize that and kill the TaskManager process.
+  *  在某些情况下, 会出现标识 TaskManager 不能处理的异常。
+  *  简单粗暴的做法就是让操作系统直接去清除, 这样我们就可以kill调进程。
+  *  在yarn(或者可恢复的独立模式), 进程会被重启, 产生一个清洗状态。
+  *  为了实现这个,我们会kill到TaskManager actor, 看门狗actor(进程收割机actor)会感知到,然后kill掉TaskManager进程。
  *
  *  Fatal errors that require TaskManager JVM restart include:
+  * 需要TaskManager重启的致命错误有:
  *
  *    - Errors bringing up the Network Stack or Library Cache after the TaskManager
  *      has registered at the JobManager. The TaskManager cannot operate without.
+  *   - 在 TaskManager 注册到 JobManager 上后, 发生在网络栈或者库缓存上的errors。TaskManager无法再操作了。
  *
  *    - Exceptions while releasing the task resources from the network stack, intermediate
  *      results, or memory manager. Those situations indicate a critical leak in the
  *      resource management, which can only be reliably fixed through a JVM restart.
+  *   - 在释放task占用的网络栈、中间结果、内存管理等资源时发生的Exceptions。
+  *     这些情况表明在资源管理器中存在严重漏洞, 只能通过重启jvm来修复了。
  *
  *    - Exceptions releasing intermediate result resources. Critical resource leak,
  *      requires a clean JVM.
+  *   - 释放中间结果资源时发生Exceptions。严重资源泄露, 需要清理jvm。
  */
 class TaskManager(
     protected val config: TaskManagerConfiguration,

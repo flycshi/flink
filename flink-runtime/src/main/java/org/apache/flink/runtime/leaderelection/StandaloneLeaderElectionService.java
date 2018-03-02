@@ -28,6 +28,8 @@ import java.util.UUID;
  * implementation assumes that there is only a single {@link LeaderContender} and thus directly
  * grants him the leadership upon start up. Furthermore, there is no communication needed between
  * multiple standalone leader election services.
+ * LeaderElectionService 接口的单机实现。
+ * 单机实现假设只有一个单独的LeaderContender, 然后在启动的时候直接给他授权领导权,这里不需要在多个独立的leader选举服务之间进行通信。
  */
 public class StandaloneLeaderElectionService implements LeaderElectionService {
 

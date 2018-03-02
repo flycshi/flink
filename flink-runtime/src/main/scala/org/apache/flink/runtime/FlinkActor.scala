@@ -26,7 +26,7 @@ import grizzled.slf4j.Logger
   * The message handling logic is defined in the handleMessage method. This allows to mixin
   * stackable traits which change the message receiving behaviour.
   */
-trait FlinkActor extends Actor {
+trait  FlinkActor extends Actor {
   val log: Logger
 
   override def receive: Receive = handleMessage

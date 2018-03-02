@@ -20,6 +20,7 @@ package org.apache.flink.runtime.clusterframework;
 
 /**
  * The status of an application.
+ * 应用的状态
  */
 public enum ApplicationStatus {
 

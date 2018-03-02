@@ -66,6 +66,7 @@ manglePathList() {
 }
 
 # Looks up a config value by key from a simple YAML-style key-value map.
+# 从yaml类型kv对文件中搜寻一个key对应的value
 # $1: key to look up
 # $2: default value to return if key does not exist
 # $3: config file to read from
@@ -332,6 +333,8 @@ fi
 # Arguments for the JVM. Used for job and task manager JVMs.
 # DO NOT USE FOR MEMORY SETTINGS! Use conf/flink-conf.yaml with keys
 # KEY_JOBM_MEM_SIZE and KEY_TASKM_MEM_SIZE for that!
+# JVM的参数, 用于job和task管理器的jvm参数。
+# 内存设置不要在这里! 内存设置在配置文件 conf/flink-conf.yaml 中, 用 KEY_JOBM_MEM_SIZE and KEY_TASKM_MEM_SIZE 进行设置
 if [ -z "${JVM_ARGS}" ]; then
     JVM_ARGS=""
 fi
@@ -480,6 +483,7 @@ readSlaves() {
 }
 
 # starts or stops TMs on all slaves
+# 启动或者停止所有slave上的TaskManager
 # TMSlaves start|stop [flip6]
 TMSlaves() {
     CMD=$1

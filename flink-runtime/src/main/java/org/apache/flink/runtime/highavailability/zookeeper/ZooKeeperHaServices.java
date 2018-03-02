@@ -42,7 +42,9 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * An implementation of the {@link HighAvailabilityServices} using Apache ZooKeeper.
+ * 利用 apache Zookeeper实现的一个 HighAvailabilityServices
  * The services store data in ZooKeeper's nodes as illustrated by teh following tree structure:
+ * 服务将数据存储在zk节点中, 如下树状图所示
  * 
  * <pre>
  * /flink
@@ -66,17 +68,24 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * <p>The root path "/flink" is configurable via the option {@link HighAvailabilityOptions#HA_ZOOKEEPER_ROOT}.
  * This makes sure Flink stores its data under specific subtrees in ZooKeeper, for example to
  * accommodate specific permission.
+ * 根目录 "/flink" 是通过选项 {@link HighAvailabilityOptions#HA_ZOOKEEPER_ROOT} 配置的。
+ * 这个可以确保flink将数据存储在zk的特定子目录下, 比如用来做权限管理。
  * 
  * <p>The "cluster_id" part identifies the data stored for a specific Flink "cluster". 
  * This "cluster" can be either a standalone or containerized Flink cluster, or it can be job
  * on a framework like YARN or Mesos (in a "per-job-cluster" mode).
+ * "cluster_id" 用来存储特定flink集群的数据。
+ * "cluster" 可以是独立或者容器化的flink集群, 也可以是类似yarn或者mesos框架上的job(在一个job一个集群模式下)
  * 
  * <p>In case of a "per-job-cluster" on YARN or Mesos, the cluster-id is generated and configured
  * automatically by the client or dispatcher that submits the Job to YARN or Mesos.
+ * 在yarn或者mesos的 "per-job-cluster" 情况下, cluster-id 由提交job的客户端或分发器自动产生和配置。
  * 
  * <p>In the case of a standalone cluster, that cluster-id needs to be configured via
  * {@link HighAvailabilityOptions#HA_CLUSTER_ID}. All nodes with the same cluster id will join the same
  * cluster and participate in the execution of the same set of jobs.
+ * 在独立集群模式下, cluster-id 需要通过 {@link HighAvailabilityOptions#HA_CLUSTER_ID} 配置。
+ * 所有具有相同cluster-id的节点,会加入到相同的集群, 配合执行相同的job集合。
  */
 public class ZooKeeperHaServices implements HighAvailabilityServices {
 

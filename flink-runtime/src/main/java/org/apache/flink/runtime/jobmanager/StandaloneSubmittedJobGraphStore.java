@@ -26,9 +26,11 @@ import java.util.Collections;
 
 /**
  * {@link SubmittedJobGraph} instances for JobManagers running in {@link HighAvailabilityMode#NONE}.
+ * JobManager运行在非HA模式下的 SubmittedJobGraph 实例
  *
  * <p>All operations are NoOps, because {@link JobGraph} instances cannot be recovered in this
  * recovery mode.
+ * 所有操作都是不做任何处理, 因为 JobGraph 实例在该模式下无法恢复。
  */
 public class StandaloneSubmittedJobGraphStore implements SubmittedJobGraphStore {
 

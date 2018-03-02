@@ -95,6 +95,7 @@ log_setting=("-Dlog.file=${log}" "-Dlog4j.configuration=file:${FLINK_CONF_DIR}/l
 JAVA_VERSION=$(${JAVA_RUN} -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q')
 
 # Only set JVM 8 arguments if we have correctly extracted the version
+# 如果提取到了java的版本信息, 只设置jvm 8 的参数
 if [[ ${JAVA_VERSION} =~ ${IS_NUMBER} ]]; then
     if [ "$JAVA_VERSION" -lt 18 ]; then
         JVM_ARGS="$JVM_ARGS -XX:MaxPermSize=256m"

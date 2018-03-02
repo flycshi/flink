@@ -32,12 +32,15 @@ public class JobManagerOptions {
 	/**
 	 * The config parameter defining the network address to connect to
 	 * for communication with the job manager.
+	 * 与JobManager进行通信连接的网络地址
 	 * 
 	 * <p>This value is only interpreted in setups where a single JobManager with static 
 	 * name or address exists (simple standalone setups, or container setups with dynamic
 	 * service name resolution). It is not used in many high-availability setups, when a
 	 * leader-election service (like ZooKeeper) is used to elect and discover the JobManager
 	 * leader from potentially multiple standby JobManagers.
+	 * 只有当存在一个具有静态名称和地址的JobManager时(简单的单机配置, 或者具有动态服务名称解析的容器配置)才会解释配置中的这个值。
+	 * 该配置在HA模式下是不用的, HA下,一个leader选举服务(比如zk)被用来从潜在的多个预备状态下的JobManager中选举和发现主JobManager。
 	 */
 	public static final ConfigOption<String> ADDRESS =
 		key("jobmanager.rpc.address")
@@ -46,6 +49,7 @@ public class JobManagerOptions {
 	/**
 	 * The config parameter defining the network port to connect to
 	 * for communication with the job manager.
+	 * 与JobManager进行通信连接的网络端口
 	 * 
 	 * <p>Like {@link JobManagerOptions#ADDRESS}, this value is only interpreted in setups where
 	 * a single JobManager with static name/address and port exists (simple standalone setups,
@@ -53,6 +57,8 @@ public class JobManagerOptions {
 	 * This config option is not used in many high-availability setups, when a
 	 * leader-election service (like ZooKeeper) is used to elect and discover the JobManager
 	 * leader from potentially multiple standby JobManagers.
+	 * 和ADDRESS类似, 只有存在一个具有静态名称/地址和端口的独立JobManager时(简单的独立配置, 或者具有动态域名解析的容器配置), 才会解释配置中的这个值。
+	 * 这个配置选项在HA模式下是不使用的, HA下, 一个leader选举服务(比如zk)被用来从潜在多个预备状态的JobManager中选举和发现主JobManager。
 	 */
 	public static final ConfigOption<Integer> PORT =
 		key("jobmanager.rpc.port")

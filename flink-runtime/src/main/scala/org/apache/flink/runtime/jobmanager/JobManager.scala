@@ -159,7 +159,10 @@ class JobManager(
 
   override val log = Logger(getClass)
 
-  /** Either running or not yet archived jobs (session hasn't been ended). */
+  /**
+    * Either running or not yet archived jobs (session hasn't been ended).
+    * 正在运行的, 还没有归档的(会话还没有结束的) job
+    */
   protected val currentJobs = scala.collection.mutable.HashMap[JobID, (ExecutionGraph, JobInfo)]()
 
   protected val haMode = HighAvailabilityMode.fromConfig(flinkConfiguration)
@@ -169,10 +172,16 @@ class JobManager(
   /** Futures which have to be completed before terminating the job manager */
   var futuresToComplete: Option[Seq[Future[Unit]]] = None
 
-  /** The default directory for savepoints. */
+  /**
+    * The default directory for savepoints.
+    * 保存点的默认路径
+    */
   val defaultSavepointDir: String = flinkConfiguration.getString(CoreOptions.SAVEPOINT_DIRECTORY)
 
-  /** The resource manager actor responsible for allocating and managing task manager resources. */
+  /**
+    * The resource manager actor responsible for allocating and managing task manager resources.
+    * 负责分配和管理TaskManager资源的ResourceManager
+    */
   var currentResourceManager: Option[ActorRef] = None
 
   var currentResourceManagerConnectionId: Long = 0
@@ -186,6 +195,9 @@ class JobManager(
   /**
    * Run when the job manager is started. Simply logs an informational message.
    * The method also starts the leader election service.
+    * 在JobManager启动的时候执行。
+    * 只是简单的打印信息。
+    * 该方法也会启动leader选举服务
    */
   override def preStart(): Unit = {
     log.info(s"Starting JobManager at $getAddress.")
@@ -1835,6 +1847,7 @@ class JobManager(
   }
 
   /** Handles error occurring in the leader election service
+    * 处理 leader 选举服务中发生的错误
     *
     * @param exception Exception being thrown in the leader election service
     */
@@ -1842,6 +1855,7 @@ class JobManager(
     log.error("Received an error from the LeaderElectionService.", exception)
 
     // terminate JobManager in case of an error
+    // 由于发生error, 终止JobManager
     self ! decorateMessage(PoisonPill)
   }
   
@@ -1923,7 +1937,7 @@ object JobManager {
     JvmShutdownSafeguard.installAsShutdownHook(LOG.logger)
 
     // parsing the command line arguments
-    /** 解析命令行参数 */
+    /** 解析命令行参数, 以及从配置文件中加载配置 */
     val (configuration: Configuration,
          executionMode: JobManagerMode,
          externalHostName: String,
@@ -1971,6 +1985,9 @@ object JobManager {
     // run the job manager
     SecurityUtils.install(new SecurityConfiguration(configuration))
 
+    /**
+      * 运行JobManager
+      */
     try {
       SecurityUtils.getInstalledContext.runSecured(new Callable[Unit] {
         override def call(): Unit = {
@@ -2040,6 +2057,7 @@ object JobManager {
       listeningAddress,
       listeningPort)
 
+    /** 构建HA服务 */
     val highAvailabilityServices = HighAvailabilityServicesUtils.createHighAvailabilityServices(
       configuration,
       ioExecutor,
@@ -2050,6 +2068,7 @@ object JobManager {
 
     metricRegistry.startQueryService(jobManagerSystem, null)
 
+    /** 启动JobManager的各组件actor */
     val (_, _, webMonitorOption, _) = try {
       startJobManagerActors(
         jobManagerSystem,
@@ -2123,6 +2142,9 @@ object JobManager {
       listeningPortRange: java.util.Iterator[Integer])
     : Unit = {
 
+    /**
+      * 找出有效的,可以绑定的端口
+      */
     val result = AkkaUtils.retryOnBindException({
       // Try all ports in the range until successful
       val socket = NetUtils.createSocketFromPorts(
@@ -2145,6 +2167,9 @@ object JobManager {
           }
         }
 
+      /**
+        * 端口校验后, 执行JobManager
+        */
       runJobManager(configuration, executionMode, listeningAddress, port)
     }, { !listeningPortRange.hasNext }, 5000)
 
@@ -2211,6 +2236,9 @@ object JobManager {
       resourceManagerClass: Option[Class[_ <: FlinkResourceManager[_]]])
     : (ActorRef, ActorRef, Option[WebMonitor], Option[ActorRef]) = {
 
+    /**
+      * 初始化web
+      */
     val webMonitor: Option[WebMonitor] =
       if (configuration.getInteger(WebOptions.PORT, 0) >= 0) {
         LOG.info("Starting JobManager web frontend")
@@ -2219,6 +2247,10 @@ object JobManager {
 
         // start the web frontend. we need to load this dynamically
         // because it is not in the same project/dependencies
+        /**
+          * 启动web前端
+          * 我们需要动态加载, 因为不在相同的project/依赖
+          */
         val webServer = WebMonitorUtils.startWebRuntimeMonitor(
           configuration,
           highAvailabilityServices,
@@ -2234,6 +2266,7 @@ object JobManager {
       }
 
     // Reset the port (necessary in case of automatic port selection)
+    // 重置端口 (在动态端口选择的场景下)
     webMonitor.foreach{ monitor => configuration.setInteger(
       WebOptions.PORT, monitor.getServerPort) }
 
@@ -2253,6 +2286,7 @@ object JobManager {
 
       // start a process reaper that watches the JobManager. If the JobManager actor dies,
       // the process reaper will kill the JVM process (to ensure easy failure detection)
+      // 进程收割机, 在发现 JobManager actor 死亡时, 关闭jvm
       LOG.debug("Starting JobManager process reaper")
       jobManagerSystem.actorOf(
         Props(
@@ -2279,6 +2313,7 @@ object JobManager {
           localTaskManagerCommunication = true,
           classOf[TaskManager])
 
+        // TaskManager actor 的进程收割机
         LOG.debug("Starting TaskManager process reaper")
         jobManagerSystem.actorOf(
           Props(
@@ -2333,6 +2368,14 @@ object JobManager {
    */
   def parseArgs(args: Array[String])
     : (Configuration, JobManagerMode, String, java.util.Iterator[Integer]) = {
+
+      /**
+        * 从入参解析配置
+        * --configDir
+        * --executionMode
+        * --host
+        * --webui-port
+        */
     val parser = new scopt.OptionParser[JobManagerCliOptions]("JobManager") {
       head("Flink JobManager")
 
@@ -2379,9 +2422,15 @@ object JobManager {
       throw new Exception("Missing parameter '--executionMode'")
     }
 
+    /**
+      * 从配置文件中加载配置
+      */
     LOG.info("Loading configuration from " + configDir)
     val configuration = GlobalConfiguration.loadConfiguration(configDir)
 
+    /**
+      * 初始化文件系统
+      */
     try {
       FileSystem.initialize(configuration)
     }
@@ -2404,6 +2453,7 @@ object JobManager {
 
     val portRange =
       // high availability mode
+      // HA模式
       if (ZooKeeperUtils.isZooKeeperRecoveryMode(configuration)) {
         LOG.info("Starting JobManager with high-availability")
 
