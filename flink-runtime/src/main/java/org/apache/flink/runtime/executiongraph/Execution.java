@@ -78,20 +78,31 @@ import static org.apache.flink.util.Preconditions.checkState;
  * A single execution of a vertex. While an {@link ExecutionVertex} can be executed multiple times
  * (for recovery, re-computation, re-configuration), this class tracks the state of a single execution
  * of that vertex and the resources.
+ * 一个 ExecutionVertex 的一次单独执行。
+ * 由于一个 ExecutionVertex 可以执行多次(为了恢复、重新计算、重新配置)，这个类跟踪这个vertex的一次单独执行的状态和资源。
  * 
  * <h2>Lock free state transitions</h2>
+ * 		锁自由状态转换
  * 
  * In several points of the code, we need to deal with possible concurrent state changes and actions.
  * For example, while the call to deploy a task (send it to the TaskManager) happens, the task gets cancelled.
+ * 在代码的多个点，我们需要处理可能的并发状态变化和动作。
+ * 比如，当调用了部署一个任务(向 TaskManager 发送)发生时，任务又被取消了。
  * 
  * <p>We could lock the entire portion of the code (decision to deploy, deploy, set state to running) such that
  * it is guaranteed that any "cancel command" will only pick up after deployment is done and that the "cancel
  * command" call will never overtake the deploying call.
+ * 我们可以锁住代码的完整部分(决定去部署、部署、设置状态为 running )，以此保障任何 "取消命令" 只会在部署完成后才会被执行，
+ * 以及 "取消命令" 不会在部署调用之前调用。
  * 
  * <p>This blocks the threads big time, because the remote calls may take long. Depending of their locking behavior, it
  * may even result in distributed deadlocks (unless carefully avoided). We therefore use atomic state updates and
  * occasional double-checking to ensure that the state after a completed call is as expected, and trigger correcting
  * actions if it is not. Many actions are also idempotent (like canceling).
+ * 这回将线程长时间阻塞，因为远程调用会很耗时。
+ * 依赖他们的锁行为，可能导致分布式死锁(除非小心避免)。
+ * 我们因此使用原子状态更新，以及双重校验来确保在一个完整调用后状态与期望是一样的，如果不是则触发正确的动作。
+ * 很多动作是幂等的(比如取消)
  */
 public class Execution implements AccessExecution, Archiveable<ArchivedExecution> {
 

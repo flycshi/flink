@@ -24,6 +24,19 @@ import org.apache.flink.annotation.PublicEvolving;
 
 /**
  * A statistically unique identification number.
+ * 一个统计学上的唯一标识数字
+ * 两个long类型的数值，分别是low和high，与一个长度为16的字节数组bytes相对应
+ * 字节数据的0-7对应于low
+ * 字节数组的8-15对应于high
+ * 假设low这个长整型从高到低的8个字节一次为 a b c d e f g h
+ * bytes[0] = a
+ * bytes[1] = b
+ * bytes[2] = c
+ * bytes[3] = d
+ * bytes[4] = e
+ * bytes[5] = f
+ * bytes[6] = g
+ * bytes[7] = h
  */
 @PublicEvolving
 public class AbstractID implements Comparable<AbstractID>, java.io.Serializable {
@@ -32,27 +45,43 @@ public class AbstractID implements Comparable<AbstractID>, java.io.Serializable 
 
 	private static final Random RND = new Random();
 
-	/** The size of a long in bytes */
+	/**
+	 * The size of a long in bytes
+	 * 长整型的字节大小
+	 */
 	private static final int SIZE_OF_LONG = 8;
 
-	/** The size of the ID in byte */
+	/**
+	 * The size of the ID in byte
+	 * ID 的字节大小
+	 */
 	public static final int SIZE = 2 * SIZE_OF_LONG;
 
 	// ------------------------------------------------------------------------
 
-	/** The upper part of the actual ID */
+	/**
+	 * The upper part of the actual ID
+	 * 真实 ID 的高位部分
+	 */
 	protected final long upperPart;
 
-	/** The lower part of the actual ID */
+	/**
+	 * The lower part of the actual ID
+	 * 真实 ID 的地位部分
+	 */
 	protected final long lowerPart;
 
-	/** The memoized value returned by toString() */
+	/**
+	 * The memoized value returned by toString()
+	 * toString() 方法返回的内存保存的值
+	 */
 	private String toString;
 
 	// --------------------------------------------------------------------------------------------
 	
 	/**
 	 * Constructs a new ID with a specific bytes value.
+	 * 由一个指定的字节数据构建的一个新的 ID
 	 */
 	public AbstractID(byte[] bytes) {
 		if (bytes == null || bytes.length != SIZE) {
@@ -177,6 +206,7 @@ public class AbstractID implements Comparable<AbstractID>, java.io.Serializable 
 
 	/**
 	 * Converts the given byte array to a long.
+	 * 将指定的字节数据转化为一个整型
 	 *
 	 * @param ba the byte array to be converted
 	 * @param offset the offset indicating at which byte inside the array the conversion shall begin
@@ -198,6 +228,15 @@ public class AbstractID implements Comparable<AbstractID>, java.io.Serializable 
 	 * @param l the long variable to be converted
 	 * @param ba the byte array to store the result the of the conversion
 	 * @param offset offset indicating at what position inside the byte array the result of the conversion shall be stored
+	 *
+	 * i = 0
+	 * 		shift = i << 3 = 0 << 3 = 0 * 2^3 = 0 = 00000000
+	 * 	    (l & (oxffL << shift)) >>> shift = (l & (11111111 << 0)) >>> 0 = (l & 11111111) >>> 0 = l & 11111111 = l 右数第一个字节上的值
+	 * 	    offset + SIZE_OF_LONG - 1 - i = offset + 7
+	 * i = 1
+	 * 		shift = i << 3 = 1 << 3 = 1 * 2^3 = 8 = 00001000
+	 * 	    (l & (oxffL << shift)) >>> shift = (l & (11111111 << 8)) >>> 8 = (l & 1111111100000000) >>> 8 = l 右数第二个字节上的值
+	 * 	    offset + SIZE_OF_LONG - 1 - i = offset + 6
 	 */
 	private static void longToByteArray(long l, byte[] ba, int offset) {
 		for (int i = 0; i < SIZE_OF_LONG; ++i) {

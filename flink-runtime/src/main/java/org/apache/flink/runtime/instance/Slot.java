@@ -39,50 +39,88 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * tasks to execute into. A slot corresponds to an AllocatedSlot (a slice of a TaskManager's resources),
  * plus additional fields to track what is currently executed in that slot, or if the slot is still
  * used or disposed (ExecutionGraph gave it back to the pool).
+ * 调度器/执行图 从 {@link SlotPool} 中获取并用来执行任务的槽位的基类。
+ * 一个槽位对应于一个 {@link AllocatedSlot} (一个 TaskManager 的资源的一个分片)，
+ * 再附加一些字段，用来跟踪当前槽位中执行的内容，或者槽位是否还在使用或者归还( ExecutionGraph 把它归还给了 pool)
  *
  * <p>In the simplest case, a slot holds a single task ({@link SimpleSlot}). In the more complex
  * case, a slot is shared ({@link SharedSlot}) and contains a set of tasks. Shared slots may contain
  * other shared slots which in turn can hold simple slots. That way, a shared slot may define a tree
  * of slots that belong to it.
+ * 在最简单的情况下，一个槽位拥有一个单独的任务{@link SimpleSlot}.
+ * 在更复杂的情况下，一个槽位时共享的{@link SharedSlot}，并且包含了一个任务集合。
+ * SharedSlot 可能包含了其他拥有 SimpleSlot 的SharedSlot。
+ * 也就是说，一个 SharedSlot 可能定义了一个 slot 的树
  */
 public abstract class Slot {
 
-	/** Updater for atomic state transitions */
+	/**
+	 * Updater for atomic state transitions
+	 * 用于原子状态转换
+	 */
 	private static final AtomicIntegerFieldUpdater<Slot> STATUS_UPDATER =
 			AtomicIntegerFieldUpdater.newUpdater(Slot.class, "status");
 
-	/** State where slot is fresh and alive. Tasks may be added to the slot. */
+	/**
+	 * State where slot is fresh and alive. Tasks may be added to the slot.
+	 * 状态 —— 槽位是新生的和活着的，tasks 可以添加到槽中。
+	 */
 	private static final int ALLOCATED_AND_ALIVE = 0;
 
-	/** State where the slot has been canceled and is in the process of being released */
+	/**
+	 * State where the slot has been canceled and is in the process of being released
+	 * 状态 —— 槽位已经被取消掉，并在释放的处理中。
+	 */
 	private static final int CANCELLED = 1;
 
-	/** State where all tasks in this slot have been canceled and the slot been given back to the instance */
+	/**
+	 * State where all tasks in this slot have been canceled and the slot been given back to the instance
+	 * 状态 —— 在这个槽中的所有任务已经被取消掉，槽位已经被规划给实例
+	 */
 	private static final int RELEASED = 2;
 
 	// temporary placeholder for Slots that are not constructed from an AllocatedSlot (prior to FLIP-6)
+	// 不是从一个 AllocatedSlot 中构建的 slot 的临时占位符
 	protected static final AllocationID NO_ALLOCATION_ID = new AllocationID(0, 0);
 
 	// ------------------------------------------------------------------------
 
-	/** The allocated slot that this slot represents. */
+	/**
+	 * The allocated slot that this slot represents.
+	 * 这个slot描述的分配的slot
+	 */
 	private final AllocatedSlot allocatedSlot;
 
-	/** The owner of this slot - the slot was taken from that owner and must be disposed to it */
+	/**
+	 * The owner of this slot - the slot was taken from that owner and must be disposed to it
+	 * 这个slot的所有者 - 这个slot从哪个owner获取，就必须归还给哪个。
+	 */
 	private final SlotOwner owner;
 
-	/** The parent of this slot in the hierarchy, or null, if this is the parent */
+	/**
+	 * The parent of this slot in the hierarchy, or null, if this is the parent
+	 * 这个slot的父亲，或者，如果本身就是parent，则该字段为null
+	 */
 	@Nullable
 	private final SharedSlot parent;
 
-	/** The id of the group that this slot is allocated to. May be null. */
+	/**
+	 * The id of the group that this slot is allocated to. May be null.
+	 * 这个slot分配给的组的id，可能为null
+	 */
 	@Nullable
 	private final AbstractID groupID;
 
-	/** The number of the slot on which the task is deployed */
+	/**
+	 * The number of the slot on which the task is deployed
+	 * task 部署的 slot 的数量
+	 */
 	private final int slotNumber;
 
-	/** The state of the vertex, only atomically updated */
+	/**
+	 * The state of the vertex, only atomically updated
+	 * 该节点的状态，只能原子更新
+	 */
 	private volatile int status = ALLOCATED_AND_ALIVE;
 
 	// --------------------------------------------------------------------------------------------

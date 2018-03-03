@@ -1300,6 +1300,7 @@ class JobManager(
         val numSlots = scheduler.getTotalNumberOfSlots()
 
         // see if there already exists an ExecutionGraph for the corresponding job ID
+        // 针对jobID，看是否已经存在 ExecutionGraph
         val registerNewGraph = currentJobs.get(jobGraph.getJobID) match {
           case Some((graph, currentJobInfo)) =>
             executionGraph = graph
@@ -1367,6 +1368,10 @@ class JobManager(
 
       // execute the recovery/writing the jobGraph into the SubmittedJobGraphStore asynchronously
       // because it is a blocking operation
+      /**
+        * 异步执行恢复/向 [[SubmittedJobGraphStore]] 写入 JobGraph
+        * 因为这个操作是阻塞的
+        */
       future {
         try {
           if (isRecovery) {
@@ -1415,10 +1420,18 @@ class JobManager(
             // There is a small chance that multiple job managers schedule the same job after if
             // they try to recover at the same time. This will eventually be noticed, but can not be
             // ruled out from the beginning.
+            /**
+              * 这里有一个很小的机会会出现如下情形，如果他们在相同时间恢复后，多个JobManager会调度相同的job。
+              * 这个最终是会被通知的，但是无法在最开始的时候被排除。
+              */
 
             // NOTE: Scheduling the job for execution is a separate action from the job submission.
             // The success of submitting the job must be independent from the success of scheduling
             // the job.
+            /**
+              * 注意：job提交与job调度执行时独立的动作。
+              * job提交成功和job调度成功必须是独立的
+              */
             log.info(s"Scheduling job $jobId ($jobName).")
 
             executionGraph.scheduleForExecution()

@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * Container class that transports the result of an accumulator as set of strings.
+ * 将一个累加器的结果转换为字符串的容器类
  */
 public class StringifiedAccumulatorResult implements java.io.Serializable{
 
@@ -57,6 +58,7 @@ public class StringifiedAccumulatorResult implements java.io.Serializable{
 
 	/**
 	 * Flatten a map of accumulator names to Accumulator instances into an array of StringifiedAccumulatorResult values.
+	 * 将累加器名称 -> 累加器实例 的映射，抚平成一个 StringifiedAccumulatorResult 的数组。
      */
 	public static StringifiedAccumulatorResult[] stringifyAccumulatorResults(Map<String, Accumulator<?, ?>> accs) {
 		if (accs == null || accs.isEmpty()) {
@@ -65,6 +67,9 @@ public class StringifiedAccumulatorResult implements java.io.Serializable{
 		else {
 			StringifiedAccumulatorResult[] results = new StringifiedAccumulatorResult[accs.size()];
 
+			/**
+			 * 依次遍历map，每对kv，构建一个 StringifiedAccumulatorResult 实例。
+			 */
 			int i = 0;
 			for (Map.Entry<String, Accumulator<?, ?>> entry : accs.entrySet()) {
 				StringifiedAccumulatorResult result;

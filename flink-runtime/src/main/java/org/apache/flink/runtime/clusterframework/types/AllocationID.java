@@ -23,9 +23,12 @@ import org.apache.flink.util.AbstractID;
 /**
  * Unique identifier for a slot allocated by a JobManager from a TaskManager.
  * Also identifies a pending allocation request, and is constant across retries.
+ * 由 JobManager 从 TaskManager 中分配的一个槽位的唯一标识。
+ * 当然也标识一个挂起的分配请求，并且在重试中保持不变。
  * 
  * <p>This ID is used for all synchronization of the status of Slots from TaskManagers
  * that are not free (i.e., have been allocated by a job).
+ * 此ID用于所有来着 TaskManager 的槽位的状态的同步
  */
 public class AllocationID extends AbstractID {
 

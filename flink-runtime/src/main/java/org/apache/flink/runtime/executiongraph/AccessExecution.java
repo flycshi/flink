@@ -23,10 +23,12 @@ import org.apache.flink.runtime.taskmanager.TaskManagerLocation;
 
 /**
  * Common interface for the runtime {@link Execution and {@link ArchivedExecution}.
+ * 运行时 Execution 和 ArchivedExecution 的公共接口
  */
 public interface AccessExecution {
 	/**
 	 * Returns the {@link ExecutionAttemptID} for this Execution.
+	 * 返回这个 Execution 的 ExecutionAttemptID
 	 *
 	 * @return ExecutionAttemptID for this execution
 	 */
@@ -34,6 +36,7 @@ public interface AccessExecution {
 
 	/**
 	 * Returns the attempt number for this execution.
+	 * 返回这个 Execution 的尝试次数
 	 *
 	 * @return attempt number for this execution.
 	 */
@@ -41,6 +44,7 @@ public interface AccessExecution {
 
 	/**
 	 * Returns the timestamps for every {@link ExecutionState}.
+	 * 返回每个 ExecutionState 的时间戳
 	 *
 	 * @return timestamps for each state
 	 */
@@ -48,6 +52,7 @@ public interface AccessExecution {
 
 	/**
 	 * Returns the current {@link ExecutionState} for this execution.
+	 * 返回该 Execution 的当前 ExecutionState
 	 *
 	 * @return execution state for this execution
 	 */
@@ -55,6 +60,7 @@ public interface AccessExecution {
 
 	/**
 	 * Returns the {@link TaskManagerLocation} for this execution.
+	 * 返回该 Execution 的 TaskManagerLocation
 	 *
 	 * @return taskmanager location for this execution.
 	 */
@@ -63,6 +69,8 @@ public interface AccessExecution {
 	/**
 	 * Returns the exception that caused the job to fail. This is the first root exception
 	 * that was not recoverable and triggered job failure.
+	 * 返回导致job失败的异常。
+	 * 这是第一个可恢复的根异常，触发job的失败
 	 *
 	 * @return failure exception as a string, or {@code "(null)"}
 	 */
@@ -70,6 +78,7 @@ public interface AccessExecution {
 
 	/**
 	 * Returns the timestamp for the given {@link ExecutionState}.
+	 * 返回指定 ExecutionState 的时间戳
 	 *
 	 * @param state state for which the timestamp should be returned
 	 * @return timestamp for the given state
@@ -78,6 +87,7 @@ public interface AccessExecution {
 
 	/**
 	 * Returns the user-defined accumulators as strings.
+	 * 返回用户自定义累加器的字符串
 	 *
 	 * @return user-defined accumulators as strings.
 	 */
@@ -85,6 +95,7 @@ public interface AccessExecution {
 
 	/**
 	 * Returns the subtask index of this execution.
+	 * 返回该 Execution 的子任务索引
 	 *
 	 * @return subtask index of this execution.
 	 */

@@ -36,7 +36,7 @@ public class ArchivedExecution implements AccessExecution, Serializable {
 
 	private final ExecutionState state;
 
-	private final String failureCause;          // once assigned, never changes
+	private final String failureCause;          // once assigned, never changes	一旦分配，不再改变
 
 	private final TaskManagerLocation assignedResourceLocation; // for the archived execution
 

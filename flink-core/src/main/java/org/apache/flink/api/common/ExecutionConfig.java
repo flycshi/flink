@@ -401,6 +401,7 @@ public class ExecutionConfig implements Serializable, Archiveable<ArchivedExecut
 
 	/**
 	 * Returns the restart strategy which has been set for the current job.
+	 * 返回针对当前job设置的重启策略
 	 *
 	 * @return The specified restart configuration
 	 */

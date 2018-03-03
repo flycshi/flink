@@ -108,36 +108,59 @@ import static org.apache.flink.util.Preconditions.checkState;
  * The execution graph is the central data structure that coordinates the distributed
  * execution of a data flow. It keeps representations of each parallel task, each
  * intermediate stream, and the communication between them.
+ * ExecutionGraph 是协调一个数据流的分布式执行的主要数据结构。
+ * 它保存了每一个并行任务、每一个中间流、以及它们之前的交互的描述。
  *
  * <p>The execution graph consists of the following constructs:
+ * ExecutionGraph 包含了如下结构：
  * <ul>
  *     <li>The {@link ExecutionJobVertex} represents one vertex from the JobGraph (usually one operation like
  *         "map" or "join") during execution. It holds the aggregated state of all parallel subtasks.
  *         The ExecutionJobVertex is identified inside the graph by the {@link JobVertexID}, which it takes
  *         from the JobGraph's corresponding JobVertex.</li>
+ *         ExecutionJobVertex 描述了 JobGraph 在执行中的一个节点（一般就是一个操作，比如 map 或者 join）。
+ *         它维护了所有并行子任务的聚合状态。
+ *         ExecutionJobVertex 在 graph 中通过 JobVertexID 来标识，而 JobVertexID 是从 JobGraph 的 JobVertex 中获取的。
+ *
  *     <li>The {@link ExecutionVertex} represents one parallel subtask. For each ExecutionJobVertex, there are
  *         as many ExecutionVertices as the parallelism. The ExecutionVertex is identified by
  *         the ExecutionJobVertex and the number of the parallel subtask</li>
+ *         ExecutionVertex 描述了一个并行的子任务。
+ *         对于每个 ExecutionJobVertex ，具有与并行度一样数量的 ExecutionVertex。
+ *         ExecutionVertex 通过 ExecutionJobVertex 和并行子任务的数量来标识。
+ *
  *     <li>The {@link Execution} is one attempt to execute a ExecutionVertex. There may be multiple Executions
  *         for the ExecutionVertex, in case of a failure, or in the case where some data needs to be recomputed
  *         because it is no longer available when requested by later operations. An Execution is always
  *         identified by an {@link ExecutionAttemptID}. All messages between the JobManager and the TaskManager
  *         about deployment of tasks and updates in the task status always use the ExecutionAttemptID to
  *         address the message receiver.</li>
+ *         Execution 是执行 ExecutionVertex 的一次尝试。
+ *         在失败的场景下，或者由于在后续操作请求时，其数据已经不可用，需要重新计算某些数据的场景下，可能会有多个 Executions。
+ *         一个 Execution 总是被一个 ExecutionAttemptID 标识。
+ *         所有在 JobManager 和 TaskManager 之间关于任务部署和任务状态更新的消息总是采用 ExecutionAttemptID 去通信。
  * </ul>
  *
  * <h2>Global and local failover</h2>
+ * 		全局和本地故障容灾
  *
  * The Execution Graph has two failover modes: <i>global failover</i> and <i>local failover</i>.
+ * ExecutionGraph 有两个容灾模式：全局容灾、本地容灾
  *
  * <p>A <b>global failover</b> aborts the task executions for all vertices and restarts whole
  * data flow graph from the last completed checkpoint. Global failover is considered the
  * "fallback strategy" that is used when a local failover is unsuccessful, or when a issue is
  * found in the state of the ExecutionGraph that could mark it as inconsistent (caused by a bug).
+ * 全局容灾 会终止所有节点的任务执行，然后从上次完成的检查点重启整个数据流图。
+ * 全局容灾 被认为是后备策略，在如下情景下使用，当一个 本地容灾 无法成功时，
+ * 或者当在 ExecutionGraph 的状态中发现一个可以被标记为不一致(由一个bug引起的)的问题时。
  *
  * <p>A <b>local failover</b> is triggered when an individual vertex execution (a task) fails.
  * The local failover is coordinated by the {@link FailoverStrategy}. A local failover typically
  * attempts to restart as little as possible, but as much as necessary.
+ * 本地容灾 在个别的节点执行(一个任务)失败时，会被触发。
+ * 本地容灾 由 FailoverStrategy 来决定。
+ * 一个 本地容灾 一般尝试尽量少的重启操作，但是按需要尽可能多的重启。
  *
  * <p>Between local- and global failover, the global failover always takes precedence, because it
  * is the core mechanism that the ExecutionGraph relies on to bring back consistency. The
@@ -147,6 +170,10 @@ import static org.apache.flink.util.Preconditions.checkState;
  * had when the failover was triggered. If a new global modification version is reached during
  * local failover (meaning there is a concurrent global failover), the failover strategy has to
  * yield before the global failover.
+ * 在本地容灾和全局容灾之间，全局容灾总是优先的，因为它是能够让 ExecutionGraph 保持一致的核心机制。
+ * ExecutionGraph 会维护一个<i>全局修改版本</i>，其值在么次全局容灾(还有其他全局动作，比如job取消，或者终止失败)时自增。
+ * 本地容灾 的作用域由容灾触发时 ExecutionGraph 的修改版本的值来决定。
+ * 如果在本地容灾期间，一个新的全局修改版本出现(意味着同时又一个全局容灾)，容灾策略必须在全局容灾之前进行。
  */
 public class ExecutionGraph implements AccessExecutionGraph, Archiveable<ArchivedExecutionGraph> {
 
@@ -1281,6 +1308,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 
 	private boolean transitionState(JobStatus current, JobStatus newState, Throwable error) {
 		// consistency check
+		// 一致性检查
 		if (current.isTerminalState()) {
 			String message = "Job is trying to leave terminal state " + current;
 			LOG.error(message);

@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 /**
  * An instance of this class represents a snapshot of the io-related metrics of a single task.
+ * 该类的一个实例描述一个独立task的io相关的度量的快照。
  */
 public class IOMetrics implements Serializable {
 

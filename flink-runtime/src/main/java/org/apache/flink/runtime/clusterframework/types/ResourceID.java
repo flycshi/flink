@@ -40,6 +40,8 @@ public final class ResourceID implements ResourceIDRetrievable, Serializable {
 
 	/**
 	 * Gets the Resource Id as string
+	 * 获取 ResourceID 的字符串
+	 *
 	 * @return Stringified version of the ResourceID
 	 */
 	public final String getResourceIdString() {
@@ -69,6 +71,8 @@ public final class ResourceID implements ResourceIDRetrievable, Serializable {
 
 	/**
 	 * A ResourceID can always retrieve a ResourceID.
+	 * 一个 ResourceID 总是可以提取一个 ResourceID
+	 *
 	 * @return This instance.
 	 */
 	@Override

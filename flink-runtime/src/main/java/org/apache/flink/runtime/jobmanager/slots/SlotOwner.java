@@ -22,6 +22,7 @@ import org.apache.flink.runtime.instance.Slot;
 
 /**
  * Interface for components that hold slots and to which slots get released / recycled.
+ * 维护slots，并对slot进行释放和重用的组件的接口
  */
 public interface SlotOwner {
 

@@ -75,6 +75,7 @@ public class FlinkUserCodeClassLoaders {
 
 	/**
 	 * Regular URLClassLoader that first loads from the parent and only after that form the URLs.
+	 * 常规的 URLClassLoader，首先从父类加载器加载，然后才从urls加载
 	 */
 	static class ParentFirstClassLoader extends URLClassLoader {
 
@@ -89,6 +90,7 @@ public class FlinkUserCodeClassLoaders {
 
 	/**
 	 * A variant of the URLClassLoader that first loads from the URLs and only after that from the parent.
+	 * URLClassLoader 的一个变种， 先从urls加载，然后从父类加载器加载
 	 *
 	 * <p>{@link #getResourceAsStream(String)} uses {@link #getResource(String)} internally so we
 	 * don't override that.
@@ -99,6 +101,8 @@ public class FlinkUserCodeClassLoaders {
 		 * The classes that should always go through the parent ClassLoader. This is relevant
 		 * for Flink classes, for example, to avoid loading Flink classes that cross the
 		 * user-code/system-code barrier in the user-code ClassLoader.
+		 * 应该总是从父类加载器加载的类。
+		 * 对于flink类来说是需要的，比如，禁止在用户类加载器中，从用户代码中加载flink的类
 		 */
 		private final String[] alwaysParentFirstPatterns;
 
