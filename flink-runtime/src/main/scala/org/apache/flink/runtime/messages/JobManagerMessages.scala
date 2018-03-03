@@ -58,12 +58,19 @@ object JobManagerMessages {
    * [[ListeningBehaviour.EXECUTION_RESULT]], then it will additionally receive the execution
    * result. If [[ListeningBehaviour.EXECUTION_RESULT_AND_STATE_CHANGES]], then it will additionally
    * receive the job status change notifications.
+    * 向JobManager提交一个job。
+    * 依赖监听模式的设置，发送者为不同的消息注册监听。
+    * 如果是 [[ListeningBehaviour.DETACHED]] ， 那发送者只会被通知job提交成功或者失败。
+    * 如果是 [[ListeningBehaviour.EXECUTION_RESULT]] ， 还会被通知执行结果。
+    * 如果是 [[ListeningBehaviour.EXECUTION_RESULT_AND_STATE_CHANGES]] ， 还会再附加通知job的状态变化。
    *
    * The submission result will be sent back to the sender as a success message.
+    * 提交结果会被作为一个成功的消息发送回给发送者
    *
-   * @param jobGraph The job to be submitted to the JobManager
+   * @param jobGraph The job to be submitted to the JobManager  将提交给JobManager的job
    * @param listeningBehaviour Specifies to what the sender wants to listen (detached, execution
    *                           result, execution result and state changes)
+    *                           指定发送者想要监听的内容
    */
   case class SubmitJob(
       jobGraph: JobGraph,
@@ -270,6 +277,7 @@ object JobManagerMessages {
 
   /**
     * Denotes messages which contain the result of a completed job execution
+    * 标识了包含已经执行完成的job的结果的消息
     */
   sealed trait JobResultMessage
 

@@ -26,16 +26,20 @@ import java.io.IOException;
 
 /**
  * A service to retrieve permanent binary large objects (BLOBs).
+ * 一个用来提取持久化二进制大对象的服务。
  *
  * <p>These may include per-job BLOBs that are covered by high-availability (HA) mode, e.g. a job's
  * JAR files or (parts of) an off-loaded {@link org.apache.flink.runtime.deployment.TaskDeploymentDescriptor}
  * or files in the {@link org.apache.flink.api.common.cache.DistributedCache}.
+ * 这里可能包含了每个job的被HA模式覆盖的BLOBs，比如job的jar文件，或者(部分的)离线加载的TaskDeploymentDescriptor，
+ * 或者是 DistributedCache 中的文件。
  */
 public interface PermanentBlobService extends Closeable {
 
 	/**
 	 * Returns the path to a local copy of the file associated with the provided job ID and blob
 	 * key.
+	 * 返回与提供的JobID和blob key关联的文件的一个本地copy的路径
 	 *
 	 * @param jobId
 	 * 		ID of the job this blob belongs to

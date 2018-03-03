@@ -1232,13 +1232,18 @@ class JobManager(
    * Submits a job to the job manager. The job is registered at the libraryCacheManager which
    * creates the job's class loader. The job graph is appended to the corresponding execution
    * graph and the execution vertices are queued for scheduling.
+    * 向JobManager提交一个job。
+    * job会被注册在创建job的类加载器的libraryCacheManager中。
+    * job graph 被追加到相关的 execution graph 中， execution vertices 被加入到队列中等待调度执行。
    *
-   * @param jobGraph representing the Flink job
+   * @param jobGraph representing the Flink job 描述 flink job
    * @param jobInfo the job info
    * @param isRecovery Flag indicating whether this is a recovery or initial submission
+    *                   标识这是一个恢复任务还是一个初始化任务
    */
   private def submitJob(jobGraph: JobGraph, jobInfo: JobInfo, isRecovery: Boolean = false): Unit = {
     if (jobGraph == null) {
+      /** 如果为null，则直接给客户端发送一个jobgraph不能为null的执行失败的结果消息 */
       jobInfo.notifyClients(
         decorateMessage(JobResultFailure(
           new SerializedThrowable(
@@ -1255,6 +1260,9 @@ class JobManager(
         // Important: We need to make sure that the library registration is the first action,
         // because this makes sure that the uploaded jar files are removed in case of
         // unsuccessful
+        /**
+          * 重要：我们需要确保类库注册时第一步操作，因为这可以确保在不成功的情况下，可以清除上传的jar包
+          */
         try {
           libraryCacheManager.registerJob(
             jobGraph.getJobID, jobGraph.getUserJarBlobKeys, jobGraph.getClasspaths)

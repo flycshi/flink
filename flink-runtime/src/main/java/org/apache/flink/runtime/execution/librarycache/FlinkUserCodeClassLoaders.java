@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * Gives the URLClassLoader a nicer name for debugging purposes.
+ * 出于debug目的，给 URLClassLoader 指定一个nice的名称
  */
 public class FlinkUserCodeClassLoaders {
 

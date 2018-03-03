@@ -21,9 +21,13 @@ package org.apache.flink.runtime.akka;
 /**
  * Defines the listening behaviour of the JobClientActor and thus the messages
  * which are sent from the JobManger to the JobClientActor.
+ * 定义了 JobClientActor 以及 JobManager 发送给 JobClientActor 的消息的监听行为。
  */
 public enum ListeningBehaviour {
 	DETACHED, // only receive the Acknowledge message about the job submission message
+			  // 只接收job提交的消息的ack消息
 	EXECUTION_RESULT, // receive additionally the SerializedJobExecutionResult
+					  // 还接收序列化的job执行结果
 	EXECUTION_RESULT_AND_STATE_CHANGES // receive additionally the JobStatusChanged messages
+									  // 还接收job状态变化的消息
 }

@@ -46,6 +46,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * Provides facilities to download a set of libraries (typically JAR files) for a job from a
  * {@link PermanentBlobService} and create a class loader with references to them.
+ * 为一个job提供工具从一个 PermanentBlobService 服务下载类库集合（一般就是jar包）， 并创建一个与之关联的类加载器。
  */
 public class BlobLibraryCacheManager implements LibraryCacheManager {
 
@@ -58,7 +59,10 @@ public class BlobLibraryCacheManager implements LibraryCacheManager {
 	/** The global lock to synchronize operations */
 	private final Object lockObject = new Object();
 
-	/** Registered entries per job */
+	/**
+	 * Registered entries per job
+	 * 每个job已经注册的实体
+	 */
 	private final Map<JobID, LibraryCacheEntry> cacheEntries = new HashMap<>();
 
 	/** The blob service to download libraries */
@@ -216,6 +220,9 @@ public class BlobLibraryCacheManager implements LibraryCacheManager {
 	 * An entry in the per-job library cache. Tracks which execution attempts
 	 * still reference the libraries. Once none reference it any more, the
 	 * class loaders can be cleaned up.
+	 * job类库缓存中的一个实体。
+	 * 跟踪那些执行尝试仍然引用的类库。
+	 * 一旦不再引用，类加载器就可以被清理。
 	 */
 	private static class LibraryCacheEntry {
 
@@ -224,9 +231,11 @@ public class BlobLibraryCacheManager implements LibraryCacheManager {
 		private final Set<ExecutionAttemptID> referenceHolders;
 		/**
 		 * Set of BLOB keys used for a previous job/task registration.
+		 * 前一个 job/task 注册用的 blob key 的集合
 		 *
 		 * <p>The purpose of this is to make sure, future registrations do not differ in content as
 		 * this is a contract of the {@link BlobLibraryCacheManager}.
+		 * 这个目的是为确保，未来的注册与这个在内容上是不同的，是 BlobLibraryCacheManager 的协议。
 		 */
 		private final Set<PermanentBlobKey> libraries;
 
@@ -240,6 +249,7 @@ public class BlobLibraryCacheManager implements LibraryCacheManager {
 
 		/**
 		 * Creates a cache entry for a flink class loader with the given <tt>libraryURLs</tt>.
+		 * 创建一个缓存实例
 		 *
 		 * @param requiredLibraries
 		 * 		BLOB keys required by the class loader (stored for ensuring consistency among different
@@ -254,8 +264,10 @@ public class BlobLibraryCacheManager implements LibraryCacheManager {
 		 * 		reference holder ID
 		 * @param classLoaderResolveOrder Whether to resolve classes first in the child ClassLoader
 		 * 		or parent ClassLoader
+		 * 	                              解析类是先从子类加载器还是父类加载器
 		 * @param alwaysParentFirstPatterns A list of patterns for classes that should always be
 		 * 		resolved from the parent ClassLoader (if possible).
+		 * 	                                一个类的模式集合，这些类应该总是先从父类加载器进行解析(如果可能的话)
 		 */
 		LibraryCacheEntry(
 				Collection<PermanentBlobKey> requiredLibraries,
