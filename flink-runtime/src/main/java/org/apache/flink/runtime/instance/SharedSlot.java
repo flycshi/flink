@@ -52,10 +52,16 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  */
 public class SharedSlot extends Slot {
 
-	/** The assignment group os shared slots that manages the availability and release of the slots */
+	/**
+	 * The assignment group os shared slots that manages the availability and release of the slots
+	 * 分配组os共享槽位，管理slots的有效性和释放
+	 */
 	private final SlotSharingGroupAssignment assignmentGroup;
 
-	/** The set os sub-slots allocated from this shared slot */
+	/**
+	 * The set os sub-slots allocated from this shared slot
+	 * 从 SharedSlot 中分配出来的 子槽位 集合
+	 */
 	private final Set<Slot> subSlots;
 
 	// ------------------------------------------------------------------------
@@ -177,6 +183,7 @@ public class SharedSlot extends Slot {
 
 	/**
 	 * Checks whether this slot is a root slot that has not yet added any child slots.
+	 * 检查这个slot是否是一个根slot，并且没有添加任何子slot
 	 * 
 	 * @return True, if this slot is a root slot and has not yet added any children, false otherwise.
 	 */

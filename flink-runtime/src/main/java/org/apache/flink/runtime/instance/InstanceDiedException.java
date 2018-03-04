@@ -21,6 +21,7 @@ package org.apache.flink.runtime.instance;
 /**
  * A special instance signaling that an attempted operation on an instance is not possible,
  * because the instance has died.
+ * 一个特定的实例，表示在一个instance上尝试一个操作是不可能的，因为instance已经died
  */
 public class InstanceDiedException extends Exception {
 	private static final long serialVersionUID = -4917918318403135745L;

@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The SlotSharingGroupAssignment manages a set of shared slots, which are shared between
  * tasks of a {@link org.apache.flink.runtime.jobmanager.scheduler.SlotSharingGroup}.
+ * SlotSharingGroupAssignment 管理着一个 SharedSlot 集合，其在一个 SlotSharingGroup 的任务之间共享
  * 
  * <p>The assignments shares tasks by allowing a shared slot to hold one vertex per
  * JobVertexID. For example, consider a program consisting of job vertices "source", "map",
@@ -92,7 +93,10 @@ public class SlotSharingGroupAssignment {
 	/** The lock globally guards against concurrent modifications in the data structures */
 	private final Object lock = new Object();
 	
-	/** All slots currently allocated to this sharing group */
+	/**
+	 * All slots currently allocated to this sharing group
+	 * 当前已经分配给共享组的所有slots
+	 */
 	private final Set<SharedSlot> allSlots = new LinkedHashSet<SharedSlot>();
 
 	/** The slots available per vertex type (JobVertexId), keyed by TaskManager, to make them locatable */
@@ -107,6 +111,7 @@ public class SlotSharingGroupAssignment {
 	 * Gets the number of slots that are currently governed by this assignment group.
 	 * This refers to the slots allocated from an {@link org.apache.flink.runtime.instance.Instance},
 	 * and not the sub-slots given out as children of those shared slots.
+	 * 获取这个分配组当前管理的slots的数量
 	 * 
 	 * @return The number of resource slots managed by this assignment group.
 	 */

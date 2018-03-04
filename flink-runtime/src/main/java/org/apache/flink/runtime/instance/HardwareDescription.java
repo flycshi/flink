@@ -24,21 +24,34 @@ import java.io.Serializable;
 
 /**
  * A hardware description describes the resources available to a task manager.
+ * 一个TaskManager的有效资源的硬件描述
  */
 public final class HardwareDescription implements Serializable {
 
 	private static final long serialVersionUID = 3380016608300325361L;
 
-	/** The number of CPU cores available to the JVM on the compute node. */
+	/**
+	 * The number of CPU cores available to the JVM on the compute node.
+	 * 在计算节点上，JVM可使用的CPU核数
+	 */
 	private final int numberOfCPUCores;
 
-	/** The size of physical memory in bytes available on the compute node. */
+	/**
+	 * The size of physical memory in bytes available on the compute node.
+	 * 在计算节点上有效的物理内存字节大小
+	 */
 	private final long sizeOfPhysicalMemory;
 
-	/** The size of the JVM heap memory */
+	/**
+	 * The size of the JVM heap memory
+	 * jvm的堆内存大小
+	 */
 	private final long sizeOfJvmHeap;
 
-	/** The size of the memory managed by the system for caching, hashing, sorting, ... */
+	/**
+	 * The size of the memory managed by the system for caching, hashing, sorting, ...
+	 * 被系统管理用来缓存、hash、存储的内存大小
+	 */
 	private final long sizeOfManagedMemory;
 
 	/**

@@ -23,6 +23,7 @@ import org.apache.flink.runtime.instance.Instance;
 /**
  * A SlotAvailabilityListener can be notified when new
  * {@link org.apache.flink.runtime.instance.Slot}s become available on an {@link Instance}.
+ * 当在一个 {@link Instance} 上，有一个 {@link org.apache.flink.runtime.instance.Slot} 变成有效时，可以通过该接口获得通知
  */
 public interface SlotAvailabilityListener {
 

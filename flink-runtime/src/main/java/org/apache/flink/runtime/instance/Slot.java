@@ -113,7 +113,7 @@ public abstract class Slot {
 
 	/**
 	 * The number of the slot on which the task is deployed
-	 * task 部署的 slot 的数量
+	 * task 部署的 slot 的 第几个
 	 */
 	private final int slotNumber;
 

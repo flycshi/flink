@@ -24,6 +24,7 @@ import javax.xml.bind.DatatypeConverter;
 
 /**
  * A class for statistically unique job vertex IDs.
+ * 统计学唯一job节点id的一个类
  */
 public class JobVertexID extends AbstractID {
 	
