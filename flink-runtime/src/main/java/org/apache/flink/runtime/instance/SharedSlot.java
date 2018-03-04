@@ -38,11 +38,17 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * schedule multiple tasks simultaneously to the same resource. Sharing a resource with multiple
  * tasks is crucial for simple pipelined / streamed execution, where both the sender and the receiver
  * are typically active at the same time.
+ * 该类描述了一个共享槽位。
+ * 一个共享槽位可以有多个{@link SimpleSlot}实例。
+ * 这就允许在相同的资源上同时调度多个tasks。
+ * 在多个tasks上共享一个资源对于简单的 pipelined/streamed Execution是很重要的，这里发送者和接收者在同一时间都是活跃的。
  *
  * <p><b>IMPORTANT:</b> This class contains no synchronization. Thus, the caller has to guarantee proper
  * synchronization. In the current implementation, all concurrently modifying operations are
  * passed through a {@link SlotSharingGroupAssignment} object which is responsible for
  * synchronization.
+ * 重要：这个类没有同步。也就是调用者需要保障同步。
+ * 在当前实现中，所有的并发修改操作都是传入一个负责同步的 SlotSharingGroupAssignment 对象。
  */
 public class SharedSlot extends Slot {
 

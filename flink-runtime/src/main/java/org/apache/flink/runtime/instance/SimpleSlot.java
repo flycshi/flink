@@ -243,7 +243,7 @@ public class SimpleSlot extends Slot {
 			 */
 			if (getParent() == null) {
 				// we have to give back the slot to the owning instance
-				// 我们必须归还
+				// 我们必须把slot归还给所有者
 				if (markCancelled()) {
 					getOwner().returnAllocatedSlot(this);
 				}
