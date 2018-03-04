@@ -357,10 +357,16 @@ public class Instance implements SlotOwner {
 		checkArgument(!slot.isAlive(), "slot is still alive");
 		checkArgument(slot.getOwner() == this, "slot belongs to the wrong TaskManager.");
 
+		/**
+		 * 这里有两个地方会返回false，但是无法区分出是什么原因导致的返回false，是否有区分的必要？
+		 */
 		if (slot.markReleased()) {
 			LOG.debug("Return allocated slot {}.", slot);
 			synchronized (instanceLock) {
 				if (isDead) {
+					/**
+					 * 这里返回false，是由于当前 TaskManager 实例，已经处于非活跃状态
+					 */
 					return false;
 				}
 
@@ -379,6 +385,9 @@ public class Instance implements SlotOwner {
 			}
 		}
 		else {
+			/**
+			 * 这里返回false，并不是有异常，而是slot的状态以及是"release"状态
+			 */
 			return false;
 		}
 	}
