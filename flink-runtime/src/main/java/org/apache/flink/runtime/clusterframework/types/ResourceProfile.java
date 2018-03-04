@@ -25,11 +25,16 @@ import java.io.Serializable;
  * Describe the resource profile of the slot, either when requiring or offering it. The profile can be
  * checked whether it can match another profile's requirement, and furthermore we may calculate a matching
  * score to decide which profile we should choose when we have lots of candidate slots.
+ * 当需要或者提供时，用来描述slot的资源配置。
+ * 可以坚持配置是否与另一个要求的配置相匹配，而且当我们有多个候选slots的时候，可以计算一个匹配值来决定选用哪个slot。
  * 
  * <p>Resource Profiles have a total ordering, defined by comparing these fields in sequence:
+ * 		资源配置有一个总的排序，通过顺序比较以下字段来定义：
  * <ol>
  *     <li>Memory Size</li>
+ *     		内存大小
  *     <li>CPU cores</li>
+ *     		cpu核数
  * </ol>
  */
 public class ResourceProfile implements Serializable, Comparable<ResourceProfile> {
@@ -40,16 +45,28 @@ public class ResourceProfile implements Serializable, Comparable<ResourceProfile
 
 	// ------------------------------------------------------------------------
 
-	/** How many cpu cores are needed, use double so we can specify cpu like 0.1 */
+	/**
+	 * How many cpu cores are needed, use double so we can specify cpu like 0.1
+	 * 需要的cpu核数，使用double，这样我可以指定如0.1
+	 */
 	private final double cpuCores;
 
-	/** How many heap memory in mb are needed */
+	/**
+	 * How many heap memory in mb are needed
+	 * 需要的堆内存，单位为 MB
+	 */
 	private final int heapMemoryInMB;
 
-	/** How many direct memory in mb are needed */
+	/**
+	 * How many direct memory in mb are needed
+	 * 需要的直接内存大小，单位为 MB
+	 */
 	private final int directMemoryInMB;
 
-	/** How many native memory in mb are needed */
+	/**
+	 * How many native memory in mb are needed
+	 * 需要的本地内存，单位为 MB
+	 */
 	private final int nativeMemoryInMB;
 
 	// ------------------------------------------------------------------------
@@ -142,6 +159,8 @@ public class ResourceProfile implements Serializable, Comparable<ResourceProfile
 
 	/**
 	 * Check whether required resource profile can be matched
+	 * 坚持要求的资源配置是否可以匹配
+	 * 其实就是看当前资源配置的cpu核数和内存大小是否都不小于要求的配置
 	 *
 	 * @param required the required resource profile
 	 * @return true if the requirement is matched, otherwise false

@@ -33,22 +33,35 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 /**
  * A SimpleSlot represents a single slot on a TaskManager instance, or a slot within a shared slot.
+ * 表示一个 TaskManager 实例上的一个单独的 slot ，或是拥有一个 SharedSlot 的 slot。
  *
  * <p>If this slot is part of a {@link SharedSlot}, then the parent attribute will point to that shared slot.
  * If not, then the parent attribute is null.
+ * 如果这个slot是一个 SharedSlot 的部分，那 parent 属性将指向那个 SharedSlot。
+ * 如果不是，那么 parent 属性为null。
  */
 public class SimpleSlot extends Slot {
 
-	/** The updater used to atomically swap in the execution */
+	/**
+	 * The updater used to atomically swap in the execution
+	 * 用来在 Execution 中进行原子交换的更新器
+	 */
 	private static final AtomicReferenceFieldUpdater<SimpleSlot, Execution> VERTEX_UPDATER =
 			AtomicReferenceFieldUpdater.newUpdater(SimpleSlot.class, Execution.class, "executedTask");
 
 	// ------------------------------------------------------------------------
 
-	/** Task being executed in the slot. Volatile to force a memory barrier and allow for correct double-checking */
+	/**
+	 * Task being executed in the slot. Volatile to force a memory barrier and allow for correct double-checking
+	 * 在slot中执行的task。
+	 * Volatile 用来强制一个内存栅栏，允许正确的双重校验。
+	 */
 	private volatile Execution executedTask;
 
-	/** The locality attached to the slot, defining whether the slot was allocated at the desired location. */
+	/**
+	 * The locality attached to the slot, defining whether the slot was allocated at the desired location.
+	 * 附加在slot上的地点配置，定义了slot是否被分配到要求的地点
+	 */
 	private volatile Locality locality = Locality.UNCONSTRAINED;
 
 	// ------------------------------------------------------------------------
@@ -159,6 +172,7 @@ public class SimpleSlot extends Slot {
 
 	/**
 	 * Atomically sets the executed vertex, if no vertex has been assigned to this slot so far.
+	 * 如果目前为止还没有被分配过 Execution， 则原子设置 Execution，
 	 *
 	 * @param executedVertex The vertex to assign to this slot.
 	 * @return True, if the vertex was assigned, false, otherwise.
@@ -169,16 +183,19 @@ public class SimpleSlot extends Slot {
 		}
 
 		// check that we can actually run in this slot
+		// 检查是否可以在这个slot中运行task
 		if (isCanceled()) {
 			return false;
 		}
 
 		// atomically assign the vertex
+		// 原子指定 Execution
 		if (!VERTEX_UPDATER.compareAndSet(this, null, executedVertex)) {
 			return false;
 		}
 
 		// we need to do a double check that we were not cancelled in the meantime
+		// 我们需要双重校验，我们没有在同时取消slot
 		if (isCanceled()) {
 			this.executedTask = null;
 			return false;
@@ -212,6 +229,7 @@ public class SimpleSlot extends Slot {
 		if (!isCanceled()) {
 
 			// kill all tasks currently running in this slot
+			// 杀掉slot中当前运行的所有task
 			Execution exec = this.executedTask;
 			if (exec != null && !exec.isFinished()) {
 				exec.fail(new Exception("TaskManager was lost/killed: " + getTaskManagerLocation()));
@@ -219,13 +237,19 @@ public class SimpleSlot extends Slot {
 
 			// release directly (if we are directly allocated),
 			// otherwise release through the parent shared slot
+			/**
+			 * 直接释放(如果我们是直接分配的)
+			 * 否则通过父SharedSlot释放
+			 */
 			if (getParent() == null) {
 				// we have to give back the slot to the owning instance
+				// 我们必须归还
 				if (markCancelled()) {
 					getOwner().returnAllocatedSlot(this);
 				}
 			} else {
 				// we have to ask our parent to dispose us
+				// 请求父亲去释放
 				getParent().releaseChild(this);
 			}
 		}

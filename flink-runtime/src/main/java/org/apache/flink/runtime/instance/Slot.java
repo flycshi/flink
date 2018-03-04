@@ -261,6 +261,9 @@ public abstract class Slot {
 	 * Gets the number of the root slot. This code behaves equal to {@code getRoot().getSlotNumber()}.
 	 * If this slot is the root of the tree of shared slots, then this method returns the same
 	 * value as {@link #getSlotNumber()}.
+	 * 获取根slot的数量。
+	 * 这段代码的行为等价于 {@code getRoot().getSlotNumber()}
+	 * 如果这个slot是共享slot的树的根，那这个方法返回的值就等于 {@link #getSlotNumber()}
 	 *
 	 * @return The slot number of the root slot.
 	 */
@@ -338,6 +341,8 @@ public abstract class Slot {
 
 	/**
 	 * Checks of the slot has been cancelled. Note that a released slot is also cancelled.
+	 * 检查slot是否被取消了。
+	 * 注意的是一个 RELEASED slot 也是取消状态
 	 *
 	 * @return True if the slot is cancelled or released, false otherwise.
 	 */
@@ -374,12 +379,16 @@ public abstract class Slot {
 
 	/**
 	 * This method cancels and releases the slot and all its sub-slots.
+	 * 这个方法取消和释放该slot，以及其子slots
 	 * 
 	 * After this method completed successfully, the slot will be in state "released", and the
 	 * {@link #isReleased()} method will return {@code true}.
+	 * 在该方法成功完成后，slot将处于"RELEASED"状态，并且{@link #isReleased()}将返回true
 	 * 
 	 * If this slot is a simple slot, it will be returned to its instance. If it is a shared slot,
 	 * it will release all of its sub-slots and release itself.
+	 * 如果该slot时一个 SimpleSlot，它将归还给它的实例。
+	 * 如果是一个 SharedSlot，他将释放所有子slot，再释放自己。
 	 */
 	public abstract void releaseSlot();
 

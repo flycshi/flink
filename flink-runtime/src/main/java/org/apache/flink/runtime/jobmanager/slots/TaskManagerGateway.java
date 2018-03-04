@@ -41,6 +41,7 @@ public interface TaskManagerGateway {
 
 	/**
 	 * Return the address of the task manager with which the gateway is associated.
+	 * 返回网关关联的TaskManager的地址
 	 *
 	 * @return Address of the task manager with which this gateway is associated.
 	 */
@@ -48,6 +49,7 @@ public interface TaskManagerGateway {
 
 	/**
 	 * Disconnect the task manager from the job manager.
+	 * 将TaskManager从JobManager上断开连接
 	 *
 	 * @param instanceId identifying the task manager
 	 * @param cause of the disconnection
@@ -56,6 +58,7 @@ public interface TaskManagerGateway {
 
 	/**
 	 * Stop the cluster.
+	 * 停止集群
 	 *
 	 * @param applicationStatus to stop the cluster with
 	 * @param message to deliver
@@ -64,6 +67,7 @@ public interface TaskManagerGateway {
 
 	/**
 	 * Request the stack trace from the task manager.
+	 * 从TaskManager请求栈跟踪信息
 	 *
 	 * @param timeout for the stack trace request
 	 * @return Future for a stack trace
