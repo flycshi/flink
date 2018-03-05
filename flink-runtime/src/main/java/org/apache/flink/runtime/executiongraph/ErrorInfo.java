@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 /**
  * Simple container to hold an exception and the corresponding timestamp.
+ * 持有一个异常和相关时间戳的简单容器
  */
 public class ErrorInfo implements Serializable {
 

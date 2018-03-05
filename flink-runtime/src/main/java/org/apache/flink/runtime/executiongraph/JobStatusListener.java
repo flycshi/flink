@@ -23,17 +23,20 @@ import org.apache.flink.runtime.jobgraph.JobStatus;
 
 /**
  * Interface for observers that monitor the status of a job.
+ * 监视一个job的状态的观察者接口
  */
 public interface JobStatusListener {
 
 	/**
 	 * This method is called whenever the status of the job changes.
+	 * 但job的状态变化时调用的方法
 	 * 
 	 * @param jobId         The ID of the job.
-	 * @param newJobStatus  The status the job switched to.
-	 * @param timestamp     The timestamp when the status transition occurred.
+	 * @param newJobStatus  The status the job switched to.	新状态
+	 * @param timestamp     The timestamp when the status transition occurred. 状态转换发生的时间
 	 * @param error         In case the job status switches to a failure state, this is the
 	 *                      exception that caused the failure.
+	 *                      在job状态转换为failure状态时, 导致failure的异常
 	 */
 	void jobStatusChanges(JobID jobId, JobStatus newJobStatus, long timestamp, Throwable error);
 }

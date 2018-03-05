@@ -26,19 +26,24 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * The slot provider is responsible for preparing slots for ready-to-run tasks.
+ * 负责为{@code ready-to-run}的任务准备slots。
  * 
  * <p>It supports two allocating modes:
+ * 		支持两个分配模式:
  * <ul>
  *     <li>Immediate allocating: A request for a task slot immediately gets satisfied, we can call
  *         {@link CompletableFuture#getNow(Object)} to get the allocated slot.</li>
+ *         立即分配: 获取一个任务槽位的一个请求立即被满足, 我么可以调用{@link CompletableFuture#getNow(Object)}获取分配的槽位
  *     <li>Queued allocating: A request for a task slot is queued and returns a future that will be
  *         fulfilled as soon as a slot becomes available.</li>
+ *         排队分配: 获取一个任务槽位的请求被入队列, 并返回future, 该future在一个槽位变为有效时就可以获取到分配的槽位。
  * </ul>
  */
 public interface SlotProvider {
 
 	/**
 	 * Allocating slot with specific requirement.
+	 * 按要求分配槽位
 	 *
 	 * @param task         The task to allocate the slot for
 	 * @param allowQueued  Whether allow the task be queued if we do not have enough resource

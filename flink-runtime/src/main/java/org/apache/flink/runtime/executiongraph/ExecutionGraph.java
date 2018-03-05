@@ -238,57 +238,106 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 	 */
 	private final ConcurrentHashMap<JobVertexID, ExecutionJobVertex> tasks;
 
-	/** All vertices, in the order in which they were created **/
+	/**
+	 * All vertices, in the order in which they were created
+	 * 所有的 vertices, 以它们被创建的顺序
+	 */
 	private final List<ExecutionJobVertex> verticesInCreationOrder;
 
-	/** All intermediate results that are part of this graph */
+	/**
+	 * All intermediate results that are part of this graph
+	 * 这个graph的所有中间结果
+	 */
 	private final ConcurrentHashMap<IntermediateDataSetID, IntermediateResult> intermediateResults;
 
-	/** The currently executed tasks, for callbacks */
+	/**
+	 * The currently executed tasks, for callbacks
+	 * 当前正在执行的task, 用于 callbacks
+	 */
 	private final ConcurrentHashMap<ExecutionAttemptID, Execution> currentExecutions;
 
-	/** Listeners that receive messages when the entire job switches it status
-	 * (such as from RUNNING to FINISHED) */
+	/**
+	 * Listeners that receive messages when the entire job switches it status
+	 * (such as from RUNNING to FINISHED)
+	 * 当这个job的状态变化时, 用来接收消息的接听器
+	 * 比如从 RUNNING 到 FINISHED
+	 */
 	private final List<JobStatusListener> jobStatusListeners;
 
-	/** Listeners that receive messages whenever a single task execution changes its status */
+	/**
+	 * Listeners that receive messages whenever a single task execution changes its status
+	 * 当一个单独的任务执行发生状态变化时, 用来接收消息的监听器
+	 */
 	private final List<ExecutionStatusListener> executionListeners;
 
-	/** The implementation that decides how to recover the failures of tasks */
+	/**
+	 * The implementation that decides how to recover the failures of tasks
+	 * 决定任务失败时的恢复策略的具体实现
+	 */
 	private final FailoverStrategy failoverStrategy;
 
-	/** Timestamps (in milliseconds as returned by {@code System.currentTimeMillis()} when
+	/**
+	 * Timestamps (in milliseconds as returned by {@code System.currentTimeMillis()} when
 	 * the execution graph transitioned into a certain state. The index into this array is the
 	 * ordinal of the enum value, i.e. the timestamp when the graph went into state "RUNNING" is
-	 * at {@code stateTimestamps[RUNNING.ordinal()]}. */
+	 * at {@code stateTimestamps[RUNNING.ordinal()]}.
+	 * 当执行图转换到一个特定状态时的时间错({@code System.currentTimeMillis()返回的毫秒)。
+	 * 数组的索引就是状态枚举量的序数, 当图状态为"RUNNING"的时间戳在{@code stateTimestamps[RUNNING.ordinal()]}
+	 */
 	private final long[] stateTimestamps;
 
-	/** The timeout for all messages that require a response/acknowledgement */
+	/**
+	 * The timeout for all messages that require a response/acknowledgement
+	 * 需要一个恢复/确认的所有消息的超时时间
+	 */
 	private final Time rpcCallTimeout;
 
-	/** The timeout for bulk slot allocation (eager scheduling mode). After this timeout,
-	 * slots are released and a recovery is triggered */
+	/**
+	 * The timeout for bulk slot allocation (eager scheduling mode).
+	 * After this timeout, slots are released and a recovery is triggered
+	 * 槽位分配的超时时间(急切调度模式)
+	 * 超时后, slots 会被释放, 会触发一次恢复
+	 */
 	private final Time scheduleAllocationTimeout;
 
-	/** Strategy to use for restarts */
+	/**
+	 * Strategy to use for restarts
+	 * 重启策略
+	 */
 	private final RestartStrategy restartStrategy;
 
-	/** The slot provider to use for allocating slots for tasks as they are needed */
+	/**
+	 * The slot provider to use for allocating slots for tasks as they are needed
+	 * 用来为任务分配他们需要的slots的提供者
+	 */
 	private final SlotProvider slotProvider;
 
-	/** The classloader for the user code. Needed for calls into user code classes */
+	/**
+	 * The classloader for the user code. Needed for calls into user code classes
+	 * 用户代码的类加载器。调用用户代码类时需要。
+	 */
 	private final ClassLoader userClassLoader;
 
-	/** Registered KvState instances reported by the TaskManagers. */
+	/**
+	 * Registered KvState instances reported by the TaskManagers.
+	 * 注册 TaskManager 上报的 KvState 实例
+	 */
 	private final KvStateLocationRegistry kvStateLocationRegistry;
 
-	/** Blob writer used to offload RPC messages */
+	/**
+	 * Blob writer used to offload RPC messages
+	 * 用来卸载rpc消息的 BlobWriter
+	 */
 	private final BlobWriter blobWriter;
 
-	/** The total number of vertices currently in the execution graph */
+	/**
+	 * The total number of vertices currently in the execution graph
+	 * 在{@code ExecutionGraph}中当前有的总的vertex数量
+	 */
 	private int numVerticesTotal;
 
 	// ------ Configuration of the Execution -------
+	// ------ 执行的配置
 
 	/** Flag to indicate whether the scheduler may queue tasks for execution, or needs to be able
 	 * to deploy them immediately. */
@@ -300,24 +349,40 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 	private ScheduleMode scheduleMode = ScheduleMode.LAZY_FROM_SOURCES;
 
 	// ------ Execution status and progress. These values are volatile, and accessed under the lock -------
+	// ------ 执行状态和进度。这些值都是volatile, 需要在获取锁后访问
 
 	private final AtomicInteger verticesFinished;
 
-	/** Current status of the job execution */
+	/**
+	 * Current status of the job execution
+	 * 当前状态
+	 */
 	private volatile JobStatus state = JobStatus.CREATED;
 
-	/** A future that completes once the job has reached a terminal state */
+	/**
+	 * A future that completes once the job has reached a terminal state
+	 * job到达一个终止状态时的 CompletableFuture
+	 */
 	private volatile CompletableFuture<JobStatus> terminationFuture;
 
-	/** On each global recovery, this version is incremented. The version breaks conflicts
-	 * between concurrent restart attempts by local failover strategies */
+	/**
+	 * On each global recovery, this version is incremented.
+	 * The version breaks conflicts between concurrent restart attempts by local failover strategies.
+	 * 每次全局恢复, 版本号自增。
+	 * 该版本通过本地容灾策略来打破并发重启尝试之间的冲突。
+	 */
 	private volatile long globalModVersion;
 
-	/** The exception that caused the job to fail. This is set to the first root exception
-	 * that was not recoverable and triggered job failure */
+	/**
+	 * The exception that caused the job to fail.
+	 * This is set to the first root exception that was not recoverable and triggered job failure
+	 * 导致job失败的异常。
+	 * 第一次触发job失败且不可恢复的异常。
+	 */
 	private volatile ErrorInfo failureCause;
 
 	// ------ Fields that are relevant to the execution and need to be cleared before archiving  -------
+	// ------ 执行相关字段,在归档前,需要被清理
 
 	/** The coordinator for checkpoints, if snapshot checkpoints are enabled */
 	private CheckpointCoordinator checkpointCoordinator;
@@ -327,6 +392,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 	private CheckpointStatsTracker checkpointStatsTracker;
 
 	// ------ Fields that are only relevant for archived execution graphs ------------
+	// ------ 只是用来归档执行图的字段
 	private String jsonPlan;
 
 	// --------------------------------------------------------------------------------------------

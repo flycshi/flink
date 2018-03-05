@@ -24,19 +24,21 @@ import org.apache.flink.runtime.jobgraph.JobVertexID;
 
 /**
  * Interface for observers that monitor the status of individual task executions.
+ * 监视个别任务执行状态的观察者接口
  */
 public interface ExecutionStatusListener {
 
 	/**
 	 * Called whenever the execution status of a task changes.
+	 * 当一个任务的状态变化时被调用
 	 * 
-	 * @param jobID                  The ID of the job
-	 * @param vertexID               The ID of the task vertex
-	 * @param taskName               The name of the task
-	 * @param totalNumberOfSubTasks  The parallelism of the task
-	 * @param subtaskIndex           The subtask's parallel index
-	 * @param executionID            The ID of the execution attempt
-	 * @param newExecutionState      The status to which the task switched
+	 * @param jobID                  The ID of the job job的id
+	 * @param vertexID               The ID of the task vertex JobVertex的id
+	 * @param taskName               The name of the task	task名称
+	 * @param totalNumberOfSubTasks  The parallelism of the task	子任务的并行度
+	 * @param subtaskIndex           The subtask's parallel index	子任务的并行索引
+	 * @param executionID            The ID of the execution attempt	执行的尝试id
+	 * @param newExecutionState      The status to which the task switched	新状态
 	 * @param timestamp              The timestamp when the change occurred. Informational only.
 	 * @param optionalMessage        An optional message attached to the status change, like an
 	 *                               exception message.

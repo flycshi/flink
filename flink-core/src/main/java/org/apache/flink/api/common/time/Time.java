@@ -26,8 +26,10 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * The definition of a time interval.
+ * 一个时间间隔的定义
  *
  * Note: This class should replace org.apache.flink.streaming.api.windowing.time.Time in Flink 2.0
+ * 注意: 在flink 2.0 , 这个类应该会被替换成 org.apache.flink.streaming.api.windowing.time.Time
  */
 @PublicEvolving
 public final class Time implements Serializable {

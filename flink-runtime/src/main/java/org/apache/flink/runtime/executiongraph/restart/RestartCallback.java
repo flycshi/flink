@@ -20,7 +20,8 @@ package org.apache.flink.runtime.executiongraph.restart;
 
 /**
  * A callback to trigger restarts, passed to the {@link RestartStrategy} to
- * trigger recovery on the ExecutionGraph. 
+ * trigger recovery on the ExecutionGraph.
+ * 一个回调接口, 用来触发重启, 通过{@link RestartStrategy}来触发{@link org.apache.flink.runtime.executiongraph.ExecutionGraph}的恢复
  */
 public interface RestartCallback {
 

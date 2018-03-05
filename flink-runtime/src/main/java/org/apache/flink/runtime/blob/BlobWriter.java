@@ -31,6 +31,7 @@ import java.io.InputStream;
 
 /**
  * BlobWriter is used to upload data to the BLOB store.
+ * {@code BlobWriter}是用来上传数据到 blob store
  */
 public interface BlobWriter {
 

@@ -23,11 +23,13 @@ import org.apache.flink.runtime.executiongraph.ExecutionGraph;
 
 /**
  * Strategy for {@link ExecutionGraph} restarts.
+ * {@link ExecutionGraph}重启的策略
  */
 public interface RestartStrategy {
 
 	/**
 	 * True if the restart strategy can be applied to restart the {@link ExecutionGraph}.
+	 * 如果重启策略可以应用去重启{@link ExecutionGraph}, 则返回true
 	 *
 	 * @return true if restart is possible, otherwise false
 	 */
@@ -37,8 +39,11 @@ public interface RestartStrategy {
 	 * Called by the ExecutionGraph to eventually trigger a full recovery.
 	 * The recovery must be triggered on the given callback object, and may be delayed
 	 * with the help of the given scheduled executor.
+	 * {@link ExecutionGraph}在最终触发一次全量恢复时调用。
+	 * 恢复必须被触发去执行给定的回调对象, 并且可能被给定的{@link ScheduledExecutor}延迟调度执行
 	 *
 	 * <p>The thread that calls this method is not supposed to block/sleep.
+	 * 		调用这个方法的线程是不期望block/sleep
 	 *
 	 * @param restarter The hook to restart the ExecutionGraph
 	 * @param executor An scheduled executor to delay the restart
