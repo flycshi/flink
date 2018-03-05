@@ -26,6 +26,7 @@ import org.apache.flink.runtime.taskmanager.TaskManagerLocation;
 public interface AccessExecutionVertex {
 	/**
 	 * Returns the name of this execution vertex in the format "myTask (2/7)".
+	 * 以 "myTask (2/7)" 的形式返回 ExecutionVertex 的名称
 	 *
 	 * @return name of this execution vertex
 	 */
@@ -33,6 +34,7 @@ public interface AccessExecutionVertex {
 
 	/**
 	 * Returns the subtask index of this execution vertex.
+	 * 返回这个 ExecutionVertex 的子任务索引
 	 *
 	 * @return subtask index of this execution vertex.
 	 */
@@ -40,6 +42,7 @@ public interface AccessExecutionVertex {
 
 	/**
 	 * Returns the current execution for this execution vertex.
+	 * 返回该 ExecutionVertex 的当前 Execution
 	 *
 	 * @return current execution
 	 */
@@ -47,6 +50,7 @@ public interface AccessExecutionVertex {
 
 	/**
 	 * Returns the current {@link ExecutionState} for this execution vertex.
+	 * 返回当前的 ExecutionState
 	 *
 	 * @return execution state for this execution vertex
 	 */
@@ -54,6 +58,7 @@ public interface AccessExecutionVertex {
 
 	/**
 	 * Returns the timestamp for the given {@link ExecutionState}.
+	 * 返回给定 ExecutionState 的时间戳
 	 *
 	 * @param state state for which the timestamp should be returned
 	 * @return timestamp for the given state
@@ -63,6 +68,8 @@ public interface AccessExecutionVertex {
 	/**
 	 * Returns the exception that caused the job to fail. This is the first root exception
 	 * that was not recoverable and triggered job failure.
+	 * 返回导致job失败的exception。
+	 * 这是第一个不可恢复的根异常，并触发了作业失败。
 	 *
 	 * @return failure exception as a string, or {@code "(null)"}
 	 */
@@ -70,6 +77,7 @@ public interface AccessExecutionVertex {
 
 	/**
 	 * Returns the {@link TaskManagerLocation} for this execution vertex.
+	 * 返回这个 ExecutionVertex 的 TaskManagerLocation
 	 *
 	 * @return taskmanager location for this execution vertex.
 	 */
@@ -77,6 +85,7 @@ public interface AccessExecutionVertex {
 
 	/**
 	 * Returns the execution for the given attempt number.
+	 * 返回给定 attempt 次数的 Execution
 	 *
 	 * @param attemptNumber attempt number of execution to be returned
 	 * @return execution for the given attempt number

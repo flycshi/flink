@@ -31,27 +31,46 @@ import java.util.Collection;
 
 /**
  * Container class for job information which is stored in the {@link ExecutionGraph}.
+ * {@link ExecutionGraph}中用来存储的job信息的容器类
  */
 public class JobInformation implements Serializable {
 
 	private static final long serialVersionUID = 8367087049937822140L;
 
-	/** Id of the job */
+	/**
+	 * Id of the job
+	 * job的id
+	 */
 	private final JobID jobId;
 
-	/** Job name */
+	/**
+	 * Job name
+	 * job的名称
+	 */
 	private final String jobName;
 
-	/** Serialized execution config because it can contain user code classes */
+	/**
+	 * Serialized execution config because it can contain user code classes
+	 * 序列化的执行配置, 因为它可以包含用户代码
+	 */
 	private final SerializedValue<ExecutionConfig> serializedExecutionConfig;
 
-	/** Configuration of the job */
+	/**
+	 * Configuration of the job
+	 * job的配置
+	 */
 	private final Configuration jobConfiguration;
 
-	/** Blob keys for the required jar files */
+	/**
+	 * Blob keys for the required jar files
+	 * 要求的jar包的blob key
+	 */
 	private final Collection<PermanentBlobKey> requiredJarFileBlobKeys;
 
-	/** URLs specifying the classpath to add to the class loader */
+	/**
+	 * URLs specifying the classpath to add to the class loader
+	 * 指定添加到class loader中的classpath的urls
+	 */
 	private final Collection<URL> requiredClasspathURLs;
 
 

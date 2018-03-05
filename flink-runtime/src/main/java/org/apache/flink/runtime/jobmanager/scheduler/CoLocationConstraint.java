@@ -34,15 +34,22 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * (Execution Vertices). In co-location groups, the different subtasks of
  * different JobVertices need to be executed on the same {@link Instance}.
  * This is realized by creating a special shared slot that holds these tasks.
+ * 一个 CoLocationConstraint 管理一个任务集合的位置。
+ * 在位置联合组中, 不同 JobVertex 的不同子任务需要在相同的 Instance 上执行。
+ * 是通过创建一个持有这些tasks的特殊SharedSlot来实现的。
  * 
  * <p>This class tracks the location and the shared slot for this set of tasks.
+ * 		这个类为task集合跟踪位置和SharedSlot
  */
 public class CoLocationConstraint {
 
+	/** 当前实例归属的 CoLocationGroup 实例 */
 	private final CoLocationGroup group;
 
+	/** 当前实例跟踪的 SharedSlot 实例 */
 	private volatile SharedSlot sharedSlot;
 
+	/** 当前实例跟踪的位置 */
 	private volatile ResourceID lockedLocation;
 
 
@@ -53,10 +60,12 @@ public class CoLocationConstraint {
 
 	// ------------------------------------------------------------------------
 	//  Status & Properties
+	//  状态 & 属性
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Gets the shared slot into which this constraint's tasks are places.
+	 * 获取该约束的tasks被放置的SharedSlot实例
 	 * 
 	 * @return The shared slot into which this constraint's tasks are places.
 	 */
@@ -66,6 +75,7 @@ public class CoLocationConstraint {
 
 	/**
 	 * Gets the ID that identifies the co-location group.
+	 * 获取标识位置联合组的ID
 	 * 
 	 * @return The ID that identifies the co-location group.
 	 */
@@ -78,6 +88,9 @@ public class CoLocationConstraint {
 	 * The location is assigned once a slot has been set, via the
 	 * {@link #setSharedSlot(org.apache.flink.runtime.instance.SharedSlot)} method,
 	 * and the location is locked via the {@link #lockLocation()} method.
+	 * 检查该约束的位置是否已经分配。
+	 * 通过 {@link #setSharedSlot(org.apache.flink.runtime.instance.SharedSlot)} 方法, 一旦一个 slot 被设置, 位置就分配了
+	 * 通过{@link #lockLocation()}方法锁定位置
 	 * 
 	 * @return True if the location has been assigned, false otherwise.
 	 */
@@ -89,6 +102,7 @@ public class CoLocationConstraint {
 	 * Checks whether the location of this constraint has been assigned
 	 * (as defined in the {@link #isAssigned()} method, and the current
 	 * shared slot is alive.
+	 * 检查当前约束的位置是否被分配,以及当前SharedSlot是否alive
 	 *
 	 * @return True if the location has been assigned and the shared slot is alive,
 	 *         false otherwise.
@@ -101,6 +115,8 @@ public class CoLocationConstraint {
 	 * Gets the location assigned to this slot. This method only succeeds after
 	 * the location has been locked via the {@link #lockLocation()} method and
 	 * {@link #isAssigned()} returns true.
+	 * 获取分配 slot 的位置, 也就是 TaskManager 的位置
+	 * 这个方法只有在通过{@link #lockLocation()}方法锁定了location,且{@link #isAssigned()}方法true后, 才能成功返回
 	 *
 	 * @return The instance describing the location for the tasks of this constraint.
 	 * @throws IllegalStateException Thrown if the location has not been assigned, yet.
@@ -122,6 +138,9 @@ public class CoLocationConstraint {
 	 * will hold the subtasks that are executed under this co-location constraint.
 	 * If the constraint's location is assigned, then this slot needs to be from
 	 * the same location (instance) as the one assigned to this constraint.
+	 * 给该实例分配一个新的SharedSlot。
+	 * 这个SharedSlot实例会持有在这个实例下执行的子任务。
+	 * 如果位置已经被分配,那新的slot需要和之前分配的slot来自相同的TaskManager实例。
 	 * 
 	 * <p>If the constraint already has a slot, the current one will be released.</p>
 	 *
@@ -151,6 +170,8 @@ public class CoLocationConstraint {
 	/**
 	 * Locks the location of this slot. The location can be locked only once
 	 * and only after a shared slot has been assigned.
+	 * 锁定slot的位置
+	 * 这个位置只能被锁定一次, 且只有在一个SharedSlot被分配后
 	 * 
 	 * @throws IllegalStateException Thrown, if the location is already locked,
 	 *                               or is no slot has been set, yet.

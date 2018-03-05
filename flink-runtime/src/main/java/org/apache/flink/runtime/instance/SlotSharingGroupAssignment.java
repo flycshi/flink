@@ -18,27 +18,18 @@
 
 package org.apache.flink.runtime.instance;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.runtime.clusterframework.types.ResourceID;
+import org.apache.flink.runtime.executiongraph.ExecutionVertex;
+import org.apache.flink.runtime.jobgraph.JobVertexID;
 import org.apache.flink.runtime.jobmanager.scheduler.CoLocationConstraint;
 import org.apache.flink.runtime.jobmanager.scheduler.Locality;
 import org.apache.flink.runtime.taskmanager.TaskManagerLocation;
 import org.apache.flink.util.AbstractID;
-import org.apache.flink.runtime.executiongraph.ExecutionVertex;
-import org.apache.flink.runtime.jobgraph.JobVertexID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 
 /**
@@ -52,13 +43,22 @@ import org.slf4j.LoggerFactory;
  * each shared slot can hold one parallel subtask of the source, the map, the reduce, and the
  * sink vertex. Each shared slot holds the actual subtasks in child slots, which are (at the leaf level),
  * the {@link SimpleSlot}s.</p>
+ * assignments 是通过允许一个 SharedSlot 中持有每个 JobVertexID 的一个vertex 来实现共享 tasks 的。
+ * 比如:
+ * 一个程序包含这些 JobVertex, "source", "map", "reduce", and "sink" 。
+ * 如果 SlotShareGroup 贯穿4个节点, 那么每一个 SharedSlot 可以持有 "source", "map", "reduce", and "sink" 这些节点的一个并行的子任务。
+ * 每个 SharedSlot 真正持有子任务的是叶节点 SimpleSlot 。
  * 
  * <p>An exception are the co-location-constraints, that define that the i-th subtask of one
  * vertex needs to be scheduled strictly together with the i-th subtasks of the vertices
  * that share the co-location-constraint. To manage that, a co-location-constraint gets its
  * own shared slot inside the shared slots of a sharing group.</p>
+ * 一个例外是共存约束(co-location-constraints),
+ * 它要求一个节点的第i个子任务, 与它共享共存约束的节点的第i个子任务, 需要严格的安排在一起调度。
+ * 为了实现共功能, 一个共享约束在一个 SlotSharedGroup 中的 SharedSlot 中获取属于自己的 SharedSlot
  * 
  * <p>Consider a job set up like this:</p>
+ * 		一个job的配置如下:
  * 
  * <pre>{@code
  * +-------------- Slot Sharing Group --------------+
@@ -71,7 +71,8 @@ import org.slf4j.LoggerFactory;
  * +------------------------------------------------+
  * }</pre>
  * 
- * <p>The slot hierarchy in the slot sharing group will look like the following</p> 
+ * <p>The slot hierarchy in the slot sharing group will look like the following</p>
+ * 		SlotSharedGroup 中 slot 的层级如下所示:
  * 
  * <pre>
  *     Shared(0)(root)
@@ -90,7 +91,10 @@ public class SlotSharingGroupAssignment {
 
 	private final static Logger LOG = LoggerFactory.getLogger(SlotSharingGroupAssignment.class);
 
-	/** The lock globally guards against concurrent modifications in the data structures */
+	/**
+	 * The lock globally guards against concurrent modifications in the data structures
+	 * 全局保障数据结构中的并发修改的lock
+	 */
 	private final Object lock = new Object();
 	
 	/**
@@ -99,19 +103,25 @@ public class SlotSharingGroupAssignment {
 	 */
 	private final Set<SharedSlot> allSlots = new LinkedHashSet<SharedSlot>();
 
-	/** The slots available per vertex type (JobVertexId), keyed by TaskManager, to make them locatable */
+	/**
+	 * The slots available per vertex type (JobVertexId), keyed by TaskManager, to make them locatable
+	 * 每个节点类型的的有效slot
+	 * 以 TaskManager 为键, 为了让他们可定位
+	 */
 	private final Map<AbstractID, Map<ResourceID, List<SharedSlot>>> availableSlotsPerJid = new LinkedHashMap<>();
 
 
 	// --------------------------------------------------------------------------------------------
 	//  Accounting
+	//  计数
 	// --------------------------------------------------------------------------------------------
 
 	/**
 	 * Gets the number of slots that are currently governed by this assignment group.
 	 * This refers to the slots allocated from an {@link org.apache.flink.runtime.instance.Instance},
 	 * and not the sub-slots given out as children of those shared slots.
-	 * 获取这个分配组当前管理的slots的数量
+	 * 获取这个分配组当前管理的slots的数量。
+	 * 这是从{@link Instance}分配的slot, 而不是这些共享槽的子槽。
 	 * 
 	 * @return The number of resource slots managed by this assignment group.
 	 */
@@ -122,6 +132,7 @@ public class SlotSharingGroupAssignment {
 	/**
 	 * Gets the number of shared slots into which the given group can place subtasks or 
 	 * nested task groups.
+	 * 获取指定group可以放置子任务或者内嵌任务组的 SharedSlot 的数量。
 	 * 
 	 * @param groupId The ID of the group.
 	 * @return The number of shared slots available to the given job vertex.
@@ -145,6 +156,10 @@ public class SlotSharingGroupAssignment {
 				// if no entry exists for a JobVertexID so far, then the vertex with that ID can
 				// add a subtask into each shared slot of this group. Consequently, all
 				// of them are available for that JobVertexID.
+				/**
+				 * 如果对一个 JobVertexID 至今还没有一个入口, 那ID对应的vertex可以添加一个子任务到该组中的每个 SharedSlot 。
+				 * 所以也就是说, 对这个 JobVertexID , 他们都是有效的。
+				 */
 				return allSlots.size();
 			}
 		}
@@ -152,6 +167,7 @@ public class SlotSharingGroupAssignment {
 	
 	// ------------------------------------------------------------------------
 	//  Slot allocation
+	//  slot分配
 	// ------------------------------------------------------------------------
 
 	public SimpleSlot addSharedSlotAndAllocateSubSlot(SharedSlot sharedSlot, Locality locality, JobVertexID groupId) {

@@ -27,14 +27,18 @@ public class ArchivedExecutionVertex implements AccessExecutionVertex, Serializa
 
 	private static final long serialVersionUID = -6708241535015028576L;
 
+	/** 子任务的索引号 */
 	private final int subTaskIndex;
 
 	private final EvictingBoundedList<ArchivedExecution> priorExecutions;
 
-	/** The name in the format "myTask (2/7)", cached to avoid frequent string concatenations */
+	/**
+	 * The name in the format "myTask (2/7)", cached to avoid frequent string concatenations
+	 * 子任务的任务名称, 格式是"myTask (2/7)", 缓存以防频繁的字符拼接
+	 */
 	private final String taskNameWithSubtask;
 
-	private final ArchivedExecution currentExecution;    // this field must never be null
+	private final ArchivedExecution currentExecution;    // this field must never be null	该字段不可为null
 
 	// ------------------------------------------------------------------------
 

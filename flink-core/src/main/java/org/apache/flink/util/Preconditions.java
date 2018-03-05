@@ -32,10 +32,13 @@ import javax.annotation.Nullable;
 
 /**
  * A collection of static utility methods to validate input.
+ * 用于校验输入的静态工具方法集合
  * 
  * <p>This class is modelled after Google Guava's Preconditions class, and partly takes code
  * from that class. We add this code to the Flink code base in order to reduce external
  * dependencies.
+ * 这个类是魔方的 google guava 的 Preconditions 类, 并且部分代码是直接copy的。
+ * 这么做的主要目的就是减少外部依赖。
  */
 @Internal
 public final class Preconditions {
@@ -47,11 +50,13 @@ public final class Preconditions {
 	/**
 	 * Ensures that the given object reference is not null.
 	 * Upon violation, a {@code NullPointerException} with no message is thrown.
+	 * 确保给定对象的应用是非null的。
+	 * 如果为null, 则抛出一个没有消息的{@code NullPointerException}
 	 * 
-	 * @param reference The object reference
-	 * @return The object reference itself (generically typed).
+	 * @param reference The object reference	对象引用
+	 * @return The object reference itself (generically typed). 对象引用自身(一般类型)
 	 * 
-	 * @throws NullPointerException Thrown, if the passed reference was null.
+	 * @throws NullPointerException Thrown, if the passed reference was null. 如果传入的引用为null, 则抛出该异常
 	 */
 	public static <T> T checkNotNull(T reference) {
 		if (reference == null) {
@@ -63,6 +68,7 @@ public final class Preconditions {
 	/**
 	 * Ensures that the given object reference is not null.
 	 * Upon violation, a {@code NullPointerException} with the given message is thrown.
+	 * 区别就是带有消息
 	 * 
 	 * @param reference The object reference
 	 * @param errorMessage The message for the {@code NullPointerException} that is thrown if the check fails.
@@ -253,13 +259,16 @@ public final class Preconditions {
 
 	// ------------------------------------------------------------------------
 	//  Utilities
+	//  工具
 	// ------------------------------------------------------------------------
 
 	/**
 	 * A simplified formatting method. Similar to {@link String#format(String, Object...)}, but
 	 * with lower overhead (only String parameters, no locale, no format validation).
+	 * 一个简化的格式化方法。类似于{@link String#format(String, Object...)}, 但是开销更低(只有字符串参数, 没有定位, 没有格式校验)
 	 * 
 	 * <p>This method is taken quasi verbatim from the Guava Preconditions class.
+	 * 		这个方法是从 Guava Preconditions 类提取来的。
 	 */
 	private static String format(@Nullable String template, @Nullable Object... args) {
 		final int numArgs = args == null ? 0 : args.length;
@@ -296,6 +305,9 @@ public final class Preconditions {
 
 	// ------------------------------------------------------------------------
 
-	/** Private constructor to prevent instantiation */
+	/**
+	 * Private constructor to prevent instantiation
+	 * 私有构造器, 防止实例化
+	 */
 	private Preconditions() {}
 }

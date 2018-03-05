@@ -41,6 +41,8 @@ public class IntermediateResult {
 	 * used for ID lookups of intermediate results. I didn't dare to change the
 	 * partition connect logic in other places that is tightly coupled to the
 	 * partitions being held as an array.
+	 * 将中间结果分区id映射到一个分区索引。这是用于中间结果的ID查找。
+	 * 我不敢更改其他地方的分区连接逻辑，这些地方与被保存为数组的分区紧密耦合。
 	 */
 	private final HashMap<IntermediateResultPartitionID, Integer> partitionLookupHelper = new HashMap<>();
 

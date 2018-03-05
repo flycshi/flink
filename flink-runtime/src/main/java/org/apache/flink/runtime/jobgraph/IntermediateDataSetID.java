@@ -18,9 +18,9 @@
 
 package org.apache.flink.runtime.jobgraph;
 
-import java.util.UUID;
-
 import org.apache.flink.util.AbstractID;
+
+import java.util.UUID;
 
 public class IntermediateDataSetID extends AbstractID {
 
@@ -28,6 +28,7 @@ public class IntermediateDataSetID extends AbstractID {
 
 	/**
 	 * Creates an new random intermediate data set ID.
+	 * 构建一个随机的id
 	 */
 	public IntermediateDataSetID() {
 		super();

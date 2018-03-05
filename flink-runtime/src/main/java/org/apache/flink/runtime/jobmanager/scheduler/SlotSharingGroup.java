@@ -38,7 +38,11 @@ public class SlotSharingGroup implements java.io.Serializable {
 
 	private final Set<JobVertexID> ids = new TreeSet<JobVertexID>();
 	
-	/** Mapping of tasks to subslots. This field is only needed inside the JobManager, and is not RPCed. */
+	/**
+	 * Mapping of tasks to subslots. This field is only needed inside the JobManager, and is not RPCed.
+	 * task -> subslot 映射。
+	 * 该字段只有在 JobManager 中才需要, 不是rpc
+	 */
 	private transient SlotSharingGroupAssignment taskAssignment;
 	
 	

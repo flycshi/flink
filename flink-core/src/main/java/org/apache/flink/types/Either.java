@@ -28,6 +28,7 @@ import org.apache.flink.api.java.typeutils.runtime.EitherSerializer;
 /**
  * This type represents a value of one two possible types, Left or Right (a
  * disjoint union), inspired by Scala's Either type.
+ * 这个雷星描述了一个值有两种可能的类型, left 或者 right (一对互斥值), 受 Scala 的 Either 类型启发
  *
  * @param <L>
  *            the type of Left

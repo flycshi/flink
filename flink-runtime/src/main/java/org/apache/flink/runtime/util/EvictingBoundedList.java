@@ -29,6 +29,8 @@ import java.util.NoSuchElementException;
  * This class implements a list (array based) that is physically bounded in maximum size, but can virtually grow beyond
  * the bounded size. When the list grows beyond the size bound, elements are dropped from the head of the list (FIFO
  * order). If dropped elements are accessed, a default element is returned instead.
+ * 这个类实现类一个列表(基于数组的), 它有一个最大的物理上界, 但是可以超出最大限制。
+ * 当这个列表超出最大限制时, 元素会从列表头删除(FIFO顺序)。如果被删除的元素还可以被访问,则返回一个默认的元素
  * 
  * <p>The list by itself is serializable, but a full list can only be serialized if the values
  * are also serializable.
@@ -40,20 +42,35 @@ public class EvictingBoundedList<T> implements Iterable<T>, Serializable {
 	private static final long serialVersionUID = -1863961980953613146L;
 
 	@SuppressWarnings("NonSerializableFieldInSerializableClass")
-	/** the default element returned for positions that were evicted */
+	/**
+	 * the default element returned for positions that were evicted
+	 * 为已经丢弃位置, 返回的默认元素
+	 */
 	private final T defaultElement;
 
 	@SuppressWarnings("NonSerializableFieldInSerializableClass")
-	/** the array (viewed as a circular buffer) that holds the latest (= non-evicted) elements */
+	/**
+	 * the array (viewed as a circular buffer) that holds the latest (= non-evicted) elements
+	 * 数组(看做一个循环缓存), 持有最新的(没有丢弃的)元素
+	 */
 	private final Object[] elements;
 
-	/** The next index to put an element in the array */
+	/**
+	 * The next index to put an element in the array
+	 * 向数组中添加一个元素的下一个位置
+	 */
 	private int idx;
 
-	/** The current number of (virtual) elements in the list */
+	/**
+	 * The current number of (virtual) elements in the list
+	 * 列表中的元素(包括虚拟的)的当前数量
+	 */
 	private int count;
 
-	/** Modification count for fail-fast iterators */
+	/**
+	 * Modification count for fail-fast iterators
+	 * 用于快速失败迭代的修改次数记录
+	 */
 	private long modCount;
 
 	// ------------------------------------------------------------------------
@@ -180,8 +197,11 @@ public class EvictingBoundedList<T> implements Iterable<T>, Serializable {
 	/**
 	 * Creates a new list that replaces its elements with transformed elements.
 	 * The list retains the same size and position-to-element mapping.
+	 * 构建一个新的list, 新list会将老list中的元素都替换为新的值。
+	 * 新list保持相同的大小,以及元素的位置。
 	 * 
 	 * <p>Note that null values are automatically mapped to null values.
+	 * 		null值自动转换为null值
 	 * 
 	 * @param transform The function used to transform each element
 	 * @param <R> The type of the elements in the result list.
@@ -211,6 +231,7 @@ public class EvictingBoundedList<T> implements Iterable<T>, Serializable {
 	/**
 	 * A simple unary function that can be used to transform elements via the
 	 * {@link EvictingBoundedList#map(Function)} method.
+	 * 一个简单的一元方程
 	 */
 	public interface Function<I, O> {
 

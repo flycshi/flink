@@ -67,9 +67,11 @@ import java.util.concurrent.CompletableFuture;
 /**
  * An {@code ExecutionJobVertex} is part of the {@link ExecutionGraph}, and the peer
  * to the {@link JobVertex}.
+ * 一个 ExecutionJobVertex 是{@link ExecutionGraph}的一部分, 是{@link JobVertex}的等价对应
  *
  * <p>The {@code ExecutionJobVertex} corresponds to a parallelized operation. It
  * contains an {@link ExecutionVertex} for each parallel instance of that operation.
+ * {@code ExecutionJobVertex}对应一个并行的操作。它包含了这个操作的每个并行实例{@link ExecutionVertex}
  */
 public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable<ArchivedExecutionJobVertex> {
 

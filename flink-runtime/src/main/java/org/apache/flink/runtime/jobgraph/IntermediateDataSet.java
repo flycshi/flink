@@ -28,7 +28,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * An intermediate data set is the data set produced by an operator - either a
  * source or any intermediate operation.
- * 一个中间数据集是由一个操作符(要么是一个数据源,要么是任何一个中间的操作符)生产的数据集
+ * 一个中间数据集是由一个操作符(要么是一个数据源,要么是任何一个中间的操作)生产的数据集
  * 
  * Intermediate data sets may be read by other operators, materialized, or
  * discarded.

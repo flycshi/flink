@@ -71,6 +71,7 @@ import static org.apache.flink.runtime.execution.ExecutionState.FINISHED;
 /**
  * The ExecutionVertex is a parallel subtask of the execution. It may be executed once, or several times, each of
  * which time it spawns an {@link Execution}.
+ * ExecutionVertex 是一个并行子任务。它可能执行一次,或者多次,每次都产生一个 Execution
  */
 public class ExecutionVertex implements AccessExecutionVertex, Archiveable<ArchivedExecutionVertex> {
 

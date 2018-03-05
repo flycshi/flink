@@ -177,13 +177,20 @@ import static org.apache.flink.util.Preconditions.checkState;
  */
 public class ExecutionGraph implements AccessExecutionGraph, Archiveable<ArchivedExecutionGraph> {
 
-	/** In place updater for the execution graph's current state. Avoids having to use an
-	 * AtomicReference and thus makes the frequent read access a bit faster */
+	/**
+	 * In place updater for the execution graph's current state.
+	 * Avoids having to use an AtomicReference and thus makes the frequent read access a bit faster
+	 * 为执行图的当前状态设置更新
+	 * 避免使用原子引用, 从而使得频繁读取访问速度更快
+	 */
 	private static final AtomicReferenceFieldUpdater<ExecutionGraph, JobStatus> STATE_UPDATER =
 			AtomicReferenceFieldUpdater.newUpdater(ExecutionGraph.class, JobStatus.class, "state");
 
-	/** In place updater for the execution graph's current global recovery version.
-	 * Avoids having to use an AtomicLong and thus makes the frequent read access a bit faster */
+	/**
+	 * In place updater for the execution graph's current global recovery version.
+	 * Avoids having to use an AtomicLong and thus makes the frequent read access a bit faster
+	 * 为执行图的当前全局恢复版本设置更新
+	 */
 	private static final AtomicLongFieldUpdater<ExecutionGraph> GLOBAL_VERSION_UPDATER =
 			AtomicLongFieldUpdater.newUpdater(ExecutionGraph.class, "globalModVersion");
 
@@ -192,26 +199,43 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 
 	// --------------------------------------------------------------------------------------------
 
-	/** The lock used to secure all access to mutable fields, especially the tracking of progress
-	 * within the job. */
+	/**
+	 * The lock used to secure all access to mutable fields, especially the tracking of progress within the job.
+	 * 用于安全访问可修改字段的lock, 特别是用来跟踪job的处理进度的字段
+	 */
 	private final Object progressLock = new Object();
 
-	/** Job specific information like the job id, job name, job configuration, etc. */
+	/**
+	 * Job specific information like the job id, job name, job configuration, etc.
+	 * 比如 jobID、jobName、配置等的特定信息
+	 */
 	private final JobInformation jobInformation;
 
 	/** Serialized job information or a blob key pointing to the offloaded job information */
 	private final Either<SerializedValue<JobInformation>, PermanentBlobKey> jobInformationOrBlobKey;
 
-	/** The executor which is used to execute futures. */
+	/**
+	 * The executor which is used to execute futures.
+	 * 用来执行 futures 的执行器
+	 */
 	private final ScheduledExecutorService futureExecutor;
 
-	/** The executor which is used to execute blocking io operations */
+	/**
+	 * The executor which is used to execute blocking io operations
+	 * 用来执行阻塞io操作的执行器
+	 */
 	private final Executor ioExecutor;
 
-	/** {@code true} if all source tasks are stoppable. */
+	/**
+	 * {@code true} if all source tasks are stoppable.
+	 * 如果所有数据源任务都可停止的, 那就返回true
+	 */
 	private boolean isStoppable = true;
 
-	/** All job vertices that are part of this graph */
+	/**
+	 * All job vertices that are part of this graph
+	 * 这个图的所有 JobVertex 映射关系
+	 */
 	private final ConcurrentHashMap<JobVertexID, ExecutionJobVertex> tasks;
 
 	/** All vertices, in the order in which they were created **/
