@@ -68,6 +68,8 @@ import java.util.Set;
 /**
  * Class representing the streaming topology. It contains all the information
  * necessary to build the jobgraph for the execution.
+ * 表示流拓扑的类。
+ * 包含了构建执行的 JobGraph 所有必须信息
  *
  */
 @Internal

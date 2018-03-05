@@ -31,6 +31,7 @@ import java.util.Arrays;
 
 /**
  * Location information for all key groups of a {@link InternalKvState} instance.
+ * 一个{@link InternalKvState}实例的所有key组的位置信息
  *
  * <p>This is populated by the {@link KvStateLocationRegistry} and used by the
  * queryable state to target queries.
@@ -45,13 +46,22 @@ public class KvStateLocation implements Serializable {
 	/** JobVertexID the KvState instances belong to. */
 	private final JobVertexID jobVertexId;
 
-	/** Number of key groups of the operator the KvState instances belong to. */
+	/**
+	 * Number of key groups of the operator the KvState instances belong to.
+	 * KvState 实例归属的操作符的 key groups 的数量
+	 */
 	private final int numKeyGroups;
 
-	/** Name under which the KvState instances have been registered. */
+	/**
+	 * Name under which the KvState instances have been registered.
+	 * KvState 实例已经被注册到的名称
+	 */
 	private final String registrationName;
 
-	/** IDs for each KvState instance where array index corresponds to key group index. */
+	/**
+	 * IDs for each KvState instance where array index corresponds to key group index.
+	 * 每个 KvState 实例的ID，其中数组索引是 key group 的索引
+	 */
 	private final KvStateID[] kvStateIds;
 
 	/**
@@ -60,7 +70,10 @@ public class KvStateLocation implements Serializable {
 	 */
 	private final InetSocketAddress[] kvStateAddresses;
 
-	/** Current number of registered key groups. */
+	/**
+	 * Current number of registered key groups.
+	 * 当前已经注册的 key groups的数量
+	 */
 	private int numRegisteredKeyGroups;
 
 	/**

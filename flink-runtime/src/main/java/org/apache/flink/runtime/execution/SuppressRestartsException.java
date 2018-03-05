@@ -20,10 +20,13 @@ package org.apache.flink.runtime.execution;
 
 /**
  * Exception thrown in order to suppress job restarts.
+ * 用来抑制job重启的异常
  *
  * <p>This exception acts as a wrapper around the real cause and suppresses
  * job restarts. The JobManager will <strong>not</strong> restart a job, which
  * fails with this Exception.
+ * 这个异常时在真实异常上包裹一层，并抑制job重启。
+ * 由于这个异常失败的job，JobManager 将不会重启它
  */
 public class SuppressRestartsException extends RuntimeException {
 

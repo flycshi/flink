@@ -26,10 +26,14 @@ import java.nio.ByteBuffer;
 /**
  * Unique (at least statistically unique) identifier for a Flink Job. Jobs in Flink correspond
  * do dataflow graphs.
+ * 一个flink job的唯一标识。
+ * flink中的job对应数据流图
  * 
  * <p>Jobs act simultaneously as <i>sessions</i>, because jobs can be created and submitted
  * incrementally in different parts. Newer fragments of a graph can be attached to existing
  * graphs, thereby extending the current data flow graphs.</p>
+ * Jobs 同时也是<i>sessions</i>，因为jobs可以在不同部分被立即创建并提交。
+ * 一个图的新的部分可以附加到一个已经存在的图中，也就是扩展了当前的数据流图
  */
 @Public
 public final class JobID extends AbstractID {

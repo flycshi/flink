@@ -71,6 +71,9 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * It triggers the checkpoint by sending the messages to the relevant tasks and collects the
  * checkpoint acknowledgements. It also collects and maintains the overview of the state handles
  * reported by the tasks that acknowledge the checkpoint.
+ * 用来协调操作符和状态的分布式快照。
+ * 通过向相关的tasks发送消息并收集检查点的确认来触发检查点。
+ * 它也收集和管理那些确认了检查点的任务上报的状态句柄的概述。
  */
 public class CheckpointCoordinator {
 

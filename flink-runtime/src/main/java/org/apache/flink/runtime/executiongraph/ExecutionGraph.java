@@ -339,13 +339,20 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 	// ------ Configuration of the Execution -------
 	// ------ 执行的配置
 
-	/** Flag to indicate whether the scheduler may queue tasks for execution, or needs to be able
-	 * to deploy them immediately. */
+	/**
+	 * Flag to indicate whether the scheduler may queue tasks for execution,
+	 * or needs to be able to deploy them immediately.
+	 * 标识调度器是否可以将任务放到队列在调度执行，或者需要立即部署任务的 flag
+	 */
 	private boolean allowQueuedScheduling = false;
 
-	/** The mode of scheduling. Decides how to select the initial set of tasks to be deployed.
+	/**
+	 * The mode of scheduling. Decides how to select the initial set of tasks to be deployed.
 	 * May indicate to deploy all sources, or to deploy everything, or to deploy via backtracking
-	 * from results than need to be materialized. */
+	 * from results than need to be materialized.
+	 * 调度模型。
+	 * 决定如何来选择将要部署的初始任务集合。
+	 */
 	private ScheduleMode scheduleMode = ScheduleMode.LAZY_FROM_SOURCES;
 
 	// ------ Execution status and progress. These values are volatile, and accessed under the lock -------

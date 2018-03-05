@@ -23,9 +23,11 @@ import org.apache.flink.api.common.state.State;
 /**
  * The {@code InternalKvState} is the root of the internal state type hierarchy, similar to the
  * {@link State} being the root of the public API state hierarchy.
+ * {@code InternalKvState}时内部state类型层级的根，就好像{@link State}是公用API state层级的根一样。
  * 
  * <p>The internal state classes give access to the namespace getters and setters and access to
  * additional functionality, like raw value access or state merging.
+ * 内部状态类提供namespace访问的get和set方法，以及额外的访问函数，比如原生value的访问，state的合并
  * 
  * <p>The public API state hierarchy is intended to be programmed against by Flink applications.
  * The internal state hierarchy holds all the auxiliary methods that are used by the runtime and not
@@ -59,6 +61,7 @@ public interface InternalKvState<N> extends State {
 
 	/**
 	 * Sets the current namespace, which will be used when using the state access methods.
+	 * 设置当前namespace，在使用state访问方法时，会用到
 	 *
 	 * @param namespace The namespace.
 	 */
@@ -66,9 +69,11 @@ public interface InternalKvState<N> extends State {
 
 	/**
 	 * Returns the serialized value for the given key and namespace.
+	 * 获取给定key和namespace对应的序列化value
 	 *
 	 * <p>If no value is associated with key and namespace, <code>null</code>
 	 * is returned.
+	 * 如果没有关联的value，则返回<code>null</code>
 	 *
 	 * @param serializedKeyAndNamespace Serialized key and namespace
 	 * @return Serialized value or <code>null</code> if no value is associated with the key and namespace.

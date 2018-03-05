@@ -25,7 +25,7 @@ import org.apache.flink.runtime.jobgraph.JobGraph;
 
 /**
  * Abstract class representing Flink Streaming plans
- * 
+ * 表示flink流计划的抽象类
  */
 public abstract class StreamingPlan implements FlinkPlan {
 

@@ -23,6 +23,7 @@ import org.apache.flink.runtime.jobgraph.JobVertexID;
 
 /**
  * Common interface for the runtime {@link ExecutionJobVertex} and {@link ArchivedExecutionJobVertex}.
+ * 公用接口
  */
 public interface AccessExecutionJobVertex {
 	/**

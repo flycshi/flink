@@ -47,10 +47,16 @@ public class ArchivedExecutionGraph implements AccessExecutionGraph, Serializabl
 	/** The name of the original job graph. */
 	private final String jobName;
 
-	/** All job vertices that are part of this graph */
+	/**
+	 * All job vertices that are part of this graph
+	 * 这个执行图的所有工作节点
+	 */
 	private final Map<JobVertexID, ArchivedExecutionJobVertex> tasks;
 
-	/** All vertices, in the order in which they were created **/
+	/**
+	 * All vertices, in the order in which they were created
+	 * 所有节点，以他们被创建的顺序
+	 */
 	private final List<ArchivedExecutionJobVertex> verticesInCreationOrder;
 
 	/**

@@ -41,13 +41,18 @@ public class KvStateLocationRegistry {
 	/** JobID this coordinator belongs to. */
 	private final JobID jobId;
 
-	/** Job vertices for determining parallelism per key. */
+	/**
+	 * Job vertices for determining parallelism per key.
+	 * 用来决定每个key的并行度的job节点
+	 */
 	private final Map<JobVertexID, ExecutionJobVertex> jobVertices;
 
 	/**
 	 * Location info keyed by registration name. The name needs to be unique
 	 * per JobID, i.e. two operators cannot register KvState with the same
 	 * name.
+	 * 以注册名称为key，对应的位置信息。
+	 * 明细需要与JobID唯一对应，两个操作符不能用相同的名称注册KvState
 	 */
 	private final Map<String, KvStateLocation> lookupTable = new HashMap<>();
 
@@ -75,6 +80,7 @@ public class KvStateLocationRegistry {
 
 	/**
 	 * Notifies the registry about a registered KvState instance.
+	 * 向注册表通知一个 registered KvState 实例
 	 *
 	 * @param jobVertexId JobVertexID the KvState instance belongs to
 	 * @param keyGroupRange Key group range the KvState instance belongs to
@@ -98,6 +104,7 @@ public class KvStateLocationRegistry {
 
 		if (location == null) {
 			// First registration for this operator, create the location info
+			// 首先注册操作符，创建位置信息
 			ExecutionJobVertex vertex = jobVertices.get(jobVertexId);
 
 			if (vertex != null) {
@@ -110,6 +117,7 @@ public class KvStateLocationRegistry {
 		}
 
 		// Duplicated name if vertex IDs don't match
+		// 如果节点id不匹配，则名称重复了
 		if (!location.getJobVertexId().equals(jobVertexId)) {
 			IllegalStateException duplicate = new IllegalStateException(
 					"Registration name clash. KvState with name '" + registrationName +
@@ -128,6 +136,7 @@ public class KvStateLocationRegistry {
 
 	/**
 	 * Notifies the registry about an unregistered KvState instance.
+	 * 向注册表通知一个 unregistered KvState 实例
 	 *
 	 * @param jobVertexId JobVertexID the KvState instance belongs to
 	 * @param keyGroupRange Key group index the KvState instance belongs to
@@ -144,6 +153,7 @@ public class KvStateLocationRegistry {
 
 		if (location != null) {
 			// Duplicate name if vertex IDs don't match
+			// 如果节点id不匹配，则名称重复了
 			if (!location.getJobVertexId().equals(jobVertexId)) {
 				throw new IllegalArgumentException("Another operator (" +
 						location.getJobVertexId() + ") registered the KvState " +

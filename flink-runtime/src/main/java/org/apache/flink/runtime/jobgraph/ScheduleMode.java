@@ -26,7 +26,7 @@ public enum ScheduleMode {
 
 	/** Schedule tasks lazily from the sources. Downstream tasks are started once their input data are ready
 	 * 从源头就开始延迟调度。
-	 * 一定输入数据准备好，就启动下游任务
+	 * 一旦输入数据准备好，就启动下游任务
 	 */
 	LAZY_FROM_SOURCES,
 

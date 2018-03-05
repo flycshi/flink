@@ -28,6 +28,8 @@ import java.util.Map;
  * Serializable class which is created when archiving the job.
  * It can be used to display job information on the web interface
  * without having to keep the classloader around after job completion.
+ * 当归档job时创建的序列化类。
+ * 在job完成后，可以不用保持类加载器，用来在web接口上显示job信息
  */
 @Internal
 public class ArchivedExecutionConfig implements Serializable {

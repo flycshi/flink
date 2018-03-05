@@ -33,10 +33,12 @@ import java.util.Map;
 
 /**
  * Common interface for the runtime {@link ExecutionGraph} and {@link ArchivedExecutionGraph}.
+ * 公共接口
  */
 public interface AccessExecutionGraph {
 	/**
 	 * Returns the job plan as a JSON string.
+	 * 以一个json字符串的形式返回job的计划
 	 *
 	 * @return job plan as a JSON string
 	 */
@@ -44,13 +46,15 @@ public interface AccessExecutionGraph {
 
 	/**
 	 * Returns the {@link JobID} for this execution graph.
+	 * 返回执行图的{@link JobID}
 	 *
 	 * @return job ID for this execution graph
 	 */
 	JobID getJobID();
 
 	/**
-	 * Returns the job name for thie execution graph.
+	 * Returns the job name for the execution graph.
+	 * 返回执行图的job名称
 	 *
 	 * @return job name for this execution graph
 	 */
@@ -82,6 +86,7 @@ public interface AccessExecutionGraph {
 
 	/**
 	 * Returns a map containing all job vertices for this execution graph.
+	 * 返回一个包含了这个执行图的所有job节点的map
 	 *
 	 * @return map containing all job vertices for this execution graph
 	 */
