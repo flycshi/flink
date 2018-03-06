@@ -45,6 +45,8 @@ import java.util.Map;
 /**
  * Internal configuration for a {@link StreamOperator}. This is created and populated by the
  * {@link StreamingJobGraphGenerator}.
+ * 为{@link StreamOperator}提供的内部配置。
+ * 由{@link StreamingJobGraphGenerator}构建。
  */
 @Internal
 public class StreamConfig implements Serializable {

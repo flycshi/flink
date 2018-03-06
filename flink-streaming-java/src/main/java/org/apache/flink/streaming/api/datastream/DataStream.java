@@ -107,6 +107,40 @@ import java.util.List;
  * <li>{@link DataStream#filter}
  * </ul>
  *
+ * <pre>
+ *     {@link org.apache.flink.api.common.functions.Function}
+ *     {@link org.apache.flink.streaming.api.operators.StreamOperator}
+ *     {@link StreamTransformation}
+ *     {@link DataStream}
+ * </pre>
+ * 这四者之间的关系如下：
+ *
+ * <ol>
+ *     <li>
+ *         一般用户会继承{@link org.apache.flink.api.common.functions.Function}的某个子类，
+ *         比如{@link org.apache.flink.streaming.api.functions.source.SourceFunction}，实现一个数据源函数，
+ *         如{@link org.apache.flink.streaming.api.functions.source.SocketTextStreamFunction}
+ *     </li>
+ *     <li>
+ *         获取{@link org.apache.flink.api.common.functions.Function}的具体实现后，
+ *         会将其封装到{@link org.apache.flink.streaming.api.operators.StreamOperator}的具体实现中，
+ *         比如{@link org.apache.flink.streaming.api.operators.StreamSource}
+ *     </li>
+ *     <li>
+ *         将获取的{@link org.apache.flink.streaming.api.operators.StreamOperator}的具体实现的实例，作为构造函数的入参传入
+ *         {@link DataStream}的具体实现，比如{@link DataStreamSource}
+ *     </li>
+ *     <li>
+ *         在{@link DataStream}的子类的构造函数中，如{@link DataStreamSource}的构造函数中，
+ *         会以{@link org.apache.flink.streaming.api.operators.StreamOperator}构造一个{@link StreamTransformation}的实例，
+ *         作为{@link DataStream}的一个属性
+ *     </li>
+ * </ol>
+ * <pre>
+ * 通过上述的构造关系，最终用户自定义处理逻辑的函数就被包含在了{@link DataStream}中了。
+ * {@code Function} --> {@code StreamOperator} --> {@code StreamTransformation} --> {@code DataStream}
+ * </pre>
+ *
  * @param <T> The type of the elements in this stream.
  */
 @Public

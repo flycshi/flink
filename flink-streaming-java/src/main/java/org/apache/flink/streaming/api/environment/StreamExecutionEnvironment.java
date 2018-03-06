@@ -1197,8 +1197,11 @@ public abstract class StreamExecutionEnvironment {
 	 * @param maxRetry
 	 * 		The maximal retry interval in seconds while the program waits for a socket that is temporarily down.
 	 * 		Reconnection is initiated every second. A number of 0 means that the reader is immediately terminated,
-	 * 		while
-	 * 		a	negative value ensures retrying forever.
+	 * 		while a	negative value ensures retrying forever.
+	 * 		当程序等待一个临时关闭的socket时的最大重试间隔，单位秒。
+	 * 		每秒进行一次重连。
+	 * 		0意味着reader时立即终止，而一个负值则一直重试。
+	 *
 	 * @return A data stream containing the strings received from the socket
 	 *
 	 * @deprecated Use {@link #socketTextStream(String, int, String, long)} instead.
@@ -1465,6 +1468,8 @@ public abstract class StreamExecutionEnvironment {
 	 * 		type of the returned stream
 	 * @param typeInfo
 	 * 		the user defined type information for the stream
+	 * 		用户为这个流自定义的类型信息
+	 *
 	 * @return the data stream constructed
 	 */
 	@SuppressWarnings("unchecked")

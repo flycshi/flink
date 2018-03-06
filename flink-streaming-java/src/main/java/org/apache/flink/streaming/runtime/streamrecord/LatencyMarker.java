@@ -36,7 +36,7 @@ public final class LatencyMarker extends StreamElement {
 
 	/**
 	 * The time the latency mark is denoting.
-	 * 延迟标记表示的时间
+	 * 潜伏标记表示的时间
 	 */
 	private final long markedTime;
 

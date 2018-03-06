@@ -30,11 +30,11 @@ import java.io.Serializable;
 /**
  * An {@link OutputTag} is a typed and named tag to use for tagging side outputs
  * of an operator.
- * 一个 OutputTag 是一个 类型 并且 被命名的tag, 用来标识一个操作符的侧输出。
+ * 一个{@link OutputTag}是一个类型并且被命名的tag，用来标识一个操作符的侧输出。
  *
  * <p>An {@code OutputTag} must always be an anonymous inner class so that Flink can derive
  * a {@link TypeInformation} for the generic type parameter.
- * 一个 OutputTag 必须总是隐式内部类, 这样 flink 可以获取一般参数类型的 TypeInfomation
+ * 一个{@link OutputTag}必须总是隐式内部类, 这样<i>flink</i>可以获取一般参数类型的{@link TypeInformation}
  *
  * <p>Example:
  * <pre>{@code
