@@ -30,6 +30,8 @@ import java.util.List;
  * The factory that instantiates the environment to be used when running jobs that are
  * submitted through a pre-configured client connection.
  * This happens for example when a job is submitted from the command line.
+ * 实例化环境的工厂, 当执行从预配置的客户端连接提交的job时要使用。
+ * 比如当从命令行提交作业时会发生这种情况。
  */
 public class ContextEnvironmentFactory implements ExecutionEnvironmentFactory {
 

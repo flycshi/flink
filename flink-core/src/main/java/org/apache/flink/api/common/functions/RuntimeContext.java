@@ -49,9 +49,12 @@ import java.util.Map;
  * A RuntimeContext contains information about the context in which functions are executed. Each parallel instance
  * of the function will have a context through which it can access static contextual information (such as 
  * the current parallelism) and other constructs like accumulators and broadcast variables.
+ * {@code RuntimeContext}包含了函数执行所在的上下文的信息。
+ * 函数的每个并行实例将有一个上下文, 通过该上下文, 它可以获取静态上下文信息(比如当前的并行度), 以及其他结构, 比如累加器和广播变量。
  * <p>
  * A function can, during runtime, obtain the RuntimeContext via a call to
  * {@link AbstractRichFunction#getRuntimeContext()}.
+ * 一个函数, 在运行期间, 可以通过{@link AbstractRichFunction#getRuntimeContext()}获取{@code RuntimeContext}
  */
 @Public
 public interface RuntimeContext {

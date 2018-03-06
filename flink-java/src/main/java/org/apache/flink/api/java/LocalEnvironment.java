@@ -31,6 +31,7 @@ import org.apache.flink.configuration.Configuration;
 /**
  * An {@link ExecutionEnvironment} that runs the program locally, multi-threaded, in the JVM where the
  * environment is instantiated.
+ * 在环境被实例化的JVM中, 本地运行程序, 多线程 的一个 {@link ExecutionEnvironment}
  *
  * <p>When this environment is instantiated, it uses a default parallelism of {@code 1}. The default
  * parallelism can be set via {@link #setParallelism(int)}.

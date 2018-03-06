@@ -41,6 +41,7 @@ import java.util.Arrays;
 
 /**
  * An operation that allows storing data results.
+ * 允许存储数据结果的一个操作符
  * @param <T>
  */
 @Public

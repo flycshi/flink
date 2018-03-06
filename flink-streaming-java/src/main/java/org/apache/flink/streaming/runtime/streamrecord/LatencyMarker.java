@@ -23,16 +23,21 @@ import org.apache.flink.annotation.PublicEvolving;
 /**
  * Special record type carrying a timestamp of its creation time at a source operator
  * and the vertexId and subtask index of the operator.
+ * 特殊记录, 用来携带它在源操作符处创建时的时间戳, 以及节点id, 操作符的子任务的索引。
  *
  * <p>At sinks, the marker can be used to approximate the time a record needs to travel
  * through the dataflow.
+ * 在sinks处, 该标记可以用来粗略估计一个记录在数据流中传输所需的时间。
  */
 @PublicEvolving
 public final class LatencyMarker extends StreamElement {
 
 	// ------------------------------------------------------------------------
 
-	/** The time the latency mark is denoting. */
+	/**
+	 * The time the latency mark is denoting.
+	 * 延迟标记表示的时间
+	 */
 	private final long markedTime;
 
 	private final int vertexID;

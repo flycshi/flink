@@ -19,19 +19,21 @@
 
 package org.apache.flink.api.common.aggregators;
 
-import java.io.Serializable;
-
 import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.types.Value;
 
+import java.io.Serializable;
+
 /**
  * Used to check for convergence.
+ * 用来检测收敛
  */
 @PublicEvolving
 public interface ConvergenceCriterion<T extends Value> extends Serializable {
 
 	/**
 	 * Decide whether the iterative algorithm has converged
+	 * 决定迭代算法是否收敛
 	 */
 	boolean isConverged(int iteration, T value);
 }

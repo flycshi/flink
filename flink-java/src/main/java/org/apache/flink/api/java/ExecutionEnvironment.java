@@ -79,9 +79,13 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * The ExecutionEnvironment is the context in which a program is executed. A
  * {@link LocalEnvironment} will cause execution in the current JVM, a
  * {@link RemoteEnvironment} will cause execution on a remote setup.
+ * {@code ExecutionEnvironment}是一个程序执行的上下文。
+ * {@link LocalEnvironment}将在当前JVM中执行,
+ * {@link RemoteEnvironment}将在一个远程配置中执行。
  *
  * <p>The environment provides methods to control the job execution (such as setting the parallelism)
  * and to interact with the outside world (data access).
+ * 环境提供了方法用来控制job的执行(比如设置并行度),以及与外部世界交互(数据访问)。
  *
  * <p>Please note that the execution environment needs strong type information for the input and return types
  * of all operations that are executed. This means that the environments needs to know that the return
@@ -89,6 +93,10 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * Because the Java compiler throws much of the generic type information away, most methods attempt to re-
  * obtain that information using reflection. In certain cases, it may be necessary to manually supply that
  * information to some of the methods.
+ * 请注意,执行环境对于执行的所有操作的输入和输出的类型都需要很强的类型信息。
+ * 这意味着环境需要知道一个操作符的返回值的的类型,比如一个String and Integer的二元组。
+ * 因为java编译器会丢弃很多一般类型信息,很多方法会通过反射获取类型信息。
+ * 在一些场景下,有必要手动提供类型信息给一些方法。
  *
  * @see LocalEnvironment
  * @see RemoteEnvironment
@@ -99,10 +107,16 @@ public abstract class ExecutionEnvironment {
 	/** The logger used by the environment and its subclasses. */
 	protected static final Logger LOG = LoggerFactory.getLogger(ExecutionEnvironment.class);
 
-	/** The environment of the context (local by default, cluster if invoked through command line). */
+	/**
+	 * The environment of the context (local by default, cluster if invoked through command line).
+	 * 上下文环境(默认是本地的, 如果从命令行调用则是集群)
+	 */
 	private static ExecutionEnvironmentFactory contextEnvironmentFactory;
 
-	/** The default parallelism used by local environments. */
+	/**
+	 * The default parallelism used by local environments.
+	 * 本地环境使用的默认并行度
+	 */
 	private static int defaultLocalDop = Runtime.getRuntime().availableProcessors();
 
 	// --------------------------------------------------------------------------------------------
@@ -113,17 +127,31 @@ public abstract class ExecutionEnvironment {
 
 	private final ExecutionConfig config = new ExecutionConfig();
 
-	/** Result from the latest execution, to make it retrievable when using eager execution methods. */
+	/**
+	 * Result from the latest execution, to make it retrievable when using eager execution methods.
+	 * 最新的执行结果, 使其在使用迫切的执行方法时可检索
+	 */
 	protected JobExecutionResult lastJobExecutionResult;
 
-	/** The ID of the session, defined by this execution environment. Sessions and Jobs are same in
-	 *  Flink, as Jobs can consist of multiple parts that are attached to the growing dataflow graph. */
+	/**
+	 * The ID of the session, defined by this execution environment.
+	 * Sessions and Jobs are same in Flink,
+	 * as Jobs can consist of multiple parts that are attached to the growing dataflow graph.
+	 * 会话ID, 由这个执行环境定义。
+	 * 在flink中会话和job都是一样的, 因为job可以由附加在增长的数据流图上的多个部分组成。
+	 */
 	protected JobID jobID;
 
-	/** The session timeout in seconds. */
+	/**
+	 * The session timeout in seconds.
+	 * 会话超时时间, 单位为秒
+	 */
 	protected long sessionTimeout;
 
-	/** Flag to indicate whether sinks have been cleared in previous executions. */
+	/**
+	 * Flag to indicate whether sinks have been cleared in previous executions.
+	 * 标识 sinks 是否在前一次执行中被清理的 flag
+	 */
 	private boolean wasExecuted = false;
 
 	/**

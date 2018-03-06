@@ -25,8 +25,10 @@ import java.io.Serializable;
 
 /**
  * Describe the different resource factors of the operator with UDF.
+ * 描述使用UDF的操作符的不同资源比例
  *
  * The state backend provides the method to estimate memory usages based on state size in the resource.
+ * 状态后端提供了根据资源中状态大小来估计内存使用的方法。
  *
  * Resource provides {@link #merge(ResourceSpec)} method for chained operators when generating job graph.
  *

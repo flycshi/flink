@@ -33,6 +33,8 @@ import java.io.Serializable;
  * The methods in this class are assumed to be stateless, such that it is effectively thread safe. Stateful
  * implementations of the methods may lead to unpredictable side effects and will compromise both stability and
  * correctness of the program.
+ * 这个类中的方法都是无状态的,以便达到线程安全。
+ * 这些方法的有状态实现可能导致不可预测的副作用,并且会影响程序的稳定性和正确性。
  * 
  * @param <T> The data type that the serializer serializes.
  */

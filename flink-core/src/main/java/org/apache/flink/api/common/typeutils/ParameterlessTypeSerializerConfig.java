@@ -27,6 +27,7 @@ import java.io.IOException;
 
 /**
  * A base class for {@link TypeSerializerConfigSnapshot}s that do not have any parameters.
+ * 没有任何参数的{@link TypeSerializerConfigSnapshot}的一个基类
  */
 @Internal
 public final class ParameterlessTypeSerializerConfig extends TypeSerializerConfigSnapshot {

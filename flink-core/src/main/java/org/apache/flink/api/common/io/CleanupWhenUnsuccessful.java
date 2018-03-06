@@ -22,14 +22,17 @@ import org.apache.flink.annotation.Public;
 
 /**
  * {@link OutputFormat}s may implement this interface to run a cleanup hook when the execution is not successful.
+ * {@link OutputFormat}可以实现这个接口, 在执行不成功时, 运行一个清理hook。
  */
 @Public
 public interface CleanupWhenUnsuccessful {
 	
 	/**
 	 * Hook that is called upon an unsuccessful execution.
+	 * 在执行不成功时被调用的hook
 	 * 
 	 * @throws Exception The method may forward exceptions when the cleanup fails.
+	 * 					 当清理失败时, 这个方法可能到导致一个异常
 	 */
 	void tryCleanupOnError() throws Exception;
 }

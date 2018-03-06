@@ -18,9 +18,8 @@
 
 package org.apache.flink.api.common.typeinfo;
 
-import java.util.Map;
-import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.annotation.Public;
+import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -28,6 +27,7 @@ import org.apache.flink.api.java.typeutils.TypeExtractor;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * TypeInformation is the core class of Flink's type system. Flink requires a type information
@@ -45,9 +45,9 @@ import java.util.Collections;
  * hold for all instances of a type. For that reason, elements in lists and arrays are not
  * assigned to individual fields, but the lists and arrays are considered to be one field in total,
  * to account for different lengths in the arrays.
- * TypeInformation 在编程语言对象模型和逻辑平面模式之间架起了桥梁。
+ * {@code TypeInformation}在编程语言对象模型和逻辑平面模式之间架起了桥梁。
  * 它将类型中的字段映射到平板模式下的列。
- * 一个类型的所欲偶字段并不是映射成平面模式中的一个独立的字段，而是整个类型映射成一个字段。
+ * 并不是一个类型的所有字段都会映射成平面模式中的一个独立的字段，经常是整个类型映射成一个字段。
  * 需要特别注意的是，一个模式必须能够包含一个类型的所有实例。
  * 介于此，list和array中的元素，不会被分配给独立的字段，而是作为一个整体字段，具有不同的长度。
  *
@@ -83,7 +83,7 @@ import java.util.Collections;
  * has an arity of two, and also two fields totally. The "OuterType" has an arity of two fields,
  * and a total number of three fields ( it contains "id", "text", and "timestamp" through recursive flattening).
  *
- * @param <T> The type represented by this type information.
+ * @param <T> The type represented by this type information. 这个 TypeInformation 表示的类型
  */
 @Public
 public abstract class TypeInformation<T> implements Serializable {

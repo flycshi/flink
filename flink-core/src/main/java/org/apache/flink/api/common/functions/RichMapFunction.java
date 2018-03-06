@@ -25,6 +25,8 @@ import org.apache.flink.annotation.Public;
  * {@link org.apache.flink.api.common.functions.RuntimeContext} and provides setup and teardown methods:
  * {@link RichFunction#open(org.apache.flink.configuration.Configuration)} and
  * {@link RichFunction#close()}.
+ * {@link MapFunction}的丰富变种。
+ * 作为一个{@link RichFunction}, 它提供{@link org.apache.flink.api.common.functions.RuntimeContext}的访问, 并提供配置和关闭方法。
  * 
  * @param <IN> Type of the input elements.
  * @param <OUT> Type of the returned elements.

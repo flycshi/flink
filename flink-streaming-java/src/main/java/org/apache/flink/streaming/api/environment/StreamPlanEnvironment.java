@@ -29,6 +29,7 @@ import org.apache.flink.streaming.api.graph.StreamGraph;
 /**
  * A special {@link StreamExecutionEnvironment} that is used in the web frontend when generating
  * a user-inspectable graph of a streaming job.
+ * 当产生一个流工作的用户检查的图的时候, 应用在web前端的特殊{@link StreamExecutionEnvironment}
  */
 @PublicEvolving
 public class StreamPlanEnvironment extends StreamExecutionEnvironment {

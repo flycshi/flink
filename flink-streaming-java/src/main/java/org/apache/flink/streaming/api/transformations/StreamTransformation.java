@@ -44,10 +44,14 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * a tree of {@code StreamTransformation}s underneath. When the stream program is to be executed
  * this graph is translated to a {@link StreamGraph} using
  * {@link org.apache.flink.streaming.api.graph.StreamGraphGenerator}.
+ * 类似{@link org.apache.flink.streaming.api.datastream.DataStream#map}的API操作创建了一个{@code StreamTransformation}树。
  *
  * <p>A {@code StreamTransformation} does not necessarily correspond to a physical operation
  * at runtime. Some operations are only logical concepts. Examples of this are union,
  * split/select data stream, partitioning.
+ * {@code StreamTransformation}不一定对应一个运行时的物理操作。
+ * 某些操作只是逻辑概念。
+ * 比如 union、split、select、分区等。
  *
  * <p>The following graph of {@code StreamTransformations}:
  * <pre>{@code
@@ -99,6 +103,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 public abstract class StreamTransformation<T> {
 
 	// This is used to assign a unique ID to every StreamTransformation
+	// 用来为每个{@code StreamTransformation}分配一个唯一的ID
 	protected static Integer idCounter = 0;
 
 	public static int getNewNodeId() {
@@ -112,9 +117,15 @@ public abstract class StreamTransformation<T> {
 	protected String name;
 
 	protected TypeInformation<T> outputType;
+
 	// This is used to handle MissingTypeInfo. As long as the outputType has not been queried
 	// it can still be changed using setOutputType(). Afterwards an exception is thrown when
 	// trying to change the output type.
+	/**
+	 * 这个属性是用来处理{@link MissingTypeInfo}。
+	 * {@link outputType}只要还没有被查询过, 就可以通过{@link #setOutputType(TypeInformation)}方法进行变更设置。
+	 * 否则, 当尝试变更{@link outputType}时就会抛出异常。
+	 */
 	protected boolean typeUsed;
 
 	private int parallelism;
@@ -122,18 +133,24 @@ public abstract class StreamTransformation<T> {
 	/**
 	 * The maximum parallelism for this stream transformation. It defines the upper limit for
 	 * dynamic scaling and the number of key groups used for partitioned state.
+	 * 这个{@code StreamTransformation}的最大并行度。
+	 * 它定义了动态扩展的上限, 以及用于分区状态的key-group的数量
 	 */
 	private int maxParallelism = -1;
 
 	/**
 	 *  The minimum resources for this stream transformation. It defines the lower limit for
 	 *  dynamic resources resize in future plan.
+	 *  这个{@code StreamTransformation}的最小资源。
+	 *  它定义了在未来计划中资源动态调整的下限。
 	 */
 	private ResourceSpec minResources = ResourceSpec.DEFAULT;
 
 	/**
 	 *  The preferred resources for this stream transformation. It defines the upper limit for
 	 *  dynamic resource resize in future plan.
+	 *  这个{@code StreamTransformation}的最优资源。
+	 *  它定义了资源动态调整的上限。
 	 */
 	private ResourceSpec preferredResources = ResourceSpec.DEFAULT;
 
@@ -142,9 +159,16 @@ public abstract class StreamTransformation<T> {
 	 * same operator ID across job restarts. There is also the automatically
 	 * generated {@link #id}, which is assigned from a static counter. That
 	 * field is independent from this.
+	 * {@code StreamTransformation}的用户自定义id。
+	 * 这个是用来在job重启时分配相同的操作符id。
+	 * 这里也有自动产生的id, 从一个静态的计数器来分配的。
+	 * {@link idCounter}字段是独立的
 	 */
 	private String uid;
 
+	/**
+	 * 用户提供的节点hash值
+	 */
 	private String userProvidedNodeHash;
 
 	protected long bufferTimeout = -1;
@@ -153,6 +177,7 @@ public abstract class StreamTransformation<T> {
 
 	/**
 	 * Creates a new {@code StreamTransformation} with the given name, output type and parallelism.
+	 * 用给定的名称、输出类型、并行度构建一个新的{@code StreamTransformation}
 	 *
 	 * @param name The name of the {@code StreamTransformation}, this will be shown in Visualizations and the Log
 	 * @param outputType The output type of this {@code StreamTransformation}

@@ -94,8 +94,10 @@ import java.util.List;
 
 /**
  * A DataSet represents a collection of elements of the same type.
+ * {@code DataSet}表示相同类型的元素的一个集合
  *
  * <p>A DataSet can be transformed into another DataSet by applying a transformation as for example
+ * 	  {@code DataSet}可以应用一个转换来转化为另一个{@code DataSet}
  * <ul>
  *   <li>{@link DataSet#map(org.apache.flink.api.common.functions.MapFunction)},</li>
  *   <li>{@link DataSet#reduce(org.apache.flink.api.common.functions.ReduceFunction)},</li>

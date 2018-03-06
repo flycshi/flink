@@ -25,13 +25,17 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to mark classes and methods for public use, but with evolving interfaces.
+ * 标记类和方法用于共用,但是具有进化接口的注解
  *
  * <p>Classes and methods with this annotation are intended for public use and have stable behavior.
  * However, their interfaces and signatures are not considered to be stable and might be changed
  * across versions.
+ * 添加了该注解的类和方法打算给公共调用使用,具有稳定的行为。
+ * 但是他们的接口和签名课鞥不稳定,在版本减可能会变化。
  *
  * <p>This annotation also excludes methods and classes with evolving interfaces / signatures
  * within classes annotated with {@link Public}.
+ * 该注释还不包括在使用{@link Public}注释的类中具有演进的接口/签名的方法和类
  *
  */
 @Documented

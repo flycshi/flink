@@ -55,6 +55,7 @@ public abstract class TypeSerializerSingleton<T> extends TypeSerializer<T>{
 	@Override
 	public TypeSerializerConfigSnapshot snapshotConfiguration() {
 		// type serializer singletons should always be parameter-less
+		// 单例类型序列化器 应该总是 少参数的。
 		return new ParameterlessTypeSerializerConfig(getSerializationFormatIdentifier());
 	}
 
@@ -72,6 +73,7 @@ public abstract class TypeSerializerSingleton<T> extends TypeSerializer<T>{
 
 	/**
 	 * Subclasses can override this if they know that they are also compatible with identifiers of other formats.
+	 * 如果他们知道与其他格式的标识也是兼容的话, 子类可以覆盖该方法
 	 */
 	protected boolean isCompatibleSerializationFormatIdentifier(String identifier) {
 		return identifier.equals(getSerializationFormatIdentifier());

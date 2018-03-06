@@ -28,8 +28,14 @@ import java.io.Serializable;
  * into zero, one, or more elements. Typical applications can be splitting elements, or unnesting lists
  * and arrays. Operations that produce multiple strictly one result element per input element can also
  * use the {@link MapFunction}.
+ * flatMap函数的基础接口。
+ * faltmap函数拿到元素, 并转换他们, 可能是0、1、或者更多各元素。
+ * 常见应用场景可能是分割元素, 或者解套列表和数组。
+ * 每个输入元素严格产生一个结果元素的操作可以使用{@link MapFunction}来实现。
+ *
  * <p>
  * The basic syntax for using a FlatMapFunction is as follows:
+ * 使用{@code FlatMapFunction}的基本语法如下:
  * <pre>{@code
  * DataSet<X> input = ...;
  * 

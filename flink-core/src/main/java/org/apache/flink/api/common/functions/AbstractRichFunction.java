@@ -18,16 +18,18 @@ c * Licensed to the Apache Software Foundation (ASF) under one
 
 package org.apache.flink.api.common.functions;
 
-import java.io.Serializable;
-
 import org.apache.flink.annotation.Public;
 import org.apache.flink.configuration.Configuration;
+
+import java.io.Serializable;
 
 /**
  * An abstract stub implementation for rich user-defined functions.
  * Rich functions have additional methods for initialization ({@link #open(Configuration)}) and
  * teardown ({@link #close()}), as well as access to their runtime execution context via
  * {@link #getRuntimeContext()}.
+ * 丰富用户自定义函数的一个抽象的根实现。
+ * Rich functions 具有额外的方法, 用来初始化、关闭、以及访问他们的运行时执行上下文。
  */
 @Public
 public abstract class AbstractRichFunction implements RichFunction, Serializable {

@@ -29,13 +29,22 @@ import org.apache.flink.annotation.Internal;
 @Internal
 public final class StreamRecord<T> extends StreamElement {
 
-	/** The actual value held by this record. */
+	/**
+	 * The actual value held by this record.
+	 * 这个记录持有的真实值
+	 */
 	private T value;
 
-	/** The timestamp of the record. */
+	/**
+	 * The timestamp of the record.
+	 * 记录的时间戳
+	 */
 	private long timestamp;
 
-	/** Flag whether the timestamp is actually set. */
+	/**
+	 * Flag whether the timestamp is actually set.
+	 * 时间戳是否真被设置的标识
+	 */
 	private boolean hasTimestamp;
 
 	/**

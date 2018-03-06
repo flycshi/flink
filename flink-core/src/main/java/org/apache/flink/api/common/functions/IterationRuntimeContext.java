@@ -28,6 +28,8 @@ public interface IterationRuntimeContext extends RuntimeContext {
 	
 	/**
 	 * Gets the number of the current superstep. Superstep numbers start at <i>1</i>.
+	 * 获取当前超步骤的序号。
+	 * 超步骤的序号从1开始。
 	 * 
 	 * @return The number of the current superstep.
 	 */

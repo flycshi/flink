@@ -39,11 +39,17 @@ import java.util.List;
  * An {@link ExecutionEnvironment} that sends programs to a cluster for execution. The environment
  * needs to be created with the address and port of the JobManager of the Flink cluster that
  * should execute the programs.
+ * 将程序发送到一个集群执行的{@link ExecutionEnvironment}。
+ * 需要使用执行程序的flink集群的{@code JobManager}的地址和端口来创建环境。
  *
  * <p>Many programs executed via the remote environment depend on additional classes. Such classes
  * may be the classes of functions (transformation, aggregation, ...) or libraries. Those classes
  * must be attached to the remote environment as JAR files, to allow the environment to ship the
  * classes into the cluster for the distributed execution.
+ * 许多通过远程环境执行的程序依赖额外的类。
+ * 这些类可能是函数的类(转换、聚合、...)或者库。
+ * 这些类必须作为jar包附加到远程环境, 以便允许让环境将类发送到集群中, 进行分布式执行。
+ *
  */
 @Public
 public class RemoteEnvironment extends ExecutionEnvironment {

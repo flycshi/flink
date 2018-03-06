@@ -33,8 +33,9 @@ import java.util.List;
  * This Transformation represents the application of a
  * {@link org.apache.flink.streaming.api.operators.OneInputStreamOperator} to one input
  * {@link org.apache.flink.streaming.api.transformations.StreamTransformation}.
+ * 这个转换表示了一个输入的应用
  *
- * @param <IN> The type of the elements in the nput {@code StreamTransformation}
+ * @param <IN> The type of the elements in the input {@code StreamTransformation}
  * @param <OUT> The type of the elements that result from this {@code OneInputTransformation}
  */
 @Internal

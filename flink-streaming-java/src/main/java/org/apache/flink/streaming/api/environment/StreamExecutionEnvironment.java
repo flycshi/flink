@@ -144,7 +144,10 @@ public abstract class StreamExecutionEnvironment {
 	 */
 	private final ExecutionConfig config = new ExecutionConfig();
 
-	/** Settings that control the checkpointing behavior. */
+	/**
+	 * Settings that control the checkpointing behavior.
+	 * 控制检查点行为的配置
+	 */
 	private final CheckpointConfig checkpointCfg = new CheckpointConfig();
 
 	protected final List<StreamTransformation<?>> transformations = new ArrayList<>();

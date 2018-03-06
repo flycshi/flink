@@ -18,24 +18,25 @@
 
 package org.apache.flink.api.common.io;
 
+import org.apache.flink.annotation.Public;
+import org.apache.flink.configuration.ConfigConstants;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.GlobalConfiguration;
+import org.apache.flink.core.fs.FSDataOutputStream;
+import org.apache.flink.core.fs.FileSystem;
+import org.apache.flink.core.fs.FileSystem.WriteMode;
+import org.apache.flink.core.fs.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.flink.annotation.Public;
-import org.apache.flink.configuration.GlobalConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.flink.configuration.ConfigConstants;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.core.fs.FSDataOutputStream;
-import org.apache.flink.core.fs.FileSystem;
-import org.apache.flink.core.fs.Path;
-import org.apache.flink.core.fs.FileSystem.WriteMode;
-
 /**
  * The abstract base class for all Rich output formats that are file based. Contains the logic to
- * open/close the target
- * file streams.
+ * open/close the target file streams.
+ * 所有基于文件的 Rich output format 的抽象基类
+ * 包含打开/关闭目标文件流的逻辑。
  */
 @Public
 public abstract class FileOutputFormat<IT> extends RichOutputFormat<IT> implements InitializeOnMaster, CleanupWhenUnsuccessful {

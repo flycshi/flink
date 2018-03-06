@@ -30,23 +30,34 @@ import java.io.Serializable;
  * This interface describes the methods that are required for a data type to be handled by the pact
  * runtime. Specifically, this interface contains the methods used for hashing, comparing, and creating
  * auxiliary structures.
+ * 这个接口描述了协议运行时要处理的数据类型所需的方法。
+ * 具体来说, 这个接口包含了用于哈希、比较、创建辅助结构的方法。
+ *
  * <p>
  * The methods in this interface depend not only on the record, but also on what fields of a record are
  * used for the comparison or hashing. That set of fields is typically a subset of a record's fields.
  * In general, this class assumes a contract on hash codes and equality the same way as defined for
- * {@link java.lang.Object#equals(Object)} {@link java.lang.Object#equals(Object)}
+ * {@link Object#hashCode()} {@link java.lang.Object#equals(Object)}
+ * 接口的方法不仅依赖于记录,还依赖于哪些字段用于比较和哈希。
+ * 这些字段集合通常是一个记录字段的子集。
+ * 一般来说,这个类在hash codes和equality上假设了与Object中定义的hashCode和equals一样的契约。
+ *
  * <p>
  * Implementing classes are stateful, because several methods require to set one record as the reference for
  * comparisons and later comparing a candidate against it. Therefore, the classes implementing this interface are
  * not thread safe. The runtime will ensure that no instance is used twice in different threads, but will create
  * a copy for that purpose. It is hence imperative that the copies created by the {@link #duplicate()} method
  * share no state with the instance from which they were copied: they have to be deep copies.
+ * 实现类是有状态的,因为一些方法需要设置一个record作为比较的对象,然后将一个候选对象与它进行比较。
+ * 因此,实现这个接口的类不是线程安全的。
+ * 运行时将确保在不同线程中不会使用同一个实例,但是会为此创建一个副本。
+ * 因此,{@link #duplicate()}方法创建的副本与被赋值的实例不共享任何状态,他们必须是深度copy。
  *
  * @see java.lang.Object#hashCode()
  * @see java.lang.Object#equals(Object)
  * @see java.util.Comparator#compare(Object, Object)
  * 
- * @param <T> The data type that the comparator works on.
+ * @param <T> The data type that the comparator works on.	比较器处理的数据类型
  */
 @PublicEvolving
 public abstract class TypeComparator<T> implements Serializable {

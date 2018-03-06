@@ -19,16 +19,19 @@
 
 package org.apache.flink.types;
 
-import java.io.Serializable;
-
 import org.apache.flink.annotation.Public;
 import org.apache.flink.core.io.IOReadableWritable;
 
+import java.io.Serializable;
+
 /**
  * Basic value interface for types that act as serializable values.
+ * 作为可序列化值的类型的基本值接口。
+ *
  * <p>
  * This interface extends {@link IOReadableWritable} and requires to implement
  * the serialization of its value.
+ * 这个继承自{@link IOReadableWritable}, 并且需要实现它的value的序列化
  * 
  * @see org.apache.flink.core.io.IOReadableWritable
  */
