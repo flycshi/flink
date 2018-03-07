@@ -99,9 +99,11 @@ import java.util.List;
 
 /**
  * A DataStream represents a stream of elements of the same type. A DataStream
- * 一个DataStream描述了一个相同类型元素的流。一个DataStream可以通过应用一个transformation转换为其他的DataStream。
  * can be transformed into another DataStream by applying a transformation as
  * for example:
+ * 一个{@code DataStream}描述了一个相同类型元素的流。
+ * 一个{@code DataStream}可以通过应用一个{@link StreamTransformation}转换为其他的{@code DataStream}。
+ *
  * <ul>
  * <li>{@link DataStream#map}
  * <li>{@link DataStream#filter}
@@ -138,6 +140,9 @@ import java.util.List;
  * {@code Function} --> {@code StreamOperator} --> {@code StreamTransformation} --> {@code DataStream}
  * </pre>
  *
+ * {@code DataStream}作为一个数据集，则需要在其上进行各种数据操作，如{@code map}、{@code reduce}等，
+ * 因此{@code DataStream}提供了很多数据操作的API，通过这些API可以{@code DataStream}转换为新的{@code DataStream}。
+ *
  * @param <T> The type of the elements in this stream.
  */
 @Public
@@ -161,6 +166,8 @@ public class DataStream<T> {
 	/**
 	 * Returns the ID of the {@link DataStream} in the current {@link StreamExecutionEnvironment}.
 	 *
+	 * {@code DataStream}的id就是其拥有的{@link StreamTransformation}实例的id。
+	 *
 	 * @return ID of the DataStream
 	 */
 	@Internal
@@ -170,6 +177,8 @@ public class DataStream<T> {
 
 	/**
 	 * Gets the parallelism for this operator.
+	 *
+	 * {@code DataStream}的并行度就是其拥有的{@link StreamTransformation}实例的并行度
 	 *
 	 * @return The parallelism set for this operator.
 	 */

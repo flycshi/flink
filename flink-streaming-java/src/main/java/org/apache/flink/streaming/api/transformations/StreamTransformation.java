@@ -283,23 +283,34 @@ public abstract class StreamTransformation<T> {
 	/**
 	 * Sets an user provided hash for this operator. This will be used AS IS the create the
 	 * JobVertexID.
+	 * 为这个操作符设置一个用户提供的散列值。
+	 * 这将用于创建{@link org.apache.flink.runtime.jobgraph.JobVertexID}
 	 *
 	 * <p>The user provided hash is an alternative to the generated hashes, that is considered when
 	 * identifying an operator through the default hash mechanics fails (e.g. because of changes
 	 * between Flink versions).
+	 * 用户提供的散列值是用来产生散列值的另一种方式，
+	 * 当通过默认的散列机制来标识一个操作符失败时(比如因为在{@code flink}的版本之间发生了变化)，会采用用户提供的值。
 	 *
 	 * <p><strong>Important</strong>: this should be used as a workaround or for trouble shooting.
 	 * The provided hash needs to be unique per transformation and job. Otherwise, job submission
 	 * will fail. Furthermore, you cannot assign user-specified hash to intermediate nodes in an
 	 * operator chain and trying so will let your job fail.
+	 * <strong>重要</strong>：这应该作为一种权益权宜方案或者问题排查。
+	 * 提供的散列值需要对每个{@code StreamTransformation}和{@code job}都是唯一的。否则，提交{@code job}将失败。
+	 * 另外，你不能给一个操作符链的中间节点分配用户指定的散列值，这样的尝试会让你的{@code job}失败。
 	 *
 	 * <p>A use case for this is in migration between Flink versions or changing the jobs in a way
 	 * that changes the automatically generated hashes. In this case, providing the previous hashes
 	 * directly through this method (e.g. obtained from old logs) can help to reestablish a lost
 	 * mapping from states to their target operator.
+	 * 一个使用场景是在{@code flink}版本间迁移或者改变{@code job}时会导致自动产生的散列值也变化。
+	 * 在这种情况下，通过这个方法直接提供之前的散列值(从旧的日志中获取)，可以帮助从状态中重建一个丢失的到目标操作符的映射。
 	 *
 	 * @param uidHash The user provided hash for this operator. This will become the JobVertexID, which is shown in the
 	 *                 logs and web ui.
+	 *                用户为这个操作符提供的散列值。这会变成{@link org.apache.flink.runtime.jobgraph.JobVertexID}，
+	 *                其会显示在日志和{@code web}界面中。
 	 */
 	public void setUidHash(String uidHash) {
 
@@ -375,6 +386,10 @@ public abstract class StreamTransformation<T> {
 	 * modifications if the type was accessed already. This ensures consistency
 	 * by making sure different parts of the operation do not assume different
 	 * type information.
+	 * 尝试设置类型信息。
+	 * 当程序使用一个类型提示时，可以稍晚些设置类型信息。
+	 * 该方法检测类型信息是否已经被访问过，如果已经被访问过，则不允许修改。
+	 * 通过确保操作的不同部分不会采用不同的类型信息，从而确保一致性。
 	 *
 	 * @param outputType The type information to fill in.
 	 *
@@ -394,6 +409,8 @@ public abstract class StreamTransformation<T> {
 	/**
 	 * Returns the output type of this {@code StreamTransformation} as a {@link TypeInformation}. Once
 	 * this is used once the output type cannot be changed anymore using {@link #setOutputType}.
+	 * 将{@code StreamTransformation}的输出类型作为一个{@code TypeInformation}返回。
+	 * 一旦调用该方法后，就不能再使用@link #setOutputType}方法对输出类型做任何的变化了。
 	 *
 	 * @return The output type of this {@code StreamTransformation}
 	 */

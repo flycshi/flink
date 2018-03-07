@@ -89,6 +89,10 @@ public class StreamSource<OUT, SRC extends SourceFunction<OUT>>
 			// if we get here, then the user function either exited after being done (finite source)
 			// or the function was canceled or stopped. For the finite source case, we should emit
 			// a final watermark that indicates that we reached the end of event-time
+			/**
+			 * 如果程序走到这里，则说明要么执行完后退出了(有限数据源)，或者是函数被取消或者停止了。
+			 * 对于有限数据源的情况，需要发射一个最终的{@link Watermark}用来指明程序已经达到数据的终点。
+			 */
 			if (!isCanceledOrStopped()) {
 				ctx.emitWatermark(Watermark.MAX_WATERMARK);
 			}
@@ -105,6 +109,9 @@ public class StreamSource<OUT, SRC extends SourceFunction<OUT>>
 		// important: marking the source as stopped has to happen before the function is stopped.
 		// the flag that tracks this status is volatile, so the memory model also guarantees
 		// the happens-before relationship
+		/**
+		 * <strong>重要</strong>：
+		 */
 		markCanceledOrStopped();
 		userFunction.cancel();
 

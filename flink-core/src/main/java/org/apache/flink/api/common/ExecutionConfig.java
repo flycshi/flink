@@ -138,6 +138,7 @@ public class ExecutionConfig implements Serializable, Archiveable<ArchivedExecut
 
 	/**
 	 * Interval in milliseconds for sending latency tracking marks from the sources to the sinks.
+	 * 用来发送从{@code sources}到{@code sinks}的潜在跟踪标记的事件间隔，单位为毫秒。
 	 */
 	private long latencyTrackingInterval = 2000L;
 

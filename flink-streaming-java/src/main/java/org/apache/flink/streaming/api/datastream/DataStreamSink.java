@@ -28,8 +28,10 @@ import org.apache.flink.util.Preconditions;
 
 /**
  * A Stream Sink. This is used for emitting elements from a streaming topology.
+ * 用来从流拓扑中发射元素。
  *
  * @param <T> The type of the elements in the Stream
+ *            流中的元素的类型
  */
 @Public
 public class DataStreamSink<T> {
