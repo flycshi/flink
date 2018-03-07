@@ -41,13 +41,18 @@ import static java.util.Objects.requireNonNull;
 /**
  * {@code SingleOutputStreamOperator} represents a user defined transformation
  * applied on a {@link DataStream} with one predefined output type.
+ * <b>SingleOutputStreamOperator</b>表示一个用户定义的, 应用在一个{@link DataStream}上, 且有一个预定义的输出类型的<b>transformation</b>。
  *
  * @param <T> The type of the elements in this stream.
+ *            这个流中的元素的类型。
  */
 @Public
 public class SingleOutputStreamOperator<T> extends DataStream<T> {
 
-	/** Indicate this is a non-parallel operator and cannot set a non-1 degree of parallelism. **/
+	/**
+	 * Indicate this is a non-parallel operator and cannot set a non-1 degree of parallelism.
+	 * 指出这是一个非并行操作符, 也就是不能设置一个非{@code 1}的并行度。
+	 */
 	protected boolean nonParallel = false;
 
 	/**
@@ -131,6 +136,7 @@ public class SingleOutputStreamOperator<T> extends DataStream<T> {
 
 	/**
 	 * Sets the parallelism for this operator. The degree must be 1 or more.
+	 * 设置这个操作符的并行度。必须不小于1。
 	 *
 	 * @param parallelism
 	 *            The parallelism for this operator.

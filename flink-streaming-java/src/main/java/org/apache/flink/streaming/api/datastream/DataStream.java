@@ -127,13 +127,10 @@ import java.util.List;
  *         比如{@link org.apache.flink.streaming.api.operators.StreamSource}
  *     </li>
  *     <li>
- *         将获取的{@link org.apache.flink.streaming.api.operators.StreamOperator}的具体实现的实例，作为构造函数的入参传入
- *         {@link DataStream}的具体实现，比如{@link DataStreamSource}
+ *         以{@link org.apache.flink.streaming.api.operators.StreamOperator}构造一个{@link StreamTransformation}的实例
  *     </li>
  *     <li>
- *         在{@link DataStream}的子类的构造函数中，如{@link DataStreamSource}的构造函数中，
- *         会以{@link org.apache.flink.streaming.api.operators.StreamOperator}构造一个{@link StreamTransformation}的实例，
- *         作为{@link DataStream}的一个属性
+ *         以{@link StreamTransformation}的实例，构造一个{@link DataStream}的具体实现，比如{@link DataStreamSource}
  *     </li>
  * </ol>
  * <pre>
@@ -320,6 +317,9 @@ public class DataStream<T> {
 	 * A field expression is either the name of a public field or a getter method with parentheses
 	 * of the {@link DataStream}'s underlying type. A dot can be used to drill
 	 * down into objects, as in {@code "field1.getInnerField2()" }.
+	 * 使用字段表达式来对{@link DataStream}的操作符状态进行分区。
+	 * 字段表达式要么是一个公共字段的名称, 要么是返回{@link DataStream}中数据类型的<b>getter</b>方法。
+	 * 一个点可以被用来深入到对象中，比如{@code "field1.getInnerField2()"}。
 	 *
 	 * @param fields
 	 *            One or more field expressions on which the state of the {@link DataStream} operators will be
@@ -577,6 +577,10 @@ public class DataStream<T> {
 	 * including none. The user can also extend {@link RichFlatMapFunction} to
 	 * gain access to other features provided by the
 	 * {@link org.apache.flink.api.common.functions.RichFunction} interface.
+	 * 应用一个<b>FlatMap</b>转换到一个{@link DataStream}。
+	 * 这个转换为数据流中的每个元素调用一个{@link FlatMapFunction}。
+	 * 每次调用可能返回任何数量的新元素,包括{@code 0}。
+	 * 用户也可以通过继承{@link RichFlatMapFunction}来获取{@link org.apache.flink.api.common.functions.RichFunction}接口提供的其他特征。
 	 *
 	 * @param flatMapper
 	 *            The FlatMapFunction that is called for each element of the

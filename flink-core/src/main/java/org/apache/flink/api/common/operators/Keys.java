@@ -189,6 +189,7 @@ public abstract class Keys<T> {
 	
 	/**
 	 * Represents (nested) field access through string and integer-based keys
+	 * 通过字符串和基于整数的键表示的(嵌套)字段的方法
 	 */
 	public static class ExpressionKeys<T> extends Keys<T> {
 		
@@ -225,6 +226,7 @@ public abstract class Keys<T> {
 
 		/**
 		 * Create int-based (non-nested) field position keys on a tuple type.
+		 * 在一个元组类型上构建一个基于整数的(非嵌套)字段位置keys
 		 */
 		public ExpressionKeys(int[] keyPositions, TypeInformation<T> type, boolean allowEmpty) {
 
@@ -283,6 +285,7 @@ public abstract class Keys<T> {
 
 		/**
 		 * Create String-based (nested) field expression keys on a composite type.
+		 * 在一个复合类型上构建基于字符串(嵌套)字段表达式keys
 		 */
 		public ExpressionKeys(String[] keyExpressions, TypeInformation<T> type) {
 			checkNotNull(keyExpressions, "Field expression cannot be null.");
@@ -331,18 +334,22 @@ public abstract class Keys<T> {
 				}
 
 				// check that all key expressions are valid
+				// 检查所有的key表达式都是有效的
 				for (String keyExpr : keyExpressions) {
 					if (keyExpr == null) {
 						throw new InvalidProgramException("Expression key may not be null.");
 					}
 					// strip off whitespace
+					// 剔除空格符
 					keyExpr = keyExpr.trim();
 					// check that full type is addressed
+					// 检查是否整个类型都被选中
 					if (!(SELECT_ALL_CHAR.equals(keyExpr) || SELECT_ALL_CHAR_SCALA.equals(keyExpr))) {
 						throw new InvalidProgramException(
 							"Field expression must be equal to '" + SELECT_ALL_CHAR + "' or '" + SELECT_ALL_CHAR_SCALA + "' for non-composite types.");
 					}
 					// add full type as key
+					// 添加整个类型作为key
 					keyFields.add(new FlatFieldDescriptor(0, type));
 				}
 				this.originalKeyTypes = new TypeInformation[] {type};

@@ -33,8 +33,10 @@ import java.util.List;
 /**
  * A {@link WindowAssigner} that windows elements into sliding windows based on the current
  * system time of the machine the operation is running on. Windows can possibly overlap.
+ * 基于操作运行所在的机器的系统时间来将元素划分到滑动窗口的{@link WindowAssigner}。窗口可能会相互重叠。
  *
  * <p>For example, in order to window into windows of 1 minute, every 10 seconds:
+ * 比如, 每10秒, 划分一个1分钟的窗口:
  * <pre> {@code
  * DataStream<Tuple2<String, Integer>> in = ...;
  * KeyedStream<String, Tuple2<String, Integer>> keyed = in.keyBy(...);

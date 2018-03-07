@@ -173,7 +173,7 @@ public interface SourceFunction<T> extends Function, Serializable {
 
 	/**
 	 * Interface that source functions use to emit elements, and possibly watermarks.
-	 * 源用来发送元素,以及watermarks的接口
+	 * 源函数用来发送元素,以及可能的watermarks的接口
 	 *
 	 * @param <T> The type of the elements produced by the source.
 	 */

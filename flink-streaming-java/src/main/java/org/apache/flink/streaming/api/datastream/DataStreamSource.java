@@ -25,9 +25,10 @@ import org.apache.flink.streaming.api.transformations.SourceTransformation;
 
 /**
  * The DataStreamSource represents the starting point of a DataStream.
- * DataStreamSource 表示 一个数据流的起点
+ * <b>DataStreamSource</b>表示一个数据流的起点
  *
  * @param <T> Type of the elements in the DataStream created from the this source.
+ *            从这个数据源创建的元素的类型
  */
 @Public
 public class DataStreamSource<T> extends SingleOutputStreamOperator<T> {

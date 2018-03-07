@@ -164,6 +164,8 @@ public abstract class TypeInformation<T> implements Serializable {
 	/**
 	 * Checks whether this type can be used as a key. As a bare minimum, types have
 	 * to be hashable and comparable to be keys.
+	 * 检查该类型是否可以用作一个<b>key</b>。
+	 * 至少, 类型必须能够计算hash, 并且进行比较。
 	 *  
 	 * @return True, if the type can be used as a key, false otherwise.
 	 */

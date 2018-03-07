@@ -24,6 +24,7 @@ import org.apache.flink.api.common.functions.AbstractRichFunction;
  * Base class for implementing a parallel data source. Upon execution, the runtime will
  * execute as many parallel instances of this function function as configured parallelism
  * of the source.
+ * 用于实现一个并行数据源的基类。
  *
  * <p>The data source has access to context information (such as the number of parallel
  * instances of the source, and which parallel instance the current instance is)

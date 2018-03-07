@@ -38,6 +38,7 @@ public final class KeyGroupRangeAssignment {
 
 	/**
 	 * Assigns the given key to a parallel operator index.
+	 * 将给定键分配给一个并行操作符的索引
 	 *
 	 * @param key the key to assign
 	 * @param maxParallelism the maximum supported parallelism, aka the number of key-groups.
@@ -101,6 +102,7 @@ public final class KeyGroupRangeAssignment {
 	/**
 	 * Computes the index of the operator to which a key-group belongs under the given parallelism and maximum
 	 * parallelism.
+	 * 计算一个<b>key-group</b>在给定并行度和最大并行度下归属的操作符的索引
 	 *
 	 * IMPORTANT: maxParallelism must be <= Short.MAX_VALUE to avoid rounding problems in this method. If we ever want
 	 * to go beyond this boundary, this method must perform arithmetic on long values.
@@ -111,6 +113,11 @@ public final class KeyGroupRangeAssignment {
 	 * @param keyGroupId     Id of a key-group. 0 <= keyGroupID < maxParallelism.
 	 * @return The index of the operator to which elements from the given key-group should be routed under the given
 	 * parallelism and maxParallelism.
+	 *
+	 * 由于{@code keyGroupId}是通过{@link #computeKeyGroupForKeyHash(int, int)},
+	 * 所以{@code keyGroupId}的取值是在[0, maxParallelism]之间,
+	 * 所以{@code keyGroupId * parallelism / maxParallelism}的结果为[0, parallelism)之间的整数
+	 *
 	 */
 	public static int computeOperatorIndexForKeyGroup(int maxParallelism, int parallelism, int keyGroupId) {
 		return keyGroupId * parallelism / maxParallelism;

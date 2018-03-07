@@ -117,6 +117,7 @@ public class SocketTextStreamFunction implements SourceFunction<String> {
 			}
 
 			// if we dropped out of this loop due to an EOF, sleep and retry
+			// 如果由于遇到EOF字符,导致从循环中退出, sleep and retry
 			if (isRunning) {
 				attempt++;
 				if (maxNumRetries == -1 || attempt < maxNumRetries) {

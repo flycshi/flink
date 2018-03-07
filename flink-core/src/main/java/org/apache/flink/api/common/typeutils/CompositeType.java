@@ -18,22 +18,24 @@
 
 package org.apache.flink.api.common.typeutils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.annotation.Public;
+import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.typeinfo.AtomicType;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Base type information class for Tuple and Pojo types
+ * 元组和对象类型的基础类型信息类
  * 
  * The class is taking care of serialization and comparators for Tuples as well.
+ * 这个类会处理好元组的序列化和比较
  */
 @Public
 public abstract class CompositeType<T> extends TypeInformation<T> {
@@ -59,6 +61,7 @@ public abstract class CompositeType<T> extends TypeInformation<T> {
 	
 	/**
 	 * Returns the flat field descriptors for the given field expression.
+	 * 根据给定的字段表达式, 返回对应的展平字段描述符
 	 *
 	 * @param fieldExpression The field expression for which the flat field descriptors are computed.
 	 * @return The list of descriptors for the flat fields which are specified by the field expression.

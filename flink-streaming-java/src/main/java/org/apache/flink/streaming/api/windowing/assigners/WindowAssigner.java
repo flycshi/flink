@@ -76,6 +76,7 @@ public abstract class WindowAssigner<T, W extends Window> implements Serializabl
 	/**
 	 * A context provided to the {@link WindowAssigner} that allows it to query the
 	 * current processing time.
+	 * 给{@link WindowAssigner}提供的用来查询当前处理时间的上下文
 	 *
 	 * <p>This is provided to the assigner by its containing
 	 * {@link org.apache.flink.streaming.runtime.operators.windowing.WindowOperator},

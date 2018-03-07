@@ -38,6 +38,7 @@ import java.util.Set;
 /**
  * A {@link Window} that represents a time interval from {@code start} (inclusive) to
  * {@code end} (exclusive).
+ * {@code Window}表示一个时间间隔, [start, end)
  */
 @PublicEvolving
 public class TimeWindow extends Window {
@@ -245,6 +246,18 @@ public class TimeWindow extends Window {
 
 	/**
 	 * Method to get the window start for a timestamp.
+	 * 通过一个时间戳获取窗口开始时间戳的方法
+	 *
+	 * 比如:
+	 * <code>
+	 *     timestamp = 1520406257000 // 2018-03-07 15:04:17
+	 *     offset = 0
+	 *     windowSize = 60000
+	 *     (timestamp - offset + windowSize) % windowSize = 17000
+	 *     说明在时间戳 1520406257000 之前最近的窗口是在 17000 毫秒的地方
+	 *     timestamp - (timestamp - offset + windowSize) % windowSize = 1520406240000 // 2018-03-07 15:04:00
+	 *     这样就可以保证每个时间窗口都是从整点开始, 而offset则是由于时区等原因需要时间调整而设置。
+	 * </code>
 	 *
 	 * @param timestamp epoch millisecond to get the window start.
 	 * @param offset The offset which window start would be shifted by.

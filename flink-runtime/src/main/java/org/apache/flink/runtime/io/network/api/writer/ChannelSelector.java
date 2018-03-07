@@ -36,6 +36,7 @@ public interface ChannelSelector<T extends IOReadableWritable> {
 	 *
 	 * @param record      the record to the determine the output channels for
 	 * @param numChannels the total number of output channels which are attached to respective output gate
+	 *                    连接到各个输出<b>gate</b>的输出通道的总数量
 	 * @return a (possibly empty) array of integer numbers which indicate the indices of the output channels through
 	 * which the record shall be forwarded
 	 */

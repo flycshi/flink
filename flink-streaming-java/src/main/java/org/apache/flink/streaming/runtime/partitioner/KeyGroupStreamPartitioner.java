@@ -26,8 +26,10 @@ import org.apache.flink.util.Preconditions;
 
 /**
  * Partitioner selects the target channel based on the key group index.
+ * 基于<b>key-group</b>索引选择目标通道的分区器
  *
  * @param <T> Type of the elements in the Stream being partitioned
+ *            流中用来进行分区的元素的类型
  */
 @Internal
 public class KeyGroupStreamPartitioner<T, K> extends StreamPartitioner<T> implements ConfigurableStreamPartitioner {

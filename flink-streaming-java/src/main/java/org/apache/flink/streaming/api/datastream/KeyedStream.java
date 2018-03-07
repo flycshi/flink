@@ -79,9 +79,13 @@ import java.util.UUID;
  * partitioned by key using a provided {@link KeySelector}. Typical operations supported by a
  * {@code DataStream} are also possible on a {@code KeyedStream}, with the exception of
  * partitioning methods such as shuffle, forward and keyBy.
+ * 一个{@link KeyedStream}表示在一个{@link DataStream}上, 通过使用提供的{@link KeySelector}来对操作符状态进行分区。
+ * {@code DataStream}上支持的典型操作在{@code KeyedStream}上也可能支持的, 但是比如<b>shuffle</b>、<b>forward</b>、
+ * <b>keyBy</b>这类分区方法是不支持的。
  *
  * <p>Reduce-style operations, such as {@link #reduce}, {@link #sum} and {@link #fold} work on
  * elements that have the same key.
+ * 归纳类型的操作，例如{@link #reduce}， {@link #sum}和{@link #fold}对具有相同<b>key</b>的元素进行工作。
  *
  * @param <T> The type of the elements in the Keyed Stream.
  * @param <KEY> The type of the key in the Keyed Stream.
@@ -334,6 +338,7 @@ public class KeyedStream<T, KEY> extends DataStream<T> {
 
 	/**
 	 * Windows this {@code KeyedStream} into sliding time windows.
+	 * 将这个{@code KeyedStream}设置为滑动时间窗口
 	 *
 	 * <p>This is a shortcut for either {@code .window(SlidingEventTimeWindows.of(size, slide))} or
 	 * {@code .window(SlidingProcessingTimeWindows.of(size, slide))} depending on the time

@@ -75,9 +75,13 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * key, and for each key, the stream of elements is split into windows based on a
  * {@link org.apache.flink.streaming.api.windowing.assigners.WindowAssigner}. Window emission
  * is triggered based on a {@link org.apache.flink.streaming.api.windowing.triggers.Trigger}.
+ * {@code WindowedStream}表示一个数据流, 其元素通过<b>key</b>进行分区, 对于每个<b>key</b>,
+ * 基于{@code WindowAssigner}将元素划分到窗口。
+ * 基于{@code Trigger}触发窗口发射。
  *
  * <p>The windows are conceptually evaluated for each key individually, meaning windows can trigger
  * at different points for each key.
+ * 窗口在概念上是对每个键分别进行评估，这意味着窗口可以在每个键的不同的点处触发。
  *
  * <p>If an {@link Evictor} is specified it will be used to evict elements from the window after
  * evaluation was triggered by the {@code Trigger} but before the actual evaluation of the window.

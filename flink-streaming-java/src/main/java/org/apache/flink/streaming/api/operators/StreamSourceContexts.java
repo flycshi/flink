@@ -85,6 +85,8 @@ public class StreamSourceContexts {
 	/**
 	 * A source context that attached {@code -1} as a timestamp to all records, and that
 	 * does not forward watermarks.
+	 * 一个{@link org.apache.flink.streaming.api.functions.source.SourceFunction.SourceContext}的具体实现,
+	 * 其给所有的{@link StreamRecord}都会附加一个时间戳为{@code -1}(实际是没有设置时间戳), 并且也不会转发{@link Watermark}
 	 */
 	private static class NonTimestampContext<T> implements SourceFunction.SourceContext<T> {
 
@@ -108,6 +110,7 @@ public class StreamSourceContexts {
 		@Override
 		public void collectWithTimestamp(T element, long timestamp) {
 			// ignore the timestamp
+			// 忽略时间戳
 			collect(element);
 		}
 

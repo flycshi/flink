@@ -150,6 +150,15 @@ public abstract class StreamExecutionEnvironment {
 	 */
 	private final CheckpointConfig checkpointCfg = new CheckpointConfig();
 
+	/**
+	 * <pre>
+	 * 顺序记录在对数据流中的数据进行处理的转换操作, 并不是所有的转换操作都会在这里记录。
+	 * 对于<b>keyBy</b>、<b>timeWindow</b>等, 这些转换操作是不会记录进这个列表中。
+	 * 对于<b>map</b>、<b>reduce</b>这类操作, 是会记录下来的。
+	 * 通过{@link StreamTransformation}子类中的{@code input}属性,
+	 * 将整个处理链上的所有{{@code StreamTransformation}}构建成了一个隐式链表
+	 * </pre>
+	 */
 	protected final List<StreamTransformation<?>> transformations = new ArrayList<>();
 
 	private long bufferTimeout = DEFAULT_NETWORK_BUFFER_TIMEOUT;
@@ -1198,7 +1207,7 @@ public abstract class StreamExecutionEnvironment {
 	 * 		The maximal retry interval in seconds while the program waits for a socket that is temporarily down.
 	 * 		Reconnection is initiated every second. A number of 0 means that the reader is immediately terminated,
 	 * 		while a	negative value ensures retrying forever.
-	 * 		当程序等待一个临时关闭的socket时的最大重试间隔，单位秒。
+	 * 		当程序等待一个临时关闭的socket时的最大重试次数, 这里的英文注释不准确
 	 * 		每秒进行一次重连。
 	 * 		0意味着reader时立即终止，而一个负值则一直重试。
 	 *
