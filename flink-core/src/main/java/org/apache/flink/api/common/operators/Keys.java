@@ -200,7 +200,9 @@ public abstract class Keys<T> {
 				+ "\\" + SELECT_ALL_CHAR_SCALA +")$");
 
 		// Flattened fields representing keys fields
+		/** key字段的列表, FlatFieldDescriptor 描述了每个key, 在所在类型中的位置以及key自身的数据类信息 */
 		private List<FlatFieldDescriptor> keyFields;
+		/** 包含key的数据类型的类型信息, 与构造函数入参中的字段顺序一一对应 */
 		private TypeInformation<?>[] originalKeyTypes;
 
 		/**

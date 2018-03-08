@@ -35,7 +35,7 @@ import java.io.Serializable;
  * invocation of {@link #cancel()} by breaking out of its main loop.
  * flink中所有流数据源的基础接口。
  * 一个流源头的约束:当源头开始发送元素,run方法被调用来进行发送元素。
- * run方法可以一致运行。
+ * run方法可以一直运行。
  * 源头必须通过cancel方法的调用来结束循环。
  *
  * <h3>Checkpointed Sources</h3>

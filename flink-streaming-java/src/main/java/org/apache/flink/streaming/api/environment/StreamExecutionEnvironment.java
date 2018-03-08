@@ -17,6 +17,7 @@
 
 package org.apache.flink.streaming.api.environment;
 
+import com.esotericsoftware.kryo.Serializer;
 import org.apache.flink.annotation.Internal;
 import org.apache.flink.annotation.Public;
 import org.apache.flink.annotation.PublicEvolving;
@@ -56,19 +57,7 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.functions.source.ContinuousFileMonitoringFunction;
-import org.apache.flink.streaming.api.functions.source.ContinuousFileReaderOperator;
-import org.apache.flink.streaming.api.functions.source.FileMonitoringFunction;
-import org.apache.flink.streaming.api.functions.source.FileProcessingMode;
-import org.apache.flink.streaming.api.functions.source.FileReadFunction;
-import org.apache.flink.streaming.api.functions.source.FromElementsFunction;
-import org.apache.flink.streaming.api.functions.source.FromIteratorFunction;
-import org.apache.flink.streaming.api.functions.source.FromSplittableIteratorFunction;
-import org.apache.flink.streaming.api.functions.source.InputFormatSourceFunction;
-import org.apache.flink.streaming.api.functions.source.ParallelSourceFunction;
-import org.apache.flink.streaming.api.functions.source.SocketTextStreamFunction;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
-import org.apache.flink.streaming.api.functions.source.StatefulSequenceSource;
+import org.apache.flink.streaming.api.functions.source.*;
 import org.apache.flink.streaming.api.graph.StreamGraph;
 import org.apache.flink.streaming.api.graph.StreamGraphGenerator;
 import org.apache.flink.streaming.api.operators.StoppableStreamSource;
@@ -77,15 +66,9 @@ import org.apache.flink.streaming.api.transformations.StreamTransformation;
 import org.apache.flink.util.Preconditions;
 import org.apache.flink.util.SplittableIterator;
 
-import com.esotericsoftware.kryo.Serializer;
-
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
@@ -1483,25 +1466,31 @@ public abstract class StreamExecutionEnvironment {
 	 */
 	@SuppressWarnings("unchecked")
 	public <OUT> DataStreamSource<OUT> addSource(SourceFunction<OUT> function, String sourceName, TypeInformation<OUT> typeInfo) {
-
+		/**
+		 * 如果传入的输出数据类型信息为null, 则尝试从已知信息中提取出输出数据类型信息
+		 */
 		if (typeInfo == null) {
 			if (function instanceof ResultTypeQueryable) {
+				/** 如果传入的function实现了ResultTypeQueryable接口, 则直接通过接口获取 */
 				typeInfo = ((ResultTypeQueryable<OUT>) function).getProducedType();
 			} else {
 				try {
+					/** 通过反射机制来提取类型信息 */
 					typeInfo = TypeExtractor.createTypeInfo(
 							SourceFunction.class,
 							function.getClass(), 0, null, null);
 				} catch (final InvalidTypesException e) {
+					/** 提取失败, 则返回一个MissingTypeInfo实例 */
 					typeInfo = (TypeInformation<OUT>) new MissingTypeInfo(sourceName, e);
 				}
 			}
 		}
-
+		/** 根据function是否是ParallelSourceFunction的子类实例来判断是否是一个并行数据源节点 */
 		boolean isParallel = function instanceof ParallelSourceFunction;
-
+		/** 闭包清理, 可减少序列化内容, 以及防止序列化出错 */
 		clean(function);
 		StreamSource<OUT, ?> sourceOperator;
+		/** 根据function是否是StoppableFunction的子类实例, 来决定构建不同的StreamOperator */
 		if (function instanceof StoppableFunction) {
 			sourceOperator = new StoppableStreamSource<>(cast2StoppableSourceFunction(function));
 		} else {

@@ -1136,6 +1136,7 @@ public class DataStream<T> {
 	public <R> SingleOutputStreamOperator<R> transform(String operatorName, TypeInformation<R> outTypeInfo, OneInputStreamOperator<T, R> operator) {
 
 		// read the output type of the input Transform to coax out errors about MissingTypeInfo
+		/** 读取输入转换的输出类型, 如果是MissingTypeInfo, 则及时抛出异常, 终止操作 */
 		transformation.getOutputType();
 
 		OneInputTransformation<T, R> resultTransform = new OneInputTransformation<>(

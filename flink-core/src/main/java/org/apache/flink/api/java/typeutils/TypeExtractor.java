@@ -827,6 +827,7 @@ public class TypeExtractor {
 		TypeInformation<OUT> typeInfo;
 
 		// return type is a variable -> try to get the type info from the input directly
+		/** 返回的类型是一个TypeVariable, 则尝试直接获取类型信息 */
 		if (returnType instanceof TypeVariable<?>) {
 			typeInfo = (TypeInformation<OUT>) createTypeInfoFromInputs((TypeVariable<?>) returnType, typeHierarchy, in1Type, in2Type);
 
@@ -1253,6 +1254,10 @@ public class TypeExtractor {
 		if (typeHierarchy != null) {
 			typeHierarchy.add(clazz);
 		}
+		/**
+		 * 获取实现的各个接口的类型, 比如{@link SocketTextStreamFunction}调用该方法的结果为
+		 * org.apache.flink.streaming.api.functions.source.SourceFunction<java.lang.String>
+		 */
 		Type[] interfaceTypes = clazz.getGenericInterfaces();
 
 		// search in interfaces for base class
@@ -1276,6 +1281,7 @@ public class TypeExtractor {
 
 	private static Type getParameterTypeFromGenericType(Class<?> baseClass, ArrayList<Type> typeHierarchy, Type t, int pos) {
 		// base class
+		/** t 就是 baseClass */
 		if (t instanceof ParameterizedType && baseClass.equals(((ParameterizedType) t).getRawType())) {
 			if (typeHierarchy != null) {
 				typeHierarchy.add(t);
@@ -1284,6 +1290,7 @@ public class TypeExtractor {
 			return baseClassChild.getActualTypeArguments()[pos];
 		}
 		// interface that extended base class as class or parameterized type
+		/** t 是基础 baseClass 的接口或者参数化类型 */
 		else if (t instanceof ParameterizedType && baseClass.isAssignableFrom((Class<?>) ((ParameterizedType) t).getRawType())) {
 			if (typeHierarchy != null) {
 				typeHierarchy.add(t);

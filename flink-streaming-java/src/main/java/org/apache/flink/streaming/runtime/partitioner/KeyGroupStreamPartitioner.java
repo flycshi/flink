@@ -58,6 +58,7 @@ public class KeyGroupStreamPartitioner<T, K> extends StreamPartitioner<T> implem
 
 		K key;
 		try {
+			/** 通过keySelector从传入的record中提取出对应的key */
 			key = keySelector.getKey(record.getInstance().getValue());
 		} catch (Exception e) {
 			throw new RuntimeException("Could not extract key from " + record.getInstance().getValue(), e);
