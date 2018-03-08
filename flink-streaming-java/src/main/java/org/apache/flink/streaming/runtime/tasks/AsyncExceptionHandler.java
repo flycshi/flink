@@ -21,6 +21,7 @@ package org.apache.flink.streaming.runtime.tasks;
 /**
  * An interface marking a task as capable of handling exceptions thrown
  * by different threads, other than the one executing the task itself.
+ * 一个接口，用来标记一个任务具备处理不同线程抛出的异常的能力，而不仅仅是执行任务的那个线程。
  */
 public interface AsyncExceptionHandler {
 

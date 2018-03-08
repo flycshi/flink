@@ -47,6 +47,8 @@ import java.util.concurrent.Future;
  * (such as name, parallelism), the configurations, the data stream readers and writers,
  * as well as the various components that are provided by the TaskManager, such as
  * memory manager, I/O manager, ...
+ * {@code Environment}可以让任务中执行的代码获取任务的属性(比如名称、并行度)，配置，数据流的读写器，
+ * 以及{@link org.apache.flink.runtime.taskmanager.TaskManager}提供的多种组件，比如内存管理器，I/O管理器。
  */
 public interface Environment {
 

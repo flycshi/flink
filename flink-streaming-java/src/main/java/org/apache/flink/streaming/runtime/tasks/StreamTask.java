@@ -79,36 +79,59 @@ import java.util.concurrent.atomic.AtomicReference;
  * the Task's operator chain. Operators that are chained together execute synchronously in the
  * same thread and hence on the same stream partition. A common case for these chains
  * are successive map/flatmap/filter tasks.
+ * 所有流任务的基类。
+ * 一个task是由{@link org.apache.flink.runtime.taskmanager.TaskManager}部署和执行的本地处理单元。
+ * 每个task运行一个或多个来着任务操作链上的{@code StreamOperator}。
+ * 被链接在一起的操作符在相同的线程中同步执行，因此也在相同的流分区上。
+ * 一个常见场景是顺序的 map/flatmap/filter 任务。
  *
  * <p>The task chain contains one "head" operator and multiple chained operators.
  * The StreamTask is specialized for the type of the head operator: one-input and two-input tasks,
  * as well as for sources, iteration heads and iteration tails.
+ * 任务链包含一个"head"操作符，以及多个链接的操作符。
+ * {@code StreamTask}是专门针对头操作符的类型：单输入和双输入任务，以及源、迭代头和迭代尾
  *
  * <p>The Task class deals with the setup of the streams read by the head operator, and the streams
  * produced by the operators at the ends of the operator chain. Note that the chain may fork and
  * thus have multiple ends.
+ * Task类处理由head操作符读取的流的设置，以及操作符链末端的操作符所产生的流。
+ * 注意，链可以叉，从而有多个末端。
  *
  * <p>The life cycle of the task is set up as follows:
+ *    任务的生命周期配置如下：
  * <pre>{@code
  *  -- setInitialState -> provides state of all operators in the chain
+ *     					  提供链中的所有操作符的状态
  *
  *  -- invoke()
  *        |
  *        +----> Create basic utils (config, etc) and load the chain of operators
+ *               创建基础攻击(配置，等)，以及加载操作符的链
  *        +----> operators.setup()
+ *        		 依次调用链上各个操作符的配置
  *        +----> task specific init()
+ *               任务的特定初始化
  *        +----> initialize-operator-states()
+ *               初始化操作符的状态
  *        +----> open-operators()
+ *               打开操作符
  *        +----> run()
+ *               运行
  *        +----> close-operators()
+ *               关闭操作符
  *        +----> dispose-operators()
+ *               回收操作符
  *        +----> common cleanup
+ *               公用的清理
  *        +----> task specific cleanup()
+ *               任务的特定清理
  * }</pre>
  *
  * <p>The {@code StreamTask} has a lock object called {@code lock}. All calls to methods on a
  * {@code StreamOperator} must be synchronized on this lock object to ensure that no methods
  * are called concurrently.
+ * {@code StreamTask}有一个叫{@code lock}的锁对象。
+ * 所有在一个{@code StreamOperator}的调用方法必须获取这个锁对象，来确保没有方法被并发调用。
  *
  * @param <OUT>
  * @param <OP>

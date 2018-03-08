@@ -29,8 +29,11 @@ import java.util.Collections;
 /**
  * This represents a Source. This does not actually transform anything since it has no inputs but
  * it is the root {@code StreamTransformation} of any topology.
+ * 这个表示一个源。
+ * 这里不会转换任何东西，因为它没有输入，但是它是任何拓扑的根{@code StreamTransformation}
  *
  * @param <T> The type of the elements that this source produces
+ *            这个数据源生产的元素的类型
  */
 @Internal
 public class SourceTransformation<T> extends StreamTransformation<T> {

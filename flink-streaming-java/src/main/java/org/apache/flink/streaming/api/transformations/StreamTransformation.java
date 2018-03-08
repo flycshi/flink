@@ -432,6 +432,7 @@ public abstract class StreamTransformation<T> {
 
 	/**
 	 * Sets the chaining strategy of this {@code StreamTransformation}.
+	 * 设置这个{@code StreamTransformation}的链接策略
 	 */
 	public abstract void setChainingStrategy(ChainingStrategy strategy);
 
@@ -459,6 +460,8 @@ public abstract class StreamTransformation<T> {
 	 * Returns all transitive predecessor {@code StreamTransformation}s of this {@code StreamTransformation}. This
 	 * is, for example, used when determining whether a feedback edge of an iteration
 	 * actually has the iteration head as a predecessor.
+	 * 返回该{@code StreamTransformation}的所有前置@code StreamTransformation}。
+	 * 比如，当要决定一个迭代的反馈边的前置中是否有迭代头时，会使用。
 	 *
 	 * @return The list of transitive predecessors.
 	 */

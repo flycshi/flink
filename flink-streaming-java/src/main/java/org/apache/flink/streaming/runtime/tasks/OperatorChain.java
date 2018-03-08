@@ -62,9 +62,11 @@ import java.util.Random;
 /**
  * The {@code OperatorChain} contains all operators that are executed as one chain within a single
  * {@link StreamTask}.
+ * {@code OperatorChain}包含一个单独{@link StreamTask}中作为一个链执行的所有操作符。
  *
  * @param <OUT> The type of elements accepted by the chain, i.e., the input type of the chain's
  *              head operator.
+ *              这个英文注释是不是有问题，从哪里copy过来的吧，错了吧？
  */
 @Internal
 public class OperatorChain<OUT, OP extends StreamOperator<OUT>> implements StreamStatusMaintainer {

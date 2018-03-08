@@ -27,10 +27,14 @@ import org.apache.flink.runtime.operators.BatchTask;
  * This is the abstract base class for every task that can be executed by a
  * TaskManager. Concrete tasks like the vertices of batch jobs (see
  * {@link BatchTask} inherit from this class.
+ * 这是可以被一个{@link org.apache.flink.runtime.taskmanager.TaskManager}执行的每个任务的抽象基类。
+ * 任务的具体实现，比如批处理job的节点{@code BatchTask}，就是机场自这个类。
  *
  * <p>The TaskManager invokes the {@link #invoke()} method when executing a
  * task. All operations of the task happen in this method (setting up input
  * output stream readers and writers as well as the task's core operation).
+ * {@code TaskManager}当要执行一个任务时，会调用{@link #invoke()}方法。
+ * 任务的所有操作都发生在这个方法中(设置输入、输出流的读写，以及任务的核心操作)
  */
 public abstract class AbstractInvokable {
 

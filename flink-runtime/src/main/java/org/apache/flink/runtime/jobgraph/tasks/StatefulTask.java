@@ -26,12 +26,15 @@ import org.apache.flink.runtime.checkpoint.TaskStateSnapshot;
 /**
  * This interface must be implemented by any invokable that has recoverable state and participates
  * in checkpointing.
+ * 该接口必须由具有可恢复状态并参与检查点的任何可调用的程序实现。
  */
 public interface StatefulTask {
 
 	/**
 	 * Sets the initial state of the operator, upon recovery. The initial state is typically
 	 * a snapshot of the state from a previous execution.
+	 * 在恢复场景下，设置操作符的初始状态。
+	 * 初始状态一般是一个上次执行的状态的快照。
 	 *
 	 * @param taskStateHandles All state handle for the task.
 	 */
