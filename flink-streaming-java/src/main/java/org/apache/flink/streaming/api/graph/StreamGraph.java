@@ -196,7 +196,7 @@ public class StreamGraph extends StreamingPlan {
 			TypeInformation<IN> inTypeInfo,
 			TypeInformation<OUT> outTypeInfo,
 			String operatorName) {
-
+		/** 根据操作符的不同类型, 决定不同的节点类, 进行节点的构造 */
 		if (operatorObject instanceof StoppableStreamSource) {
 			addNode(vertexID, slotSharingGroup, StoppableSourceStreamTask.class, operatorObject, operatorName);
 		} else if (operatorObject instanceof StreamSource) {
@@ -205,15 +205,15 @@ public class StreamGraph extends StreamingPlan {
 			addNode(vertexID, slotSharingGroup, OneInputStreamTask.class, operatorObject, operatorName);
 		}
 
-		/**
-		 * 确定输入和输出的序列化器
-		 */
+		/** 确定输入和输出的序列化器, 类型不为null, 且不是MissingTypeInfo, 则构造对应的序列化器, 否则序列化器为null */
 		TypeSerializer<IN> inSerializer = inTypeInfo != null && !(inTypeInfo instanceof MissingTypeInfo) ? inTypeInfo.createSerializer(executionConfig) : null;
 
 		TypeSerializer<OUT> outSerializer = outTypeInfo != null && !(outTypeInfo instanceof MissingTypeInfo) ? outTypeInfo.createSerializer(executionConfig) : null;
 
+		/** 设置序列化器 */
 		setSerializers(vertexID, inSerializer, null, outSerializer);
 
+		/** 根据操作符类型, 进行输出数据类型设置 */
 		if (operatorObject instanceof OutputTypeConfigurable && outTypeInfo != null) {
 			@SuppressWarnings("unchecked")
 			OutputTypeConfigurable<OUT> outputTypeConfigurable = (OutputTypeConfigurable<OUT>) operatorObject;
@@ -221,11 +221,13 @@ public class StreamGraph extends StreamingPlan {
 			outputTypeConfigurable.setOutputType(outTypeInfo, executionConfig);
 		}
 
+		/** 根据操作符类型, 进行输入数据类型判断 */
 		if (operatorObject instanceof InputTypeConfigurable) {
 			InputTypeConfigurable inputTypeConfigurable = (InputTypeConfigurable) operatorObject;
 			inputTypeConfigurable.setInputType(inTypeInfo, executionConfig);
 		}
 
+		/** 根据配置, 打印调试日志 */
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("Vertex: {}", vertexID);
 		}
@@ -265,6 +267,7 @@ public class StreamGraph extends StreamingPlan {
 		StreamOperator<?> operatorObject,
 		String operatorName) {
 
+		/** 校验添加新节点的id, 与已添加的节点id, 是否有重复, 如果有, 则抛出异常*/
 		if (streamNodes.containsKey(vertexID)) {
 			throw new RuntimeException("Duplicate vertexID " + vertexID);
 		}
@@ -277,6 +280,7 @@ public class StreamGraph extends StreamingPlan {
 			new ArrayList<OutputSelector<?>>(),
 			vertexClass);
 
+		/** 将新构建的节点保存记录 */
 		streamNodes.put(vertexID, vertex);
 
 		return vertex;
@@ -398,6 +402,7 @@ public class StreamGraph extends StreamingPlan {
 			List<String> outputNames,
 			OutputTag outputTag) {
 
+		/** 根据源节点的id，判断进入不同的处理逻辑 */
 		if (virtualSideOutputNodes.containsKey(upStreamVertexID)) {
 			int virtualId = upStreamVertexID;
 			upStreamVertexID = virtualSideOutputNodes.get(virtualId).f0;
@@ -421,6 +426,7 @@ public class StreamGraph extends StreamingPlan {
 			}
 			addEdgeInternal(upStreamVertexID, downStreamVertexID, typeNumber, partitioner, outputNames, outputTag);
 		} else {
+			/** 根据上下节点的id，分别获取对应的StreamNode实例 */
 			StreamNode upstreamNode = getStreamNode(upStreamVertexID);
 			StreamNode downstreamNode = getStreamNode(downStreamVertexID);
 
@@ -436,6 +442,7 @@ public class StreamGraph extends StreamingPlan {
 				partitioner = new RebalancePartitioner<Object>();
 			}
 
+			/** 如果是Forward分区, 而上下游的并行度不一致, 则抛异常, 这里是进行双重校验 */
 			if (partitioner instanceof ForwardPartitioner) {
 				if (upstreamNode.getParallelism() != downstreamNode.getParallelism()) {
 					throw new UnsupportedOperationException("Forward partitioning does not allow " +
@@ -447,6 +454,7 @@ public class StreamGraph extends StreamingPlan {
 
 			StreamEdge edge = new StreamEdge(upstreamNode, downstreamNode, typeNumber, outputNames, partitioner, outputTag);
 
+			/** 将新建的StreamEdge添加到源节点的输出边界集合中，目标节点的输入边界集合中 */
 			getStreamNode(edge.getSourceId()).addOutEdge(edge);
 			getStreamNode(edge.getTargetId()).addInEdge(edge);
 		}

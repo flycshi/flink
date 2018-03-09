@@ -31,6 +31,10 @@ import org.slf4j.LoggerFactory;
  * Special {@link StreamExecutionEnvironment} that will be used in cases where the CLI client or
  * testing utilities create a {@link StreamExecutionEnvironment} that should be used when
  * {@link StreamExecutionEnvironment#getExecutionEnvironment()} is called.
+ *
+ * <p>
+ * 特定的{@code StreamExecutionEnvironment}, 在CLI客户端或者测试工具创建一个{@code StreamExecutionEnvironment}的地方会被使用到,
+ * 通过{@code StreamExecutionEnvironment#getExecutionEnvironment()}获取。
  */
 @PublicEvolving
 public class StreamContextEnvironment extends StreamExecutionEnvironment {

@@ -34,6 +34,7 @@ import java.util.List;
 
 /**
  * Class representing the operators in the streaming programs, with all their properties.
+ * 表示流处理程序中的操作符, 以及其所有的属性的类
  */
 @Internal
 public class StreamNode implements Serializable {

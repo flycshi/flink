@@ -24,28 +24,11 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.runtime.state.KeyGroupRangeAssignment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.InputFormatSourceFunction;
-import org.apache.flink.streaming.api.transformations.CoFeedbackTransformation;
-import org.apache.flink.streaming.api.transformations.FeedbackTransformation;
-import org.apache.flink.streaming.api.transformations.OneInputTransformation;
-import org.apache.flink.streaming.api.transformations.PartitionTransformation;
-import org.apache.flink.streaming.api.transformations.SelectTransformation;
-import org.apache.flink.streaming.api.transformations.SideOutputTransformation;
-import org.apache.flink.streaming.api.transformations.SinkTransformation;
-import org.apache.flink.streaming.api.transformations.SourceTransformation;
-import org.apache.flink.streaming.api.transformations.SplitTransformation;
-import org.apache.flink.streaming.api.transformations.StreamTransformation;
-import org.apache.flink.streaming.api.transformations.TwoInputTransformation;
-import org.apache.flink.streaming.api.transformations.UnionTransformation;
-
+import org.apache.flink.streaming.api.transformations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A generator that generates a {@link StreamGraph} from a graph of
@@ -56,12 +39,20 @@ import java.util.Map;
  * and add edges from the input Nodes to our newly created node. The transformation methods
  * return the IDs of the nodes in the StreamGraph that represent the input transformation. Several
  * IDs can be returned to be able to deal with feedback transformations and unions.
+ * 在每个{@code transformation}处, 我们会递归的转换输入, 然后创建{@code StreamGraph}中的一个节点,
+ * 并添加一个从输入节点到我们新创建的节点的{@code edge}。
+ * 转换方法返回在{@code StreamGraph}中表示输入{@code transformation}的节点的ID。
+ * 对于反馈转换和{@code union}操作, 可以返回多个IDs。
  *
  * <p>Partitioning, split/select and union don't create actual nodes in the {@code StreamGraph}. For
  * these, we create a virtual node in the {@code StreamGraph} that holds the specific property, i.e.
  * partitioning, selector and so on. When an edge is created from a virtual node to a downstream
  * node the {@code StreamGraph} resolved the id of the original node and creates an edge
  * in the graph with the desired property. For example, if you have this graph:
+ * Partitioning, split/select and union 这些操作不会在{@code StreamGraph}中创建真实的节点。
+ * 因此, 我们创建一个在{@code StreamGraph}中创建一个虚拟节点来持有这些特殊的特征, 比如 partitioning, selector and so on 。
+ * 当创建从一个虚拟节点到一个下游节点的{@code edge}时, {@code StreamGraph}会转化原始节点的id, 并创建一个拥有要求属性的{@code edge}。
+ * 比如, 下面的图:
  *
  * <pre>
  *     Map-1 -&gt; HashPartition-2 -&gt; Map-3
@@ -73,6 +64,10 @@ import java.util.Map;
  * {@code HashPartition}. This transformation returns the ID 4. Then we transform the {@code Map-3}.
  * We add the edge {@code 4 -> 3}. The {@code StreamGraph} resolved the actual node with ID 1 and
  * creates and edge {@code 1 -> 3} with the property HashPartition.
+ * 其中数字表示{@code transformation}的id。我们先递归查找。{@code Map-1}被转化了, 我们创建一个ID为1的{@code StreamNode}。
+ * 然后我们转化{@code HashPartition}, 对于它, 我们创建ID为4的虚拟节点, 其持有{@code HashPartition}的属性。
+ * 这个转换返回ID为4。然后我们转化{@code Map-3}。我们添加{@code 4 -> 3}的{@code edge}。
+ * {@code StreamGraph}转化ID为1的真实节点, 并创建{@code 1 -> 3}的{@code edge}, 其持有{@code HashPartition}的属性。
  */
 @Internal
 public class StreamGraphGenerator {
@@ -136,18 +131,22 @@ public class StreamGraphGenerator {
 
 	/**
 	 * Transforms one {@code StreamTransformation}.
+	 * 转化一个{@code StreamTransformation}
 	 *
 	 * <p>This checks whether we already transformed it and exits early in that case. If not it
 	 * delegates to one of the transformation specific methods.
+	 * 这里会检查我们是否已经转化过它, 如果转化过, 则提早退出。
+	 * 如果没有, 会委派给特定的转化方法。
 	 */
 	private Collection<Integer> transform(StreamTransformation<?> transform) {
-
+		/** 判断传入的transform是否已经被转化过, 如果已经转化过, 则直接返回转化后对应的结果 */
 		if (alreadyTransformed.containsKey(transform)) {
 			return alreadyTransformed.get(transform);
 		}
 
 		LOG.debug("Transforming " + transform);
 
+		/** 对于该transform, 如果没有设置最大并行度, 则尝试获取job的最大并行度, 并设置给它 */
 		if (transform.getMaxParallelism() <= 0) {
 
 			// if the max parallelism hasn't been set, then first use the job wide max parallelism
@@ -162,6 +161,7 @@ public class StreamGraphGenerator {
 		}
 
 		// call at least once to trigger exceptions about MissingTypeInfo
+		/** 这里调用该方法的目的就是为了尽早发现, 输出数据类型信息是否丢失, 抛出异常 */
 		transform.getOutputType();
 
 		Collection<Integer> transformedIds;
@@ -193,6 +193,7 @@ public class StreamGraphGenerator {
 
 		// need this check because the iterate transformation adds itself before
 		// transforming the feedback edges
+		/** 将转化结果记录到alreadyTransformed这个map中，这里做条件判断，是考虑到迭代转换下，transform会先添加自身，再转化反馈边界 */
 		if (!alreadyTransformed.containsKey(transform)) {
 			alreadyTransformed.put(transform, transformedIds);
 		}
@@ -242,6 +243,7 @@ public class StreamGraphGenerator {
 		StreamTransformation<T> input = partition.getInput();
 		List<Integer> resultIds = new ArrayList<>();
 
+		/** 递归转化输入 */
 		Collection<Integer> transformedIds = transform(input);
 		for (Integer transformedId: transformedIds) {
 			int virtualId = StreamTransformation.getNewNodeId();
@@ -470,6 +472,7 @@ public class StreamGraphGenerator {
 	 * Transforms a {@code SourceTransformation}.
 	 */
 	private <T> Collection<Integer> transformSource(SourceTransformation<T> source) {
+		/** 对于数据流的源来说, 如果用户没有指定slotSharingGroup, 这里返回的就是"default" */
 		String slotSharingGroup = determineSlotSharingGroup(source.getSlotSharingGroup(), new ArrayList<Integer>());
 		streamGraph.addSource(source.getId(),
 				slotSharingGroup,
@@ -491,10 +494,13 @@ public class StreamGraphGenerator {
 	 */
 	private <T> Collection<Integer> transformSink(SinkTransformation<T> sink) {
 
+		/** 递归转化输入 */
 		Collection<Integer> inputIds = transform(sink.getInput());
 
+		/** 决定槽共享分组名 */
 		String slotSharingGroup = determineSlotSharingGroup(sink.getSlotSharingGroup(), inputIds);
 
+		/** 添加sink */
 		streamGraph.addSink(sink.getId(),
 				slotSharingGroup,
 				sink.getOperator(),
@@ -502,9 +508,11 @@ public class StreamGraphGenerator {
 				null,
 				"Sink: " + sink.getName());
 
+		/** 属性设置 */
 		streamGraph.setParallelism(sink.getId(), sink.getParallelism());
 		streamGraph.setMaxParallelism(sink.getId(), sink.getMaxParallelism());
 
+		/** 构建edge */
 		for (Integer inputId: inputIds) {
 			streamGraph.addEdge(inputId,
 					sink.getId(),
@@ -528,7 +536,7 @@ public class StreamGraphGenerator {
 	 * 递归转化输入，创建一个StreamNode，并且将输入连接到该节点。
 	 */
 	private <IN, OUT> Collection<Integer> transformOneInputTransform(OneInputTransformation<IN, OUT> transform) {
-
+		/** 先递归转化对应的input属性 */
 		Collection<Integer> inputIds = transform(transform.getInput());
 
 		// the recursive call might have already transformed this
@@ -537,6 +545,7 @@ public class StreamGraphGenerator {
 			return alreadyTransformed.get(transform);
 		}
 
+		/** 判断transform的槽共享组的名称 */
 		String slotSharingGroup = determineSlotSharingGroup(transform.getSlotSharingGroup(), inputIds);
 
 		streamGraph.addOperator(transform.getId(),
@@ -546,6 +555,7 @@ public class StreamGraphGenerator {
 				transform.getOutputType(),
 				transform.getName());
 
+		/** 属性设置 */
 		if (transform.getStateKeySelector() != null) {
 			TypeSerializer<?> keySerializer = transform.getStateKeyType().createSerializer(env.getConfig());
 			streamGraph.setOneInputStateKey(transform.getId(), transform.getStateKeySelector(), keySerializer);
@@ -554,10 +564,12 @@ public class StreamGraphGenerator {
 		streamGraph.setParallelism(transform.getId(), transform.getParallelism());
 		streamGraph.setMaxParallelism(transform.getId(), transform.getMaxParallelism());
 
+		/** 构建edge */
 		for (Integer inputId: inputIds) {
 			streamGraph.addEdge(inputId, transform.getId(), 0);
 		}
 
+		/** 将transform的id封装成一个集合返回 */
 		return Collections.singleton(transform.getId());
 	}
 

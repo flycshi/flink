@@ -1536,6 +1536,9 @@ public abstract class StreamExecutionEnvironment {
 	 * the program that have resulted in a "sink" operation. Sink operations are
 	 * for example printing results or forwarding them to a message queue.
 	 *
+	 * <p>
+	 * 触发程序执行。环境会执行最后结果为一个"sink"操作的程序的所有部分。"sink"操作, 比如, 打印结果或者转发到一个消息队列中。
+	 *
 	 * <p>The program execution will be logged and displayed with the provided name
 	 *
 	 * @param jobName
@@ -1547,6 +1550,7 @@ public abstract class StreamExecutionEnvironment {
 
 	/**
 	 * Getter of the {@link org.apache.flink.streaming.api.graph.StreamGraph} of the streaming job.
+	 * 获取流job的{@code StreamGraph}
 	 *
 	 * @return The streamgraph representing the transformations
 	 */
