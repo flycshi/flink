@@ -19,30 +19,19 @@
 package org.apache.flink.streaming.api.graph;
 
 import org.apache.flink.runtime.jobgraph.JobVertexID;
+import org.apache.flink.shaded.guava18.com.google.common.hash.HashFunction;
+import org.apache.flink.shaded.guava18.com.google.common.hash.Hasher;
+import org.apache.flink.shaded.guava18.com.google.common.hash.Hashing;
 import org.apache.flink.streaming.api.operators.AbstractUdfStreamOperator;
 import org.apache.flink.streaming.api.operators.ChainingStrategy;
 import org.apache.flink.streaming.api.operators.StreamOperator;
 import org.apache.flink.streaming.api.transformations.StreamTransformation;
 import org.apache.flink.streaming.runtime.partitioner.ForwardPartitioner;
-
-import org.apache.flink.shaded.guava18.com.google.common.hash.HashFunction;
-import org.apache.flink.shaded.guava18.com.google.common.hash.Hasher;
-import org.apache.flink.shaded.guava18.com.google.common.hash.Hashing;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import static org.apache.flink.util.StringUtils.byteToHexString;
 
@@ -50,7 +39,10 @@ import static org.apache.flink.util.StringUtils.byteToHexString;
  * StreamGraphHasher from Flink 1.2. This contains duplicated code to ensure that the algorithm does not change with
  * future Flink versions.
  *
+ * StreamGraphHasher 来自 Flink 1.2。这个类包含了重复的代码，以确保算法不会随着将来的Flink版本而改变。
+ *
  * <p>DO NOT MODIFY THIS CLASS
+ *    不要修改这个类
  */
 public class StreamGraphHasherV2 implements StreamGraphHasher {
 
@@ -79,14 +71,22 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 	 * </ul>
 	 *
 	 * @return A map from {@link StreamNode#id} to hash as 16-byte array.
+	 *
+	 * 用来为{@code StreamGraph}中的每个{@code StreamNode}产生一个对应的16位字节数组的散列值, 用于设置其对应的{@code JobVertexID}
+	 * 这样在任务重新部署时, 可以保障{@code JobVertexID}保持一致, 从而可以使用之前执行的快照等数据。
+	 *
 	 */
 	@Override
 	public Map<Integer, byte[]> traverseStreamGraphAndGenerateHashes(StreamGraph streamGraph) {
 		// The hash function used to generate the hash
+		/** 用来产生散列值的散列函数 */
 		final HashFunction hashFunction = Hashing.murmur3_128(0);
+		/** 用来保存映射结果 */
 		final Map<Integer, byte[]> hashes = new HashMap<>();
 
+		/** 已经被访问过的{@code StreamNode}的id集合 */
 		Set<Integer> visited = new HashSet<>();
+		/** 等待处理的{@code StreamNode}队列 */
 		Queue<StreamNode> remaining = new ArrayDeque<>();
 
 		// We need to make the source order deterministic. The source IDs are
@@ -95,12 +95,13 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 		// deterministic hash assignment.
 		/**
 		 * 我们需要让源节点id的顺序是确定的。
-		 * 源id集合是无序的,也就意味着提交相同程序两次可能会导致不同的遍历次序,这会导致hash值不是确定的
+		 * 源id集合是无序的, 也就意味着提交相同程序两次可能会导致不同的遍历次序, 这会导致hash值不是确定的
 		 */
 		List<Integer> sources = new ArrayList<>();
 		for (Integer sourceNodeId : streamGraph.getSourceIDs()) {
 			sources.add(sourceNodeId);
 		}
+		/** 按升序排序 */
 		Collections.sort(sources);
 
 		//
@@ -109,23 +110,25 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 		//
 		/**
 		 * 以宽度优先的方式遍历graph。
-		 * 需要谨记,graph不是一个树,到达一个节点可以有多条路径。
+		 * 需要谨记, graph不是一个树, 到达一个节点可以有多条路径。
 		 */
 
 		// Start with source nodes
+		/** 从源节点开始 */
 		for (Integer sourceNodeId : sources) {
 			remaining.add(streamGraph.getStreamNode(sourceNodeId));
 			visited.add(sourceNodeId);
 		}
 
 		StreamNode currentNode;
+		/** 从{@code remaining}队列中, 按FIFO, 依次遍历操作 */
 		while ((currentNode = remaining.poll()) != null) {
 			// Generate the hash code. Because multiple path exist to each
 			// node, we might not have all required inputs available to
 			// generate the hash code.
 			/**
 			 * 产生hash值。
-			 * 由于每个节点存在多条路径,在产生hash值时,可能会存在不具备所有的所需输入的情况
+			 * 由于每个节点存在多条路径, 所在计算某个节点的hash值时, 有可能会存在其所有的输入都就绪的情况
 			 */
 			if (generateNodeHash(currentNode, hashFunction, hashes, streamGraph.isChainingEnabled())) {
 				// Add the child nodes
@@ -140,7 +143,7 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 			} else {
 				// We will revisit this later.
 				/**
-				 * 当前条件不具备,后续再重新visit
+				 * 当前条件不具备, 后续再重新visit
 				 */
 				visited.remove(currentNode.getId());
 			}
@@ -170,6 +173,7 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 			boolean isChainingEnabled) {
 
 		// Check for user-specified ID
+		/** 获取用户设置的id */
 		String userSpecifiedHash = node.getTransformationUID();
 
 		if (userSpecifiedHash == null) {
@@ -181,13 +185,14 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 				// If the input node has not been visited yet, the current
 				// node will be visited again at a later point when all input
 				// nodes have been visited and their hashes set.
-				/** 如果输入节点还没有都被遍历过,当前节点会稍后等所有输入节点都遍历过,切hash被设置之后,再重新遍历 */
+				/** 如果输入节点还没有都被遍历过, 当前节点会稍后等所有输入节点都遍历过, 且hash被设置之后, 再重新遍历 */
 				if (!hashes.containsKey(inEdge.getSourceId())) {
 					return false;
 				}
 			}
 
 			Hasher hasher = hashFunction.newHasher();
+			/** 产生确定的散列值 */
 			byte[] hash = generateDeterministicHash(node, hasher, hashes, isChainingEnabled);
 
 			if (hashes.put(node.getId(), hash) != null) {
@@ -246,11 +251,13 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 		/**
 		 * 将流节点放入hash。
 		 * 我们使用当前已经计算hash的节点数作为id。
-		 * 不能使用节点的ID,因为它是从一个静态的自增器产生的。这会导致两个独立的程序具有不同的hash
+		 * 不能使用节点的ID,因为它是从一个静态的自增器产生的。
+		 * 这会导致两个独立的程序具有不同的hash。
 		 */
 		generateNodeLocalHash(node, hasher, hashes.size());
 
 		// Include chained nodes to hash
+		/** 将可以链接到一起的节点加入到hash中 */
 		for (StreamEdge outEdge : node.getOutEdges()) {
 			if (isChainable(outEdge, isChainingEnabled)) {
 				StreamNode chainedNode = outEdge.getTargetVertex();
@@ -258,7 +265,7 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 				// Use the hash size again, because the nodes are chained to
 				// this node. This does not add a hash for the chained nodes.
 				/**
-				 * 再次使用hash的个数,因为节点被连接到该节点上了,也就是连接在一起的节点的id是一样的。
+				 * 再次使用hash的个数, 因为节点被连接到该节点上了, 也就是连接在一起的节点的id是一样的。
 				 */
 				generateNodeLocalHash(chainedNode, hasher, hashes.size());
 			}
@@ -269,7 +276,7 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 		// Make sure that all input nodes have their hash set before entering
 		// this loop (calling this method).
 		/**
-		 * 进入该循环前,需要确保所有输入节点的hash已经被设置好
+		 * 进入该循环前, 需要确保所有输入节点的hash已经被设置好
 		 */
 		for (StreamEdge inEdge : node.getInEdges()) {
 			byte[] otherHash = hashes.get(inEdge.getSourceId());

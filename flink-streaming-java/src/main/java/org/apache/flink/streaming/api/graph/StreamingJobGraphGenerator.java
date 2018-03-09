@@ -60,6 +60,7 @@ import java.util.Map.Entry;
 
 /**
  * The StreamingJobGraphGenerator converts a {@link StreamGraph} into a {@link JobGraph}.
+ * 将一个{@code StreamGraph}转化为一个{@code JobGraph}
  */
 @Internal
 public class StreamingJobGraphGenerator {
@@ -101,7 +102,9 @@ public class StreamingJobGraphGenerator {
 	private final Map<Integer, ResourceSpec> chainedMinResources;
 	private final Map<Integer, ResourceSpec> chainedPreferredResources;
 
+	/** 默认的hash生产器, 用于为{@code StreamGraph}中的每个{@code StreamNode}生产一个确定的hash值 */
 	private final StreamGraphHasher defaultStreamGraphHasher;
+	/** 后备hash生成器 */
 	private final List<StreamGraphHasher> legacyStreamGraphHashers;
 
 	private StreamingJobGraphGenerator(StreamGraph streamGraph) {
