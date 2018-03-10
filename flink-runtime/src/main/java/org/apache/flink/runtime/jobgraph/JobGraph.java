@@ -65,7 +65,10 @@ public class JobGraph implements Serializable {
 
 	// --- job and configuration ---
 
-	/** List of task vertices included in this job graph. */
+	/**
+	 * List of task vertices included in this job graph.
+	 * 这个{@code JobGraph}中包含的任务节点列表
+	 */
 	private final Map<JobVertexID, JobVertex> taskVertices = new LinkedHashMap<JobVertexID, JobVertex>();
 
 	/** The job configuration attached to this job. */
@@ -395,10 +398,18 @@ public class JobGraph implements Serializable {
 
 	// --------------------------------------------------------------------------------------------
 	//  Topological Graph Access
+	//  拓扑图获取
 	// --------------------------------------------------------------------------------------------
 
+	/**
+	 * 1、首先找出所有的源节点，添加到sorted这个列表集合中；
+	 * 2、然后依次遍历sorted这个列表中的元素，直到remaining这个集合为空。
+	 *
+	 * 得到一个JobGraph中的JobVertex的列表，从数据源依次添加到列表中的
+	 */
 	public List<JobVertex> getVerticesSortedTopologicallyFromSources() throws InvalidProgramException {
 		// early out on empty lists
+		/** 节点集合为空时，可以快速退出 */
 		if (this.taskVertices.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -408,6 +419,7 @@ public class JobGraph implements Serializable {
 
 		// start by finding the vertices with no input edges
 		// and the ones with disconnected inputs (that refer to some standalone data set)
+		/** 找出没有输入的JobVertex */
 		{
 			Iterator<JobVertex> iter = remaining.iterator();
 			while (iter.hasNext()) {
@@ -423,10 +435,15 @@ public class JobGraph implements Serializable {
 		int startNodePos = 0;
 
 		// traverse from the nodes that were added until we found all elements
+		/** 遍历已经添加的节点，直到找出所有元素 */
 		while (!remaining.isEmpty()) {
 
 			// first check if we have more candidates to start traversing from. if not, then the
 			// graph is cyclic, which is not permitted
+			/**
+			 * 检查开始检查的节点的位置编号是否大于总的可遍历的节点的个数
+			 * 如果大于，则说明出现循环图，这是不允许的
+			 */
 			if (startNodePos >= sorted.size()) {
 				throw new InvalidProgramException("The job graph is cyclic.");
 			}
@@ -438,13 +455,22 @@ public class JobGraph implements Serializable {
 		return sorted;
 	}
 
+	/**
+	 * 将remaining集合中的节点，
+	 */
 	private void addNodesThatHaveNoNewPredecessors(JobVertex start, List<JobVertex> target, Set<JobVertex> remaining) {
 
 		// forward traverse over all produced data sets and all their consumers
+		/** 向前遍历产生的所有数据集，以及它们的消费者 */
 		for (IntermediateDataSet dataSet : start.getProducedDataSets()) {
 			for (JobEdge edge : dataSet.getConsumers()) {
 
 				// a vertex can be added, if it has no predecessors that are still in the 'remaining' set
+				/** 如果一个节点没有输入节点还在"remaining"集合中，则将这个节点添加进来 */
+
+				/**
+				 * 如果目标节点已经不在remaining集合中，则continue
+				 */
 				JobVertex v = edge.getTarget();
 				if (!remaining.contains(v)) {
 					continue;
@@ -452,8 +478,14 @@ public class JobGraph implements Serializable {
 
 				boolean hasNewPredecessors = false;
 
+				/**
+				 * 如果节点v，其所有输入节点都已经不在remaining集合中，
+				 * 则说明其输入节点都已经被添加到sorted列表，则hasNewPredecessors为false，
+				 * 否则hasNewPredecessors的值为true，表示节点v还有输入节点在remaining集合中。
+				 */
 				for (JobEdge e : v.getInputs()) {
 					// skip the edge through which we came
+					/** 跳过上层循环中遍历到的JobEdge，也就是edge变量 */
 					if (e == edge) {
 						continue;
 					}
@@ -465,6 +497,11 @@ public class JobGraph implements Serializable {
 					}
 				}
 
+				/**
+				 * 如果节点v已经没有输入节点还在remaining集合中，则将节点v添加到sorted列表中，
+				 * 同时从remaining集合中删除，
+				 * 然后开始递归遍历节点v的下游节点。
+				 */
 				if (!hasNewPredecessors) {
 					target.add(v);
 					remaining.remove(v);

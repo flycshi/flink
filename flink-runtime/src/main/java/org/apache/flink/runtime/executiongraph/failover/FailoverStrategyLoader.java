@@ -28,7 +28,8 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 
 /**
- * A utility class to load failover strategies from the configuration. 
+ * A utility class to load failover strategies from the configuration.
+ * 一个用来从配置中加载容灾策略的工具类
  */
 public class FailoverStrategyLoader {
 

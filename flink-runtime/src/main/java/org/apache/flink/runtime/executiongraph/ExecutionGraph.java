@@ -922,6 +922,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 			}
 
 			// create the execution job vertex and attach it to the graph
+			/** 创建{@link ExecutionJobVertex}，并附加到这个graph中 */
 			ExecutionJobVertex ejv = new ExecutionJobVertex(
 				this,
 				jobVertex,

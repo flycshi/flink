@@ -70,6 +70,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Utility class to encapsulate the logic of building an {@link ExecutionGraph} from a {@link JobGraph}.
+ * 用来封装从一个{@code JobGraph}构建一个{@code ExecutionGraph}的逻辑的工具类
  */
 public class ExecutionGraphBuilder {
 
@@ -100,9 +101,11 @@ public class ExecutionGraphBuilder {
 		final String jobName = jobGraph.getName();
 		final JobID jobId = jobGraph.getJobID();
 
+		/** 从配置中获取容灾恢复策略的工厂类 */
 		final FailoverStrategy.Factory failoverStrategy =
 				FailoverStrategyLoader.loadFailoverStrategy(jobManagerConfig, log);
 
+		/** 构建{@code JobInformation}实例 */
 		final JobInformation jobInformation = new JobInformation(
 			jobId,
 			jobName,
@@ -112,6 +115,7 @@ public class ExecutionGraphBuilder {
 			jobGraph.getClasspaths());
 
 		// create a new execution graph, if none exists so far
+		/** 如果入参中的prior不为null，则直接使用，如果为null，则构建一个新的{@code ExecutionGraph}实例 */
 		final ExecutionGraph executionGraph;
 		try {
 			executionGraph = (prior != null) ? prior :
@@ -130,7 +134,7 @@ public class ExecutionGraphBuilder {
 		}
 
 		// set the basic properties
-
+		/** 设置基本属性 */
 		executionGraph.setScheduleMode(jobGraph.getScheduleMode());
 		executionGraph.setQueuedSchedulingAllowed(jobGraph.getAllowQueuedScheduling());
 
@@ -184,6 +188,7 @@ public class ExecutionGraphBuilder {
 		}
 
 		// configure the state checkpointing
+		/** 配置状态checkpointing */
 		JobCheckpointingSettings snapshotSettings = jobGraph.getCheckpointingSettings();
 		if (snapshotSettings != null) {
 			List<ExecutionJobVertex> triggerVertices = 
@@ -306,7 +311,7 @@ public class ExecutionGraphBuilder {
 		}
 
 		// create all the metrics for the Execution Graph
-
+		/** 为{@code ExecutionGraph}创建所有的metrics */
 		metrics.gauge(RestartTimeGauge.METRIC_NAME, new RestartTimeGauge(executionGraph));
 		metrics.gauge(DownTimeGauge.METRIC_NAME, new DownTimeGauge(executionGraph));
 		metrics.gauge(UpTimeGauge.METRIC_NAME, new UpTimeGauge(executionGraph));

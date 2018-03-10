@@ -36,7 +36,7 @@ import org.apache.flink.runtime.akka.ListeningBehaviour
  * manually, but it is cumbersome and complicates testing in certain scenarios, where you need to
  * make sure to resolve the correct [[ActorRef]]s when submitting jobs (RepointableActorRef vs.
  * RemoteActorRef).
-  * 重要：这个类时序列化的， 但是需要在一个actor system的context中反序列化来解析客户单的 ActorRef。
+  * 重要：这个类是序列化的， 但是需要在一个actor system的context中反序列化来解析客户单的 ActorRef。
   * 有可能是手动序列化akka的url，但是当你需要确保在提交job时正确解析ActorRef时， 在某些情况下是比较繁杂的。
  *
  * @param client Actor which submitted the job

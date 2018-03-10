@@ -551,6 +551,7 @@ public class JobVertex implements java.io.Serializable {
 	/**
 	 * A hook that can be overwritten by sub classes to implement logic that is called by the
 	 * master when the job starts.
+	 * 一个hook，可以被子类覆写，以便实现当job启动时，被master调用的逻辑。
 	 * 
 	 * @param loader The class loader for user defined code.
 	 * @throws Exception The method may throw exceptions which cause the job to fail immediately.
