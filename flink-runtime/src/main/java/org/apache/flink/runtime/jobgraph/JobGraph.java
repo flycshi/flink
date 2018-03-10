@@ -88,7 +88,10 @@ public class JobGraph implements Serializable {
 	 */
 	private boolean allowQueuedScheduling;
 
-	/** The mode in which the job is scheduled */
+	/**
+	 * The mode in which the job is scheduled
+	 * job被调度的模式
+	 */
 	private ScheduleMode scheduleMode = ScheduleMode.LAZY_FROM_SOURCES;
 
 	// --- checkpointing ---
@@ -129,6 +132,9 @@ public class JobGraph implements Serializable {
 	 * Constructs a new job graph with the given job ID (or a random ID, if {@code null} is passed),
 	 * the given name and the given execution configuration (see {@link ExecutionConfig}).
 	 * The ExecutionConfig will be serialized and can't be modified afterwards.
+	 * 使用给定的{@link JobID}(如果传入的是null，则产生一个随机的ID)，{@code jobName}，{@link ExecutionConfig}，
+	 * 构建一个新的{@code JobGraph}。
+	 * {@code ExecutionConfig}会被序列化，并且后面不能再修改。
 	 *
 	 * @param jobId The id of the job. A random ID is generated, if {@code null} is passed.
 	 * @param jobName The name of the job.
