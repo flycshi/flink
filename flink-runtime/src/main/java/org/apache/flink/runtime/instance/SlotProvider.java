@@ -46,8 +46,11 @@ public interface SlotProvider {
 	 * 按要求分配槽位
 	 *
 	 * @param task         The task to allocate the slot for
+	 *                     需要分配槽位的task
 	 * @param allowQueued  Whether allow the task be queued if we do not have enough resource
+	 *                     如果没有足够的资源, 是否允许将task加入队列
 	 * @param preferredLocations preferred locations for the slot allocation
+	 *                           优先的位置分配
 	 * @return The future of the allocation
 	 */
 	CompletableFuture<SimpleSlot> allocateSlot(

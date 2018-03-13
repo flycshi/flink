@@ -1024,14 +1024,21 @@ public class CheckpointCoordinator {
 
 	/**
 	 * Restores the latest checkpointed state.
+	 * 恢复最新的检查点状态
 	 *
 	 * @param tasks Map of job vertices to restore. State for these vertices is
 	 * restored via {@link Execution#setInitialState(TaskStateSnapshot)}.
+	 *              需要恢复的job节点的映射。
+	 *              这些节点的状态通过{@link Execution#setInitialState(TaskStateSnapshot)}进行恢复。
 	 * @param errorIfNoCheckpoint Fail if no completed checkpoint is available to
 	 * restore from.
+	 *                            true —— 如果没有完整的有效检查点可以用来恢复, 则fail
 	 * @param allowNonRestoredState Allow checkpoint state that cannot be mapped
 	 * to any job vertex in tasks.
+	 *                              true —— 允许存在检查点状态不能映射到tasks中的任何节点
 	 * @return <code>true</code> if state was restored, <code>false</code> otherwise.
+	 * 			true —— 如果状态被恢复;
+	 * 			false —— 否则, 就是false
 	 * @throws IllegalStateException If the CheckpointCoordinator is shut down.
 	 * @throws IllegalStateException If no completed checkpoint is available and
 	 *                               the <code>failIfNoCheckpoint</code> flag has been set.
@@ -1057,10 +1064,15 @@ public class CheckpointCoordinator {
 			// We create a new shared state registry object, so that all pending async disposal requests from previous
 			// runs will go against the old object (were they can do no harm).
 			// This must happen under the checkpoint lock.
+			/**
+			 * 我们创建一个新的{@link SharedStateRegistry}对象, 这样所有来自前一次运行的悬挂着的异步清理请求将由老的对象处理(这样做是否是无害的?)。
+			 * 这个操作必须在锁下执行。
+			 */
 			sharedStateRegistry.close();
 			sharedStateRegistry = sharedStateRegistryFactory.create(executor);
 
 			// Recover the checkpoints, TODO this could be done only when there is a new leader, not on each recovery
+			/** 恢复检查点, 只有在有新的领导时才能完成，而不是每次恢复 */
 			completedCheckpointStore.recover();
 
 			// Now, we re-register all (shared) states from the checkpoint store with the new registry
@@ -1073,6 +1085,7 @@ public class CheckpointCoordinator {
 			// Restore from the latest checkpoint
 			CompletedCheckpoint latest = completedCheckpointStore.getLatestCheckpoint();
 
+			/** 判断是否有最新的检查点 */
 			if (latest == null) {
 				if (errorIfNoCheckpoint) {
 					throw new IllegalStateException("No completed checkpoint available");
@@ -1119,6 +1132,7 @@ public class CheckpointCoordinator {
 
 	/**
 	 * Restore the state with given savepoint
+	 * 用给定的保存点恢复状态
 	 * 
 	 * @param savepointPath    Location of the savepoint
 	 * @param allowNonRestored True if allowing checkpoint state that cannot be 
@@ -1141,12 +1155,14 @@ public class CheckpointCoordinator {
 				savepointPath, (allowNonRestored ? "allowing non restored state" : ""));
 
 		// Load the savepoint as a checkpoint into the system
+		// 将保存点作为一个检查点加载到系统中
 		CompletedCheckpoint savepoint = SavepointLoader.loadAndValidateSavepoint(
 				job, tasks, savepointPath, userClassLoader, allowNonRestored);
 
 		completedCheckpointStore.addCheckpoint(savepoint);
 		
 		// Reset the checkpoint ID counter
+		// 重置检查点id
 		long nextCheckpointId = savepoint.getCheckpointID() + 1;
 		checkpointIdCounter.setCount(nextCheckpointId);
 		

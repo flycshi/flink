@@ -57,13 +57,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * The scheduler is responsible for distributing the ready-to-run tasks among instances and slots.
+ * scheduler用来将 ready-to-run 任务在instances和slots之间进行分配。
  * 
  * <p>The scheduler supports two scheduling modes:</p>
+ * scheduler 支持两种调度模式
  * <ul>
  *     <li>Immediate scheduling: A request for a task slot immediately returns a task slot, if one is
  *         available, or throws a {@link NoResourceAvailableException}.</li>
+ *         立即调度: 如果有有效的任务槽位, 任务槽位的请求被立即返回一个任务槽位, 否则抛出异常
  *     <li>Queued Scheduling: A request for a task slot is queued and returns a future that will be
  *         fulfilled as soon as a slot becomes available.</li>
+ *         排队调度: 任务槽位的请求会被加入队列, 并返回一个future, 只要一个槽位变的有效, 这个future就会被分配。
  * </ul>
  */
 public class Scheduler implements InstanceListener, SlotAvailabilityListener, SlotProvider {

@@ -83,6 +83,11 @@ public class RestartStrategies {
 		return new FailureRateRestartStrategyConfiguration(failureRate, failureInterval, delayInterval);
 	}
 
+	/**
+	 * ################################################################################################
+	 * 重启策略配置的接口定义与实现
+	 */
+
 	public abstract static class RestartStrategyConfiguration implements Serializable {
 		private static final long serialVersionUID = 6285853591578313960L;
 
@@ -90,6 +95,7 @@ public class RestartStrategies {
 
 		/**
 		 * Returns a description which is shown in the web interface
+		 * 返回web节点显示的重启策略配置的描述字符串
 		 *
 		 * @return Description of the restart strategy
 		 */
@@ -185,6 +191,8 @@ public class RestartStrategies {
 	 * Restart strategy configuration that could be used by jobs to use cluster level restart
 	 * strategy. Useful especially when one has a custom implementation of restart strategy set via
 	 * flink-conf.yaml.
+	 * 使用集群级别的重启策略。
+	 * 当通过`flink-conf.yaml`设置了一个用户实现的重启策略时会特别有用。
 	 */
 	final public static class FallbackRestartStrategyConfiguration extends RestartStrategyConfiguration{
 		private static final long serialVersionUID = -4441787204284085544L;

@@ -1275,6 +1275,7 @@ class JobManager(
               "Cannot set up the user code libraries: " + t.getMessage, t)
         }
 
+        /** 获取用户类加载器 */
         val userCodeLoader = libraryCacheManager.getClassLoader(jobGraph.getJobID)
         if (userCodeLoader == null) {
           throw new JobSubmissionException(jobId,
@@ -1286,6 +1287,7 @@ class JobManager(
           throw new JobSubmissionException(jobId, "The given job is empty")
         }
 
+        /** 获取重启策略 */
         val restartStrategy =
           Option(jobGraph.getSerializedExecutionConfig()
             .deserializeValue(userCodeLoader)
@@ -1313,6 +1315,7 @@ class JobManager(
             true
         }
 
+        /** 通过{@link JobGraph}构建出{@link ExecutionGraph} */
         executionGraph = ExecutionGraphBuilder.buildGraph(
           executionGraph,
           jobGraph,
@@ -1328,17 +1331,20 @@ class JobManager(
           numSlots,
           blobServer,
           log.logger)
-        
+
+        /** 如果还没有注册过, 则进行注册 */
         if (registerNewGraph) {
           currentJobs.put(jobGraph.getJobID, (executionGraph, jobInfo))
         }
 
         // get notified about job status changes
+        // 注册job状态变化监听器
         executionGraph.registerJobStatusListener(
           new StatusListenerMessenger(self, leaderSessionID.orNull))
 
         jobInfo.clients foreach {
           // the sender wants to be notified about state changes
+          // 客户端也需要被通知有关job和execution的状态变化
           case (client, ListeningBehaviour.EXECUTION_RESULT_AND_STATE_CHANGES) =>
             val listener  = new StatusListenerMessenger(client, leaderSessionID.orNull)
             executionGraph.registerExecutionListener(listener)
@@ -1347,6 +1353,7 @@ class JobManager(
         }
 
       } catch {
+        /** 如果异常, 则进行回收操作 */
         case t: Throwable =>
           log.error(s"Failed to submit job $jobId ($jobName)", t)
 
@@ -1384,12 +1391,15 @@ class JobManager(
           else {
             // load a savepoint only if this is not starting from a newer checkpoint
             // as part of an master failure recovery
+            /** 仅当这不是从一个新的检查点开始，作为主故障恢复的一部分时，加载一个保存点。 */
             val savepointSettings = jobGraph.getSavepointRestoreSettings
+            /** 判断是否需要进行从保存点进行恢复 */
             if (savepointSettings.restoreSavepoint()) {
               try {
                 val savepointPath = savepointSettings.getRestorePath()
                 val allowNonRestored = savepointSettings.allowNonRestoredState()
 
+                // 从保存点恢复
                 executionGraph.getCheckpointCoordinator.restoreSavepoint(
                   savepointPath, 
                   allowNonRestored,
@@ -1404,21 +1414,25 @@ class JobManager(
               }
             }
 
+            /** 如果有必要的话, 将{@code JobGraph}的数据进行备份 */
             try {
               submittedJobGraphs.putJobGraph(new SubmittedJobGraph(jobGraph, jobInfo))
             } catch {
               case t: Throwable =>
                 // Don't restart the execution if this fails. Otherwise, the
                 // job graph will skip ZooKeeper in case of HA.
+                /** 如果这里失败, 不进行重启操作。否则, 在HA的情况下, JobGraph 会跳过zk */
                 jobInfo.notifyClients(
                   decorateMessage(JobResultFailure(new SerializedThrowable(t))))
                 throw new SuppressRestartsException(t)
             }
           }
 
+          /** 通知客户端, job已经提交成功 */
           jobInfo.notifyClients(
             decorateMessage(JobSubmitSuccess(jobGraph.getJobID)))
 
+          /** 如果是 leader [[JobManager]], 则开始调度执行 */
           if (leaderElectionService.hasLeadership) {
             // There is a small chance that multiple job managers schedule the same job after if
             // they try to recover at the same time. This will eventually be noticed, but can not be
@@ -1437,10 +1451,12 @@ class JobManager(
               */
             log.info(s"Scheduling job $jobId ($jobName).")
 
+            /** 将{@code ExecutionGraph}进行调度执行 */
             executionGraph.scheduleForExecution()
           } else {
             // Remove the job graph. Otherwise it will be lingering around and possibly removed from
             // ZooKeeper by this JM.
+            /** 移除这个job, 否则, 它会逗留一会, 并可能被这个JM从zk上移除 */
             self ! decorateMessage(RemoveJob(jobId, removeJobFromStateBackend = false))
 
             log.warn(s"Submitted job $jobId, but not leader. The other leader needs to recover " +

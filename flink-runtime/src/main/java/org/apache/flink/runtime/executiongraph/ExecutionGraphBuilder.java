@@ -78,6 +78,9 @@ public class ExecutionGraphBuilder {
 	 * Builds the ExecutionGraph from the JobGraph.
 	 * If a prior execution graph exists, the JobGraph will be attached. If no prior execution
 	 * graph exists, then the JobGraph will become attach to a new empty execution graph.
+	 * 从{@code JobGraph}构建{@code ExecutionGraph}。
+	 * 如果存在一个之前的{@code ExecutionGraph}, {@code JobGraph}将会被附加上。
+	 * 如果不存在{@code ExecutionGraph}, {@code JobGraph}会附加到一个新的空的{@code ExecutionGraph}。
 	 */
 	public static ExecutionGraph buildGraph(
 			@Nullable ExecutionGraph prior,
@@ -96,8 +99,10 @@ public class ExecutionGraphBuilder {
 			Logger log)
 		throws JobExecutionException, JobException {
 
+		/** jobGraph 不能为 null */
 		checkNotNull(jobGraph, "job graph cannot be null");
 
+		/** 提取job的name和id */
 		final String jobName = jobGraph.getName();
 		final JobID jobId = jobGraph.getJobID();
 

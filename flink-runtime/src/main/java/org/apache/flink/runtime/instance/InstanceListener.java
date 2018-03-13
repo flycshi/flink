@@ -21,11 +21,13 @@ package org.apache.flink.runtime.instance;
 /**
  * Classes implementing the InstanceListener interface can be notified about
  * the availability disappearance of instances.
+ * 当出现有效的{@link Instance}时, 该接口的实现可以被通知到。
  */
 public interface InstanceListener {
 
 	/**
 	 * Called when a new instance becomes available.
+	 * 当一个新的{@code Instance}变为有效时, 被调用
 	 * 
 	 * @param instance The instance that became available.
 	 */
@@ -33,6 +35,7 @@ public interface InstanceListener {
 	
 	/**
 	 * Called when an instance died.
+	 * 当一个{@link Instance}挂掉时, 被调用
 	 * 
 	 * @param instance The instance that died.
 	 */

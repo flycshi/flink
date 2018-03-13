@@ -20,11 +20,14 @@ package org.apache.flink.runtime.jobmanager.scheduler;
 
 /**
  * Defines the location preference constraint.
+ * 定义位置首选项约束。
  *
  * <p> Currently, we support that all input locations have to be taken into consideration
  * and only those which are known at scheduling time. Note that if all input locations
  * are considered, then the scheduling operation can potentially take a while until all
  * inputs have locations assigned.
+ * 目前, 我们支持所有输入位置都需要被考虑, 和只考虑那些只有在调度时已知的位置。
+ * 注意, 如果所有输入位置都需要考虑, 那么调度操作可能需要一段时间, 直到所有的输入都指定位置。
  */
 public enum LocationPreferenceConstraint {
 	ALL, // wait for all inputs to have a location assigned

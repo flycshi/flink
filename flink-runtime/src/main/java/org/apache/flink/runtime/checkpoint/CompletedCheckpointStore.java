@@ -47,6 +47,7 @@ public interface CompletedCheckpointStore {
 	/**
 	 * Returns the latest {@link CompletedCheckpoint} instance or <code>null</code> if none was
 	 * added.
+	 * 返回最新的{@link CompletedCheckpoint}实例, 或者, 如果没有添加, 则返回null
 	 */
 	CompletedCheckpoint getLatestCheckpoint() throws Exception;
 

@@ -77,6 +77,7 @@ public abstract class RestartStrategyFactory implements Serializable {
 
 	/**
 	 * Creates a {@link RestartStrategy} instance from the given {@link Configuration}.
+	 * 从给定的{@code Configuration}创建一个{@code RestartStrategy}实例。
 	 *
 	 * @return RestartStrategy instance
 	 * @throws Exception which indicates that the RestartStrategy could not be instantiated.
@@ -87,6 +88,7 @@ public abstract class RestartStrategyFactory implements Serializable {
 		switch (restartStrategyName.toLowerCase()) {
 			case "none":
 				// support deprecated ConfigConstants values
+				// 支持废弃的配置key
 				final int numberExecutionRetries = configuration.getInteger(ConfigConstants.EXECUTION_RETRIES_KEY,
 					ConfigConstants.DEFAULT_EXECUTION_RETRIES);
 				String pauseString = configuration.getString(AkkaOptions.WATCH_HEARTBEAT_PAUSE);

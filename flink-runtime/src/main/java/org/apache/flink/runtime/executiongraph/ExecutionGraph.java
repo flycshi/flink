@@ -489,12 +489,14 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 			ClassLoader userClassLoader,
 			BlobWriter blobWriter) throws IOException {
 
+		/** futureExecutor 不能为null */
 		checkNotNull(futureExecutor);
 
 		this.jobInformation = Preconditions.checkNotNull(jobInformation);
 
 		this.blobWriter = Preconditions.checkNotNull(blobWriter);
 
+		/** 根据jobInformatica的字节大小, 来决定是否需要把其持久化为离线 */
 		this.jobInformationOrBlobKey = BlobWriter.serializeAndTryOffload(jobInformation, jobInformation.getJobId(), blobWriter);
 
 		this.futureExecutor = Preconditions.checkNotNull(futureExecutor);
@@ -995,8 +997,10 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 	 *
 	 *
 	 * @param slotProvider  The resource provider from which the slots are allocated
+	 *                      提供可分配的slot资源提供者
 	 * @param timeout       The maximum time that the deployment may take, before a
 	 *                      TimeoutException is thrown.
+	 *                      部署可能的最大耗时, 否则会抛出一个{@link TimeoutException}
 	 */
 	private void scheduleEager(SlotProvider slotProvider, final Time timeout) {
 		checkState(state == JobStatus.RUNNING, "job is not running currently");
@@ -1005,14 +1009,22 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 		// that way we do not have any operation that can fail between allocating the slots
 		// and adding them to the list. If we had a failure in between there, that would
 		// cause the slots to get lost
+		/**
+		 * 重要: 预留我们需要的所有空间。
+		 * 这样, 在分配槽位和将它们添加到列表之间, 我们就不会进行任何可能失败的操作了。
+		 * 如果我们在这之间有一个失败的操作, 那么会导致槽位丢失。
+		 */
 		final boolean queued = allowQueuedScheduling;
 
 		// collecting all the slots may resize and fail in that operation without slots getting lost
+		// 收集所有槽位, 这些槽位可能调整大小, 并且在没有槽位丢失的情况下, 也会操作失败。
 		final ArrayList<CompletableFuture<Execution>> allAllocationFutures = new ArrayList<>(getNumberOfExecutionJobVertices());
 
 		// allocate the slots (obtain all their futures
+		// 分配操作(获得所有的future对象)
 		for (ExecutionJobVertex ejv : getVerticesTopologically()) {
 			// these calls are not blocking, they only return futures
+			// 这些操作是非阻塞的, 只是返回future对象
 			Collection<CompletableFuture<Execution>> allocationFutures = ejv.allocateResourcesForAll(
 				slotProvider,
 				queued,
@@ -1023,14 +1035,25 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 
 		// this future is complete once all slot futures are complete.
 		// the future fails once one slot future fails.
+		/**
+		 * 一旦所有的槽分配future都完成了, future 就完成了。
+		 * 一旦有一个槽分配失败, 那么future就会失败。
+		 */
 		final ConjunctFuture<Collection<Execution>> allAllocationsComplete = FutureUtils.combineAll(allAllocationFutures);
 
 		// make sure that we fail if the allocation timeout was exceeded
+		/**
+		 * 确保如果超过槽分配超时时间, 就fail
+		 */
 		final ScheduledFuture<?> timeoutCancelHandle = futureExecutor.schedule(new Runnable() {
 			@Override
 			public void run() {
 				// When the timeout triggers, we try to complete the conjunct future with an exception.
 				// Note that this is a no-op if the future is already completed
+				/**
+				 * 当触发超时时, 我们尝试用一个异常来完成ConjunctFuture
+				 * 注意: 如果future已经完成, 则不会有任何操作
+				 */
 				int numTotal = allAllocationsComplete.getNumFuturesTotal();
 				int numComplete = allAllocationsComplete.getNumFuturesCompleted();
 				String message = "Could not allocate all requires slots within timeout of " +
@@ -1040,21 +1063,26 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 			}
 		}, timeout.getSize(), timeout.getUnit());
 
-
+		/**
+		 * 异步调用执行
+		 */
 		allAllocationsComplete.handleAsync(
 			(Collection<Execution> executions, Throwable throwable) -> {
 				try {
 					// we do not need the cancellation timeout any more
+					// 取消上面的超时检查任务
 					timeoutCancelHandle.cancel(false);
 
 					if (throwable == null) {
 						// successfully obtained all slots, now deploy
+						// 成功后去所需槽位, 现在开始部署
 						for (Execution execution : executions) {
 							execution.deploy();
 						}
 					}
 					else {
 						// let the exception handler deal with this
+						// 抛出异常, 让异常句柄处理这个
 						throw throwable;
 					}
 				}
@@ -1325,14 +1353,18 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 
 	/**
 	 * Restores the latest checkpointed state.
+	 * 恢复最新的检查点状态
 	 *
 	 * <p>The recovery of checkpoints might block. Make sure that calls to this method don't
 	 * block the job manager actor and run asynchronously.
 	 *
 	 * @param errorIfNoCheckpoint Fail if there is no checkpoint available
+	 *                            如果没有有效的checkpoint, 则fail
 	 * @param allowNonRestoredState Allow to skip checkpoint state that cannot be mapped
 	 * to the ExecutionGraph vertices (if the checkpoint contains state for a
 	 * job vertex that is not part of this ExecutionGraph).
+	 *                              如果为true, 则允许跳过那些不能映射到{@code ExecutionGraph}的节点的检查点状态
+	 *                              (如果检查点包含了不属于这个{@code ExecutionGraph}的节点的状态)
 	 */
 	public void restoreLatestCheckpointedState(boolean errorIfNoCheckpoint, boolean allowNonRestoredState) throws Exception {
 		synchronized (progressLock) {

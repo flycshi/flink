@@ -81,6 +81,7 @@ public interface BlobWriter {
 	/**
 	 * Serializes the given value and offloads it to the BlobServer if its size exceeds the minimum
 	 * offloading size of the BlobServer.
+	 * 将给定的value进行序列化, 如果序列化后的数据大小超过最小者, 则将数据离线存储
 	 *
 	 * @param value to serialize
 	 * @param jobId to which the value belongs.

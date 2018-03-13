@@ -46,8 +46,10 @@ public interface SubmittedJobGraphStore {
 
 	/**
 	 * Adds the {@link SubmittedJobGraph} instance.
+	 * 添加这个{@link SubmittedJobGraph}实例。
 	 *
 	 * <p>If a job graph with the same {@link JobID} exists, it is replaced.
+	 * 如果一个具有相同{@link JobID}的{@link org.apache.flink.runtime.jobgraph.JobGraph}存在, 那它会被替换掉。
 	 */
 	void putJobGraph(SubmittedJobGraph jobGraph) throws Exception;
 
