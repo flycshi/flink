@@ -188,6 +188,7 @@ public class BlobUtils {
 
 	/**
 	 * Makes sure a given directory exists by creating it if necessary.
+	 * 确保一个给定的目录存在, 必要的话创建它。
 	 *
 	 * @param dir
 	 * 		directory to create
@@ -198,6 +199,7 @@ public class BlobUtils {
 	private static void mkdirTolerateExisting(final File dir) throws IOException {
 		// note: thread-safe create should try to mkdir first and then ignore the case that the
 		//       directory already existed
+		/** 注意: 线程安全的创建目录操作, 应该先尝试`mkdir`, 并忽略目录已经存在的情况 */
 		if (!dir.mkdirs() && !dir.exists()) {
 			throw new IOException(
 				"Cannot create directory '" + dir.getAbsolutePath() + "'.");
@@ -206,6 +208,7 @@ public class BlobUtils {
 
 	/**
 	 * Returns the (designated) physical storage location of the BLOB with the given key.
+	 * 返回给定key对应的BLOB的物理存储位置
 	 *
 	 * @param storageDir
 	 * 		storage directory used be the BLOB service
@@ -423,6 +426,7 @@ public class BlobUtils {
 	/**
 	 * Moves the temporary <tt>incomingFile</tt> to its permanent location where it is available for
 	 * use (not thread-safe!).
+	 * 将临时文件移动到它的持久化位置(该方法是非线程安全, 所有使用时, 可以通过加锁)
 	 *
 	 * @param incomingFile
 	 * 		temporary file created during transfer
@@ -446,9 +450,11 @@ public class BlobUtils {
 
 		try {
 			// first check whether the file already exists
+			/** 首先检查文件是否存在 */
 			if (!storageFile.exists()) {
 				try {
 					// only move the file if it does not yet exist
+					/** 只有目标文件不存在时, 才将临时文件move到目标文件 */
 					Files.move(incomingFile.toPath(), storageFile.toPath());
 
 					incomingFile = null;

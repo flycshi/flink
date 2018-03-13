@@ -311,8 +311,13 @@ public class BlobLibraryCacheManager implements LibraryCacheManager {
 			// Make sure the previous registration referred to the same libraries and class paths.
 			// NOTE: the original collections may contain duplicates and may not already be Set
 			//       collections with fast checks whether an item is contained in it.
+			/**
+			 * 确保之前的注册与当前注册关联相同的{@code libraries}和{@code classpaths}。
+			 * 注意: 原始集合可能包含重复的副本, 并且集合可能没有设置快速检查一个item是否已经包含在内。
+			 */
 
 			// lazy construction of a new set for faster comparisons
+			/** 老的libraries集合, 需要与新的libraries集合的内容一致, 否则抛出异常 */
 			if (libraries.size() != requiredLibraries.size() ||
 				!new HashSet<>(requiredLibraries).containsAll(libraries)) {
 

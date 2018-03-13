@@ -58,6 +58,7 @@ public abstract class AbstractBlobCache implements Closeable {
 
 	/**
 	 * Root directory for local file storage.
+	 * 本地文件存储的根目录
 	 */
 	protected final File storageDir;
 
@@ -123,10 +124,13 @@ public abstract class AbstractBlobCache implements Closeable {
 
 	/**
 	 * Returns local copy of the file for the BLOB with the given key.
+	 * 返回给定key对应的BLOB的文件的本地copy
 	 *
 	 * <p>The method will first attempt to serve the BLOB from its local cache. If the BLOB is not
 	 * in the cache, the method will try to download it from this cache's BLOB server via a
 	 * distributed BLOB store (if available) or direct end-to-end download.
+	 * 该方法首先会尝试采用本地缓存来给这个BLOB提供服务。
+	 * 如果这个BLOB不在缓存中, 该方法会尝试通过一个分布式的BLOB存储(如果可用)或者直接的点对点, 从缓存BLOB服务下载。
 	 *
 	 * @param jobId
 	 * 		ID of the job this blob belongs to (or <tt>null</tt> if job-unrelated)
@@ -154,6 +158,7 @@ public abstract class AbstractBlobCache implements Closeable {
 
 		// first try the distributed blob store (if available)
 		// use a temporary file (thread-safe without locking)
+		/** 首先尝试分布式BLOB存储(如果可用), 使用一个临时文件(无锁的线程安全) */
 		File incomingFile = createTemporaryFilename();
 		try {
 			try {
@@ -188,6 +193,11 @@ public abstract class AbstractBlobCache implements Closeable {
 			return localFile;
 		} finally {
 			// delete incomingFile from a failed download
+			/**
+			 * 确保临时文件被删除
+			 * 在{@link BlotUtils#moveTempFileToStore}方法中, 会把传入的incomingFile变量设置为null,
+			 * 而这里没有对incomingFile进行非null判断, 确定不会抛出异常吗???
+			 */
 			if (!incomingFile.delete() && incomingFile.exists()) {
 				log.warn("Could not delete the staging file {} for blob key {} and job {}.",
 					incomingFile, blobKey, jobId);

@@ -1250,8 +1250,10 @@ class JobManager(
             new JobSubmissionException(null, "JobGraph must not be null.")))))
     }
     else {
+      /** 从{@link JobGraph}中提取出job的id和name */
       val jobId = jobGraph.getJobID
       val jobName = jobGraph.getName
+
       var executionGraph: ExecutionGraph = null
 
       log.info(s"Submitting job $jobId ($jobName)" + (if (isRecovery) " (Recovery)" else "") + ".")
@@ -1279,6 +1281,7 @@ class JobManager(
             "The user code class loader could not be initialized.")
         }
 
+        /** 判断{@code JobGraph}中的{@code StreamNode}的个数, 如果为0, 则说明是个空任务 */
         if (jobGraph.getNumberOfVertices == 0) {
           throw new JobSubmissionException(jobId, "The given job is empty")
         }
