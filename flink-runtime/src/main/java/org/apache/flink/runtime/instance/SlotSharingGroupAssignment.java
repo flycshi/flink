@@ -107,6 +107,12 @@ public class SlotSharingGroupAssignment {
 	 * The slots available per vertex type (JobVertexId), keyed by TaskManager, to make them locatable
 	 * 每个节点类型的的有效slot
 	 * 以 TaskManager 为键, 为了让他们可定位
+	 * [JobVertexID -> [ResourceID -> List<SharedSlot>]]
+	 * 每个JobVertexID，都有对应的资源分配，而分配给它的资源，可能在不同的TaskManager上
+	 * 每个TaskManager都有一个ResourceID，且每个TaskManager上可能会给JobVertexID分配多个SharedSlot
+	 *
+	 * 该变量的含义：一个JobVertexID，可以使用的{@link SharedSlot}，
+	 * 这些{@link SharedSlot}按照其归属的{@code TaskManager}划分到不同的列表中，其中{@code TaskManager}用{@link ResourceID}来表示
 	 */
 	private final Map<AbstractID, Map<ResourceID, List<SharedSlot>>> availableSlotsPerJid = new LinkedHashMap<>();
 
@@ -184,6 +190,7 @@ public class SlotSharingGroupAssignment {
 			SharedSlot sharedSlot, Locality locality, JobVertexID groupId, CoLocationConstraint constraint) {
 
 		// sanity checks
+		/** sharedSlot需要是根节点，且子节点集合为空，否则，抛出异常 */
 		if (!sharedSlot.isRootAndEmpty()) {
 			throw new IllegalArgumentException("The given slot is not an empty root slot.");
 		}
@@ -192,11 +199,13 @@ public class SlotSharingGroupAssignment {
 
 		synchronized (lock) {
 			// early out in case that the slot died (instance disappeared)
+			/** 在slot挂掉的情况下早点退出(实例消失了) */
 			if (!sharedSlot.isAlive()) {
 				return null;
 			}
 			
 			// add to the total bookkeeping
+			/** 添加到总的备份集合中，如果是集合中已经存在的元素，则抛出异常 */
 			if (!allSlots.add(sharedSlot)) {
 				throw new IllegalArgumentException("Slot was already contained in the assignment group");
 			}
@@ -206,6 +215,7 @@ public class SlotSharingGroupAssignment {
 					
 			if (constraint == null) {
 				// allocate us a sub slot to return
+				// 分配一个子slot
 				subSlot = sharedSlot.allocateSubSlot(groupId);
 				groupIdForMap = groupId;
 			}
@@ -218,14 +228,17 @@ public class SlotSharingGroupAssignment {
 				
 				// we need a co-location slot --> a SimpleSlot nested in a SharedSlot to
 				//                                host other co-located tasks
+				/** 我们需要一个 co-location slot --> 一个 SimpleSlot 内嵌在一个 SharedSlot 中，用来持有 co-located 任务 */
 				SharedSlot constraintGroupSlot = sharedSlot.allocateSharedSlot(constraint.getGroupId());
 				groupIdForMap = constraint.getGroupId();
 				
 				if (constraintGroupSlot != null) {
 					// the sub-slots in the co-location constraint slot have no own group IDs
+					/** 在 co-location 约束下的 sub-slots 没有自己的 groupID */
 					subSlot = constraintGroupSlot.allocateSubSlot(null);
 					if (subSlot != null) {
 						// all went well, we can give the constraint its slot
+						/** 一切正常，我们可以给 constraint 设置slot */
 						constraint.setSharedSlot(constraintGroupSlot);
 						
 						// NOTE: Do not lock the location constraint, because we don't yet know whether we will
@@ -248,14 +261,17 @@ public class SlotSharingGroupAssignment {
 			
 			if (subSlot != null) {
 				// preserve the locality information
+				// 设定定位信息
 				subSlot.setLocality(locality);
 				
 				// let the other groups know that this slot exists and that they
 				// can place a task into this slot.
+				/** 让其他 groups 知道，这个slot已经存在，并且他们可以将任务放到这个slot中 */
 				boolean entryForNewJidExists = false;
 				
 				for (Map.Entry<AbstractID, Map<ResourceID, List<SharedSlot>>> entry : availableSlotsPerJid.entrySet()) {
 					// there is already an entry for this groupID
+					// 对这个groupID，已经存在一个entry了
 					if (entry.getKey().equals(groupIdForMap)) {
 						entryForNewJidExists = true;
 						continue;
@@ -266,6 +282,7 @@ public class SlotSharingGroupAssignment {
 				}
 
 				// make sure an empty entry exists for this group, if no other entry exists
+				/** 如果没有其他entry存在，确保给groupIdForMap构建一个空的entry */
 				if (!entryForNewJidExists) {
 					availableSlotsPerJid.put(groupIdForMap, new LinkedHashMap<ResourceID, List<SharedSlot>>());
 				}
@@ -275,17 +292,25 @@ public class SlotSharingGroupAssignment {
 			else {
 				// if sharedSlot is releases, abort.
 				// This should be a rare case, since this method is called with a fresh slot.
+				/**
+				 * 如果 sharedSlot 被释放了，终止
+				 * 这应该是一个很罕见的情况，因为这个方法的入参是一个新的slot
+				 */
 				return null;
 			}
 		}
 		// end synchronized (lock)
+		// 同步锁结束
 	}
 
 	/**
 	 * Gets a slot suitable for the given task vertex. This method will prefer slots that are local
 	 * (with respect to {@link ExecutionVertex#getPreferredLocationsBasedOnInputs()}), but will return non local
 	 * slots if no local slot is available. The method returns null, when this sharing group has
-	 * no slot is available for the given JobVertexID. 
+	 * no slot is available for the given JobVertexID.
+	 * 为给定的 task vertex 获取一个合适的 slot 。
+	 * 这个方法有优先选择local节点，但如果没有local是有效的，则会返回 non-local。
+	 * 当这个 sharing group 为给定的 JobVertexID 没有有效的 slot，该方法会返回 null。
 	 *
 	 * @param vertexID the vertex id
 	 * @param locationPreferences location preferences
@@ -294,6 +319,7 @@ public class SlotSharingGroupAssignment {
 	 */
 	public SimpleSlot getSlotForTask(JobVertexID vertexID, Iterable<TaskManagerLocation> locationPreferences) {
 		synchronized (lock) {
+			/** 在内部已经存在的allSlots集合中，找出满足要求的 */
 			Tuple2<SharedSlot, Locality> p = getSlotForTaskInternal(vertexID, locationPreferences, false);
 
 			if (p != null) {
@@ -312,25 +338,40 @@ public class SlotSharingGroupAssignment {
 	 * Gets a slot for a task that has a co-location constraint. This method tries to grab
 	 * a slot form the location-constraint's shared slot. If that slot has not been initialized,
 	 * then the method tries to grab another slot that is available for the location-constraint-group.
+	 * 为一个拥有一个 co-location约束的task获取一个slot。
+	 * 这个方法尝试从location-constraint's shared slot中获取一个slot。
+	 * 如果那个slot还没有被初始化，这个方法则尝试夺取另一个slot，其对location-constraint-group是有效的
 	 * 
 	 * <p>In cases where the co-location constraint has not yet been initialized with a slot,
 	 * or where that slot has been disposed in the meantime, this method tries to allocate a shared
-	 * slot for the co-location constraint (inside on of the other available slots).</p>
+	 * slot for the co-location constraint (inside one of the other available slots).</p>
+	 * 在 co-location 约束 还没有用一个slot初始化过时，或者这个slot已经被废弃了，
+	 * 这个方法会尝试为 co-location constraint 分配一个共享的slot(在另一个有效的slot中分配的)
 	 * 
 	 * <p>If a suitable shared slot is available, this method allocates a simple slot within that
 	 * shared slot and returns it. If no suitable shared slot could be found, this method
 	 * returns null.</p>
+	 * 如果一个合适的共享slot是有效的，这个方法会在那个共享slot中分配一个simple slot，并返回它。
+	 * 如果没有合适的shared slot发现，这个方法返回null
 	 * 
 	 * @param constraint The co-location constraint for the placement of the execution vertex.
 	 * @param locationPreferences location preferences
 	 * 
 	 * @return A simple slot allocate within a suitable shared slot, or {@code null}, if no suitable
 	 *         shared slot is available.
+	 *
+	 * 1）{@code CoLocationConstraint}已经用{@code SharedSlot}初始化过，
+	 * 	  且当前这个{@code SharedSlot}处于alive状态，则直接用它分配一个slot
+	 *
+	 * 2）{@code CoLocationConstraint}被分配了，但是其中的{@code SharedSlot}挂了
+	 *
+	 * 3）{@code CoLocationConstraint}还没有用{@code SharedSlot}初始化过
 	 */
 	public SimpleSlot getSlotForTask(CoLocationConstraint constraint, Iterable<TaskManagerLocation> locationPreferences) {
 		synchronized (lock) {
 			if (constraint.isAssignedAndAlive()) {
 				// the shared slot of the co-location group is initialized and set we allocate a sub-slot
+				// co-location group 的共享槽被初始化过，那我们分配一个 sub-slot
 				final SharedSlot shared = constraint.getSharedSlot();
 				SimpleSlot subslot = shared.allocateSubSlot(null);
 				subslot.setLocality(Locality.LOCAL);
@@ -338,6 +379,7 @@ public class SlotSharingGroupAssignment {
 			}
 			else if (constraint.isAssigned()) {
 				// we had an assignment before.
+				// 之前被分配过，但是当前那个sharedSlot已经挂了
 				
 				SharedSlot previous = constraint.getSharedSlot();
 				if (previous == null) {
@@ -345,9 +387,10 @@ public class SlotSharingGroupAssignment {
 				}
 
 				TaskManagerLocation location = previous.getTaskManagerLocation();
+				// 从内部找出一个有效的
 				Tuple2<SharedSlot, Locality> p = getSlotForTaskInternal(
 						constraint.getGroupId(), Collections.singleton(location), true);
-
+				// 如果内部找不到，只能返回null了
 				if (p == null) {
 					return null;
 				}
@@ -355,6 +398,7 @@ public class SlotSharingGroupAssignment {
 					SharedSlot newSharedSlot = p.f0;
 
 					// allocate the co-location group slot inside the shared slot
+					// 在一个SharedSlot内部为co-location分配一个slot
 					SharedSlot constraintGroupSlot = newSharedSlot.allocateSharedSlot(constraint.getGroupId());
 					if (constraintGroupSlot != null) {
 						constraint.setSharedSlot(constraintGroupSlot);
@@ -367,6 +411,7 @@ public class SlotSharingGroupAssignment {
 					}
 					else {
 						// could not allocate the co-location-constraint shared slot
+						// 无法分配，则返回null
 						return null;
 					}
 				}
@@ -375,6 +420,10 @@ public class SlotSharingGroupAssignment {
 				// the location constraint has not been associated with a shared slot, yet.
 				// grab a new slot and initialize the constraint with that one.
 				// preferred locations are defined by the vertex
+				/**
+				 * 还没有被关联过一个shared slot。
+				 * 抓取一个并用来初始化。
+				 */
 				Tuple2<SharedSlot, Locality> p =
 						getSlotForTaskInternal(constraint.getGroupId(), locationPreferences, false);
 				if (p == null) {
@@ -402,20 +451,30 @@ public class SlotSharingGroupAssignment {
 		}
 	}
 
-
+	/**
+	 * 能在指定的preferredLocations中找到满足要求的最好，
+	 * 如果不能，再看localOnly，如果localOnly为ture，那就没辙了，返回null，如果为false，那还有一线生机
+	 * @param groupId
+	 * @param preferredLocations
+	 * @param localOnly
+	 * @return
+	 */
 	private Tuple2<SharedSlot, Locality> getSlotForTaskInternal(
 			AbstractID groupId, Iterable<TaskManagerLocation> preferredLocations, boolean localOnly)
 	{
 		// check if there is anything at all in this group assignment
+		// 如果压根就不存在slot了，那还分配个毛，直接返回null
 		if (allSlots.isEmpty()) {
 			return null;
 		}
 
 		// get the available slots for the group
+		// 获取给定groupId的有效slot
 		Map<ResourceID, List<SharedSlot>> slotsForGroup = availableSlotsPerJid.get(groupId);
 		
 		if (slotsForGroup == null) {
 			// we have a new group, so all slots are available
+			// 我们新增了一个新的group，所以所有的slots都是有效的
 			slotsForGroup = new LinkedHashMap<>();
 			availableSlotsPerJid.put(groupId, slotsForGroup);
 
@@ -425,10 +484,13 @@ public class SlotSharingGroupAssignment {
 		}
 		else if (slotsForGroup.isEmpty()) {
 			// the group exists, but nothing is available for that group
+			// 如果这个group存在，但是没有任何有效的，那也只能返回null了
 			return null;
 		}
 
 		// check whether we can schedule the task to a preferred location
+		// 检查我们是否可以将task调度到一个preferred location
+		// 这个变量表示从 preferredLocations 中，没有找到满足要求的
 		boolean didNotGetPreferred = false;
 
 		if (preferredLocations != null) {
@@ -436,6 +498,8 @@ public class SlotSharingGroupAssignment {
 
 				// set the flag that we failed a preferred location. If one will be found,
 				// we return early anyways and skip the flag evaluation
+				// 设置这个flat，表示我们没能成功的获取到一个优先考虑的位置。
+				// 如果发现了一个，我们会提前return，直接跳过了后续的flag校验
 				didNotGetPreferred = true;
 
 				SharedSlot slot = removeFromMultiMap(slotsForGroup, location.getResourceID());
@@ -446,6 +510,7 @@ public class SlotSharingGroupAssignment {
 		}
 
 		// if we want only local assignments, exit now with a "not found" result
+		// 如果我们只想local，那只能返回null了
 		if (didNotGetPreferred && localOnly) {
 			return null;
 		}
@@ -453,6 +518,7 @@ public class SlotSharingGroupAssignment {
 		Locality locality = didNotGetPreferred ? Locality.NON_LOCAL : Locality.UNCONSTRAINED;
 
 		// schedule the task to any available location
+		// 获取任意有效的location
 		SharedSlot slot;
 		while ((slot = pollFromMultiMap(slotsForGroup)) != null) {
 			if (slot.isAlive()) {
@@ -461,6 +527,7 @@ public class SlotSharingGroupAssignment {
 		}
 		
 		// nothing available after all, all slots were dead
+		// 全部处理过，没有有效的，则就是所有的slot都挂了，只能返回null了
 		return null;
 	}
 
@@ -470,6 +537,7 @@ public class SlotSharingGroupAssignment {
 
 	/**
 	 * Releases the simple slot from the assignment group.
+	 * 从分配组中释放简单的slot
 	 * 
 	 * @param simpleSlot The SimpleSlot to be released
 	 */
@@ -477,14 +545,17 @@ public class SlotSharingGroupAssignment {
 		synchronized (lock) {
 			// try to transition to the CANCELED state. That state marks
 			// that the releasing is in progress
+			/** 尝试将状态转换为{@link Slot#CANCELLED}状态。表示已经开始进行releasing操作 */
 			if (simpleSlot.markCancelled()) {
 
 				// sanity checks
+				// 明智的检查
 				if (simpleSlot.isAlive()) {
 					throw new IllegalStateException("slot is still alive");
 				}
 
 				// check whether the slot is already released
+				/** 检查slot是否已经处于{@link Slot#RELEASED}，状态转换成功，则继续操作 */
 				if (simpleSlot.markReleased()) {
 					LOG.debug("Release simple slot {}.", simpleSlot);
 
@@ -492,15 +563,21 @@ public class SlotSharingGroupAssignment {
 					SharedSlot parent = simpleSlot.getParent();
 
 					// if we have a group ID, then our parent slot is tracked here
+					/** 如果我们拥有一个group ID，那我们的 parent slot 应该在这里是被跟踪的 */
 					if (groupID != null && !allSlots.contains(parent)) {
 						throw new IllegalArgumentException("Slot was not associated with this SlotSharingGroup before.");
 					}
 
+					/** 从父亲{@link SharedSlot}中，移除这个子节点 */
 					int parentRemaining = parent.removeDisposedChildSlot(simpleSlot);
 
 					if (parentRemaining > 0) {
 						// the parent shared slot is still alive. make sure we make it
 						// available again to the group of the just released slot
+						/**
+						 * parent shared slot 仍然是alive的。
+						 * 确保让他对刚释放的slot的group是有效的
+						 */
 
 						if (groupID != null) {
 							// if we have a group ID, then our parent becomes available
@@ -519,6 +596,7 @@ public class SlotSharingGroupAssignment {
 						}
 					} else {
 						// the parent shared slot is now empty and can be released
+						/** 父亲{@link SharedSlot}的子节点已经空了，现在可以释放父亲自身了 */
 						parent.markCancelled();
 						internalDisposeEmptySharedSlot(parent);
 					}
@@ -539,6 +617,7 @@ public class SlotSharingGroupAssignment {
 				
 				if (sharedSlot.hasChildren()) {
 					// by simply releasing all children, we should eventually release this slot.
+					// 通过释放所有的children，也就最终释放了这个slot
 					Set<Slot> children = sharedSlot.getSubSlots();
 					while (children.size() > 0) {
 						children.iterator().next().releaseSlot();
@@ -558,6 +637,10 @@ public class SlotSharingGroupAssignment {
 	 */
 	private void internalDisposeEmptySharedSlot(SharedSlot sharedSlot) {
 		// sanity check
+		/**
+		 * 如果{@link sharedSlot}还处于alive状态，或者子slot集合不为空，则抛出异常
+		 * 也就是说，对于{@link SharedSlot}实例来说，只有当其子slots集合为空，且自身状态处于非活跃状态时，才可以进行释放操作。
+		 */
 		if (sharedSlot.isAlive() | !sharedSlot.getSubSlots().isEmpty()) {
 			throw new IllegalArgumentException();
 		}
@@ -568,12 +651,18 @@ public class SlotSharingGroupAssignment {
 		// 1) If we do not have a parent, we are a root slot.
 		// 2) If we are not a root slot, we are a slot with a groupID and our parent
 		//    becomes available for that group
+		/**
+		 * 1) 如果没有parent，那即使个根节点；
+		 * 2）如果我们不是根节点，我们是拥有一个groupID的slot，并且我们的parent对那个group是有效的
+		 */
 		
 		if (parent == null) {
 			// root slot, return to the instance.
+			// 根slot，归还给 instance
 			sharedSlot.getOwner().returnAllocatedSlot(sharedSlot);
 			
 			// also, make sure we remove this slot from everywhere
+			// 当然，确保所有地方都移除了
 			allSlots.remove(sharedSlot);
 			removeSlotFromAllEntries(availableSlotsPerJid, sharedSlot);
 		}

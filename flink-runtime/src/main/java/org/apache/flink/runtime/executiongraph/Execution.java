@@ -125,7 +125,10 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 	/** The executor which is used to execute futures. */
 	private final Executor executor;
 
-	/** The execution vertex whose task this execution executes */ 
+	/**
+	 * The execution vertex whose task this execution executes
+	 * 这个{@code Execution}实例执行的任务对应的{@link ExecutionVertex}
+	 */
 	private final ExecutionVertex vertex;
 
 	/** The unique ID marking the specific execution instant of the task */

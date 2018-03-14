@@ -29,11 +29,12 @@ import java.util.List;
  * A Co-location group is a group of JobVertices, where the <i>i-th</i> subtask of one vertex
  * has to be executed on the same TaskManager as the <i>i-th</i> subtask of all
  * other JobVertices in the same group.
- * 一个联合组是一组任务节点,每一个节点的第i个子任务需要和组内所有其他节点的第i个子任务,在同一个TaskManager中执行。
+ * Co-location group ：协同定位组
+ * 一个协同定位组是一组任务节点, 每一个节点的第i个子任务需要和组内所有其他节点的第i个子任务, 在同一个TaskManager中执行。
  * 
  * <p>The co-location group is used for example to make sure that the i-th subtasks for iteration
  * head and iteration tail are scheduled to the same TaskManager.</p>
- * 位置联合组使用场景有, 确保迭代head的第i个子任务和迭代tail的第i个子任务被调度在相同的TaskManager上。
+ * 协同定位组使用场景有, 确保迭代head的第i个子任务和迭代tail的第i个子任务被调度在相同的TaskManager上。
  */
 public class CoLocationGroup implements java.io.Serializable {
 	
@@ -48,13 +49,13 @@ public class CoLocationGroup implements java.io.Serializable {
 	
 	/**
 	 * The vertices participating in the co-location group
-	 * 位置共享组包含的 vertices
+	 * co-location group 包含的 vertices
 	 */
 	private final List<JobVertex> vertices = new ArrayList<JobVertex>();
 	
 	/**
 	 * The constraints, which hold the shared slots for the co-located operators
-	 * 约束, 为 位置共享 操作符 持有 SharedSlots
+	 * 约束, 为 co-location 操作符 持有 SharedSlots
 	 */
 	private transient ArrayList<CoLocationConstraint> constraints;
 	

@@ -34,12 +34,15 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * (Execution Vertices). In co-location groups, the different subtasks of
  * different JobVertices need to be executed on the same {@link Instance}.
  * This is realized by creating a special shared slot that holds these tasks.
+ * co-location constraint --> 位置协调约束
  * 一个 CoLocationConstraint 管理一个任务集合的位置。
- * 在位置联合组中, 不同 JobVertex 的不同子任务需要在相同的 Instance 上执行。
+ * 在co-location组中, 不同 JobVertex 的不同子任务需要在相同的 Instance 上执行。
  * 是通过创建一个持有这些tasks的特殊SharedSlot来实现的。
  * 
  * <p>This class tracks the location and the shared slot for this set of tasks.
  * 		这个类为task集合跟踪位置和SharedSlot
+ *
+ * 	有些节点需要在同一个TaskManager实例上执行，则可以通过使用同一个{@code CoLocationConstraint}实例，来进行slot分配
  */
 public class CoLocationConstraint {
 
@@ -154,11 +157,17 @@ public class CoLocationConstraint {
 		if (this.sharedSlot == null) {
 			this.sharedSlot = newSlot;
 		}
-		else if (newSlot != this.sharedSlot){
+		else if (newSlot != this.sharedSlot) {
+			/**
+			 * {@link sharedSlot}不为null，且与{@link newSlot}不相等
+			 * 这时候，就需要判断两个slot归属的TaskManager是否是同一个，如果不是，则抛出异常
+			 */
 			if (lockedLocation != null && lockedLocation != newSlot.getTaskManagerID()) {
 				throw new IllegalArgumentException(
 						"Cannot assign different location to a constraint whose location is locked.");
 			}
+
+			/** 如果当前{@link sharedSlot}还处于alive状态，则先释放后，再被新slot覆盖 */
 			if (this.sharedSlot.isAlive()) {
 				this.sharedSlot.releaseSlot();
 			}

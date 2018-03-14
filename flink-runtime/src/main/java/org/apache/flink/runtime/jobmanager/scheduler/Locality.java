@@ -28,7 +28,7 @@ public enum Locality {
 
 	/**
 	 * The task was scheduled into the same TaskManager as requested
-	 * task被调度到要求的相同TaskManager上
+	 * task被调度到那个被要求的TaskManager上
 	 * */
 	LOCAL,
 
@@ -38,7 +38,7 @@ public enum Locality {
 	HOST_LOCAL,
 
 	/** The task was scheduled to a destination not included in its locality preferences.
-	 * task被调度到一个不包含在本地选项的目的地上
+	 * task被调度到一个不在指定的{@code TaskManager}实例列表中的{@code TaskManager}上去了
 	 * */
 	NON_LOCAL,
 

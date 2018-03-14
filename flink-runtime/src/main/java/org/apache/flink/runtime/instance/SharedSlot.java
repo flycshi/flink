@@ -225,6 +225,8 @@ public class SharedSlot extends Slot {
 	/**
 	 * Creates a new sub slot if the slot is not dead, yet. This method should only be called from
 	 * the assignment group instance to guarantee synchronization.
+	 * 如果这个slot没有dead，创建一个新的子slot。
+	 * 这个方法只能从 assignmentGroup 实例调用，以此来保障同步。
 	 * 
 	 * <b>NOTE:</b> This method is not synchronized and must only be called from
 	 *              the slot's assignment group.
@@ -289,11 +291,14 @@ public class SharedSlot extends Slot {
 	/**
 	 * Removes the given slot from this shared slot. This method Should only be called
 	 * through this shared slot's {@link SlotSharingGroupAssignment}
+	 * 从这个{@code SharedSlot}中移除给定的slot。
+	 * 这个方法只能从this shared slot's {@link SlotSharingGroupAssignment}中调用
 	 *
 	 * @param slot slot to be removed from the set of sub slots.
 	 * @return Number of remaining sub slots
 	 */
 	int removeDisposedChildSlot(Slot slot) {
+		/** 如果slot还没有被释放，或者subSlots这个集合中不包含这个slot，则抛出异常 */
 		if (!slot.isReleased() || !subSlots.remove(slot)) {
 			throw new IllegalArgumentException();
 		}

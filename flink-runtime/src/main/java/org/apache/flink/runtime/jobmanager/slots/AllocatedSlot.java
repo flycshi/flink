@@ -78,7 +78,7 @@ public class AllocatedSlot {
 
 	/**
 	 * The number of the slot on the TaskManager to which slot belongs. Purely informational.
-	 * slot属于的TaskManager上的slot的数量
+	 * slot属于的TaskManager上的slot的索引号
 	 * 纯粹的信息记录
 	 */
 	private final int slotNumber;

@@ -80,7 +80,7 @@ public abstract class Slot {
 	private static final int RELEASED = 2;
 
 	// temporary placeholder for Slots that are not constructed from an AllocatedSlot (prior to FLIP-6)
-	// 不是从一个 AllocatedSlot 中构建的 slot 的临时占位符
+	// 临时占位符，用于不从分配槽中构造的槽
 	protected static final AllocationID NO_ALLOCATION_ID = new AllocationID(0, 0);
 
 	// ------------------------------------------------------------------------
@@ -321,6 +321,7 @@ public abstract class Slot {
 
 	/**
 	 * Gets the number of simple slots that are at the leaves of the tree of slots.
+	 * 获取在槽的树状结构的叶节点上的简单槽的编号
 	 *
 	 * @return The number of simple slots at the leaves.
 	 */

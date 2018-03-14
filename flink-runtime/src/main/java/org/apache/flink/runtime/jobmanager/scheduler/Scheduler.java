@@ -172,6 +172,14 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	// ------------------------------------------------------------------------
 
 
+	/**
+	 * 为一个task分配一个slot
+	 *
+	 * @param task					需要分配槽位的task
+	 * @param allowQueued			表示无法立即分配slot时，是否可以将入队列，稍后再分配
+	 * @param preferredLocations	表示在进行slot分配时，优先考虑slot所在的TaskManager的位置集合
+	 * @return
+	 */
 	@Override
 	public CompletableFuture<SimpleSlot> allocateSlot(
 			ScheduledUnit task,
@@ -179,6 +187,11 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 			Collection<TaskManagerLocation> preferredLocations) {
 
 		try {
+			/**
+			 * 分配slot
+			 * 1）有"槽位共享组"，则从组内找出满足要求的；
+			 * 2）没有"槽位共享组"
+ 			 */
 			final Object ret = scheduleTask(task, allowQueued, preferredLocations);
 
 			if (ret instanceof SimpleSlot) {
@@ -213,7 +226,11 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		}
 
 		final ExecutionVertex vertex = task.getTaskToExecute().getVertex();
-		
+
+		/**
+		 * 这个值，在这个表达式里，只能为false
+		 * 这个变量的含义是：是否强制要求分配的slot所在的TaskManager，一定要在preferredLocations这个集合中。
+		 */
 		final boolean forceExternalLocation = false &&
 									preferredLocations != null && preferredLocations.iterator().hasNext();
 	
@@ -224,24 +241,36 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 			if (sharingUnit != null) {
 
 				// 1)  === If the task has a slot sharing group, schedule with shared slots ===
-				
+				// 1)  === 如果任务有一个槽位共享组，在共享槽中调度 ===
+
+				/** 拥有一个"节点共享槽位的组"的task，是不可能入队等待分配slot的 */
 				if (queueIfNoResource) {
 					throw new IllegalArgumentException(
 							"A task with a vertex sharing group was scheduled in a queued fashion.");
 				}
-				
+
+				// 获取"槽位共享分组分配器"
 				final SlotSharingGroupAssignment assignment = sharingUnit.getTaskAssignment();
+				// 获取"位置协调约束器"
 				final CoLocationConstraint constraint = task.getLocationConstraint();
 				
 				// sanity check that we do not use an externally forced location and a co-location constraint together
+				/**
+				 * 检查，我们没有将 外部强制位置 与 co-location约束 同时使用
+				 * 既要求满足"外部强制位置"，又要求有"位置协调约束"，这两者很容易冲突，所以直接禁止这两种条件同时发生
+				 */
 				if (constraint != null && forceExternalLocation) {
 					throw new IllegalArgumentException("The scheduling cannot be constrained simultaneously by a "
 							+ "co-location constraint and an external location constraint.");
 				}
 				
 				// get a slot from the group, if the group has one for us (and can fulfill the constraint)
+				// 如果group中有满足要求的，从group中获取一个slot，
 				final SimpleSlot slotFromGroup;
 				if (constraint == null) {
+					/**
+					 * 没有"位置协调约束"的要求
+					 * 根据JobVertexID，从槽共享组中，为task分配一个slot */
 					slotFromGroup = assignment.getSlotForTask(vertex.getJobvertexId(), preferredLocations);
 				}
 				else {
@@ -252,14 +281,22 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 				SimpleSlot toUse = null;
 
 				// the following needs to make sure any allocated slot is released in case of an error
+				// 接下来的操作需要确保在发生error时，任何已经被分配的slot会被释放掉
 				try {
 					
 					// check whether the slot from the group is already what we want.
 					// any slot that is local, or where the assignment was unconstrained is good!
+					/**
+					 * 检查从group获取的slot是否是我们想要的。
+					 * 任何local的，或者没有约束的，都是good
+					 */
 					if (slotFromGroup != null && slotFromGroup.getLocality() != Locality.NON_LOCAL) {
 						
 						// if this is the first slot for the co-location constraint, we lock
 						// the location, because we are quite happy with the slot
+						/**
+						 * 如果这是co-location被分配的第一个slot，那我们锁定location，因为我们对这个slot很满意
+						 */
 						if (constraint != null && !constraint.isAssigned()) {
 							constraint.lockLocation();
 						}
@@ -269,11 +306,14 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 					}
 					
 					// the group did not have a local slot for us. see if we can one (or a better one)
+					// 如果group没有能提供一个local的，我们看看是否可以获得一个更好的
 					
 					// our location preference is either determined by the location constraint, or by the
 					// vertex's preferred locations
+					// 我们优先考虑的位置，要么是由location constraint确定，要么由节点的preferred locations决定
 					final Iterable<TaskManagerLocation> locations;
 					final boolean localOnly;
+					// 这里用来确定优先考虑进行slot分配的TaskManager
 					if (constraint != null && constraint.isAssigned()) {
 						locations = Collections.singleton(constraint.getLocation());
 						localOnly = true;
@@ -285,23 +325,36 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 					
 					newSlot = getNewSlotForSharingGroup(vertex, locations, assignment, constraint, localOnly);
 
+					/**
+					 * 1) newSlot为null
+					 * 		1.1）slotFromGroup也为null，这种只能根据具体的原因抛出异常了
+					 * 		1.2）slotFromGroup不为null，则只能用slotFromGroup了
+					 *
+					 * 2）newSlot不为null
+					 * 		2.1）slotFromGroup为null，或者挂了，或者newSlot是local的，则使用newSlot
+					 * 		2.2）slotFromGroup也是杠杠的，那就优先使用slotFromGroup，以此来减少可能占用的TaskManager的数量
+					 */
 					if (newSlot == null) {
 						if (slotFromGroup == null) {
 							// both null, which means there is nothing available at all
+							// 都是null，意味着没有有效的
 							
 							if (constraint != null && constraint.isAssigned()) {
 								// nothing is available on the node where the co-location constraint forces us to
+								// 在 co-location约束 强制我们的那个node上，没有有效的资源
 								throw new NoResourceAvailableException("Could not allocate a slot on instance " +
 										constraint.getLocation() + ", as required by the co-location constraint.");
 							}
 							else if (forceExternalLocation) {
 								// could not satisfy the external location constraint
+								// 在外部听的位置约束中，无法满足
 								String hosts = getHostnamesFromInstances(preferredLocations);
 								throw new NoResourceAvailableException("Could not schedule task " + vertex
 										+ " to any of the required hosts: " + hosts);
 							}
 							else {
 								// simply nothing is available
+								// 就是没有有效资源了
 								throw new NoResourceAvailableException(task, getNumberOfAvailableInstances(),
 										getTotalNumberOfSlots(), getNumberOfAvailableSlots());
 							}
@@ -309,12 +362,14 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 						else {
 							// got a non-local from the group, and no new one, so we use the non-local
 							// slot from the sharing group
+							// 从group中获取到了一个 non-local，并且没有新的了，所以我们就使用这个 non-local 了
 							toUse = slotFromGroup;
 						}
 					}
 					else if (slotFromGroup == null || !slotFromGroup.isAlive() || newSlot.getLocality() == Locality.LOCAL) {
 						// if there is no slot from the group, or the new slot is local,
 						// then we use the new slot
+						// 如果group中没有slot了，或者新的slot是local的，那么就使用这个新的
 						if (slotFromGroup != null) {
 							slotFromGroup.releaseSlot();
 						}
@@ -324,6 +379,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 						// both are available and usable. neither is local. in that case, we may
 						// as well use the slot from the sharing group, to minimize the number of
 						// instances that the job occupies
+						// 两边都获取到可用的，都不是local的，在这种情况下，我们还是选用从group获取的，以便减少这个job占用的instances的个数
 						newSlot.releaseSlot();
 						toUse = slotFromGroup;
 					}
@@ -355,7 +411,12 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 			else {
 				
 				// 2) === schedule without hints and sharing ===
-				
+				// 2) === 没有提示和共享的调度 ===
+
+				/**
+				 * 优先从preferredLocations集合中找出满足要求的实例分配slot，
+				 * 如果没有，且forceExternalLocation为false，则从已有的instance有效集合中拿出第一个分配slot
+				 */
 				SimpleSlot slot = getFreeSlotForTask(vertex, preferredLocations, forceExternalLocation);
 				if (slot != null) {
 					updateLocalityCounters(slot, vertex);
@@ -363,6 +424,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 				}
 				else {
 					// no resource available now, so queue the request
+					// 目前没有有效的资源，所有将请求入队列
 					if (queueIfNoResource) {
 						CompletableFuture<SimpleSlot> future = new CompletableFuture<>();
 						this.taskQueue.add(new QueuedTask(task, future));
@@ -384,8 +446,10 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	
 	/**
 	 * Gets a suitable instance to schedule the vertex execution to.
+	 * 获取一个合适的instance来调度执行vertex
 	 * <p>
 	 * NOTE: This method does is not thread-safe, it needs to be synchronized by the caller.
+	 * 注意：这个方法是非线程安全的，需要调用者进行synchronized操作
 	 * 
 	 * @param vertex The task to run. 
 	 * @return The instance to run the vertex on, it {@code null}, if no instance is available.
@@ -395,9 +459,15 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 											boolean localOnly) {
 		// we need potentially to loop multiple times, because there may be false positives
 		// in the set-with-available-instances
+		/** 可能需要多次循环，因为有效instances集合中，可能存在无效的实例 */
 		while (true) {
+			/**
+			 * 优先在指定的{@link TaskManager}实例列表查找合适的，
+			 * 如果查找不到，在根据参数{@link localOnly}决定是否可以分配其他{@code TaskManager}实例
+			 */
 			Pair<Instance, Locality> instanceLocalityPair = findInstance(requestedLocations, localOnly);
 
+			/** 如果找不到合适的{@code TaskManager}实例，则返回 null */
 			if (instanceLocalityPair == null){
 				return null;
 			}
@@ -409,6 +479,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 				SimpleSlot slot = instanceToUse.allocateSimpleSlot(vertex.getJobId());
 				
 				// if the instance has further available slots, re-add it to the set of available resources.
+				// 如果被使用的这个instance还有有效的slots，则添加到有效instances池中
 				if (instanceToUse.hasResourcesAvailable()) {
 					this.instancesWithAvailableResources.put(instanceToUse.getTaskManagerID(), instanceToUse);
 				}
@@ -421,10 +492,12 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 			catch (InstanceDiedException e) {
 				// the instance died it has not yet been propagated to this scheduler
 				// remove the instance from the set of available instances
+				/** instance已经died，不能被scheduler所用，将其从有效instatnce集合中移除 */
 				removeInstance(instanceToUse);
 			}
 			
 			// if we failed to get a slot, fall through the loop
+			// 如果获取slot失败，就是一次失败的循环
 		}
 	}
 
@@ -432,9 +505,16 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	 * Tries to allocate a new slot for a vertex that is part of a slot sharing group. If one
 	 * of the instances has a slot available, the method will allocate it as a shared slot, add that
 	 * shared slot to the sharing group, and allocate a simple slot from that shared slot.
+	 * 尝试为一个"槽位共享组"中的一个"JobVertexID"对应的节点分配一个新的slot。
+	 * 如果其中一个instance有一个有效的slot，该方法会分配一个 SharedSlot，并将其添加到组内，并且从这个SharedSlot中分配出一个SimpleSlot。
 	 * 
 	 * <p>This method will try to allocate a slot from one of the local instances, and fall back to
 	 * non-local instances, if permitted.</p>
+	 * 这个方法会尝试从其中一个local实例中分配一个slot，如果允许的化，那会以一个non-local作为后备
+	 *
+	 * 这里的local和no-local的含义
+	 * local —— 分配slot的Instance是提供的Instance列表中的一个， requestedLocations
+	 * non-local —— 非local
 	 * 
 	 * @param vertex The vertex to allocate the slot for.
 	 * @param requestedLocations The locations that are considered local. May be null or empty, if the
@@ -453,11 +533,13 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	{
 		// we need potentially to loop multiple times, because there may be false positives
 		// in the set-with-available-instances
+		// 可能多次循环
 		while (true) {
 			Pair<Instance, Locality> instanceLocalityPair = findInstance(requestedLocations, localOnly);
 			
 			if (instanceLocalityPair == null) {
 				// nothing is available
+				// 没有有效的，则直接返回null了
 				return null;
 			}
 
@@ -468,15 +550,18 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 				JobVertexID groupID = vertex.getJobvertexId();
 				
 				// allocate a shared slot from the instance
+				// 从instance中分配出一个SharedSlot
 				SharedSlot sharedSlot = instanceToUse.allocateSharedSlot(vertex.getJobId(), groupAssignment);
 
 				// if the instance has further available slots, re-add it to the set of available resources.
+				// 如果instance还有更多的资源，则重新加入到有效集合中
 				if (instanceToUse.hasResourcesAvailable()) {
 					this.instancesWithAvailableResources.put(instanceToUse.getTaskManagerID(), instanceToUse);
 				}
 
 				if (sharedSlot != null) {
 					// add the shared slot to the assignment group and allocate a sub-slot
+					// 添加SharedSlot到分配组中，并分配一个sub-slot
 					SimpleSlot slot = constraint == null ?
 							groupAssignment.addSharedSlotAndAllocateSubSlot(sharedSlot, locality, groupID) :
 							groupAssignment.addSharedSlotAndAllocateSubSlot(sharedSlot, locality, constraint);
@@ -486,6 +571,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 					}
 					else {
 						// could not add and allocate the sub-slot, so release shared slot
+						// 不能添加并分配sub-slot，则释放这个SharedSlot
 						sharedSlot.releaseSlot();
 					}
 				}
@@ -503,6 +589,9 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	/**
 	 * Tries to find a requested instance. If no such instance is available it will return a non-
 	 * local instance. If no such instance exists (all slots occupied), then return null.
+	 * 尝试发现一个请求的实例。
+	 * 如果没有这样的实例存在，将会返回一个本地实例。
+	 * 如果所有的都不存在，则返回null
 	 * 
 	 * <p><b>NOTE:</b> This method is not thread-safe, it needs to be synchronized by the caller.</p>
 	 *
@@ -513,6 +602,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	private Pair<Instance, Locality> findInstance(Iterable<TaskManagerLocation> requestedLocations, boolean localOnly) {
 		
 		// drain the queue of newly available instances
+		// 先处理完{@link newlyAvailableInstances}中的数据
 		while (this.newlyAvailableInstances.size() > 0) {
 			Instance queuedInstance = this.newlyAvailableInstances.poll();
 			if (queuedInstance != null) {
@@ -521,6 +611,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		}
 		
 		// if nothing is available at all, return null
+		// 如果压根就没有有效的，那直接返回null
 		if (this.instancesWithAvailableResources.isEmpty()) {
 			return null;
 		}
@@ -529,6 +620,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 
 		if (locations != null && locations.hasNext()) {
 			// we have a locality preference
+			// 我们有一个偏好的位置
 
 			while (locations.hasNext()) {
 				TaskManagerLocation location = locations.next();
@@ -541,11 +633,13 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 			}
 			
 			// no local instance available
+			// 要求的{@code TaskManager}实例，都没有有效的状态
 			if (localOnly) {
 				return null;
 			}
 			else {
 				// take the first instance from the instances with resources
+				// 返回有资源的instance列中的第一个
 				Iterator<Instance> instances = instancesWithAvailableResources.values().iterator();
 				Instance instanceToUse = instances.next();
 				instances.remove();
@@ -555,6 +649,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		}
 		else {
 			// no location preference, so use some instance
+			// 没有偏好位置，那就使用一些instance
 			Iterator<Instance> instances = instancesWithAvailableResources.values().iterator();
 			Instance instanceToUse = instances.next();
 			instances.remove();
@@ -623,6 +718,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 					if (newSlot != null) {
 						
 						// success, remove from the task queue and notify the future
+						// 分配成功，从任务队列中移除这个task，通知futre
 						taskQueue.poll();
 						if (queued.getFuture() != null) {
 							try {
@@ -688,6 +784,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	
 	@Override
 	public void newInstanceAvailable(Instance instance) {
+		/** 首先对{@code Instance}实例进行一些校验，如拥有的槽位数要大于0，实例是存活的 */
 		if (instance == null) {
 			throw new IllegalArgumentException();
 		}
@@ -699,18 +796,22 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		}
 		
 		// synchronize globally for instance changes
+		// instance的变化，需要全局锁
 		synchronized (this.globalLock) {
 			
 			// check we do not already use this instance
+			// 检查这个instance还没有被注册过
 			if (!this.allInstances.add(instance)) {
 				throw new IllegalArgumentException("The instance is already contained.");
 			}
 			
 			try {
 				// make sure we get notifications about slots becoming available
+				// 确保有有效槽位时可以获得通知，这个监听器
 				instance.setSlotAvailabilityListener(this);
 				
 				// store the instance in the by-host-lookup
+				// 保存instance
 				String instanceHostName = instance.getTaskManagerLocation().getHostname();
 				Set<Instance> instanceSet = allInstancesByHost.get(instanceHostName);
 				if (instanceSet == null) {
@@ -720,9 +821,11 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 				instanceSet.add(instance);
 
 				// add it to the available resources and let potential waiters know
+				// 添加到有效资源池中
 				this.instancesWithAvailableResources.put(instance.getTaskManagerID(), instance);
 
 				// add all slots as available
+				// 添加到有效槽位池中
 				for (int i = 0; i < instance.getNumberOfAvailableSlots(); i++) {
 					newSlotAvailable(instance);
 				}
@@ -742,13 +845,16 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		
 		instance.markDead();
 		
-		// we only remove the instance from the pools, we do not care about the 
+		// we only remove the instance from the pools, we do not care about the
+		// 从池中移除这个{@code Instance}
 		synchronized (this.globalLock) {
 			// the instance must not be available anywhere any more
+			// 这个实例在任何地方都不能再有效了
 			removeInstance(instance);
 		}
 	}
-	
+
+	/** 将一个{@code TaskManager}实例从{@code Scheduler}中移除 */
 	private void removeInstance(Instance instance) {
 		if (instance == null) {
 			throw new NullPointerException();
@@ -770,11 +876,13 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	
 	// --------------------------------------------------------------------------------------------
 	//  Status reporting
+	//  状态报告
 	// --------------------------------------------------------------------------------------------
 
 	/**
 	 *
 	 * NOTE: In the presence of multi-threaded operations, this number may be inexact.
+	 * 注意：在多线程操作的情况下，这个数字可能是不精确的。
 	 *
 	 * @return The number of empty slots, for tasks.
 	 */
@@ -792,6 +900,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		return count;
 	}
 
+	/** 获取所有注册的{@code TaskManager}实例上的总的{@code Slot}的个数 */
 	public int getTotalNumberOfSlots() {
 		int count = 0;
 
@@ -806,6 +915,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		return count;
 	}
 
+	/** 获取所有有效{@code TaskManager}实例的个数 */
 	public int getNumberOfAvailableInstances() {
 		int numberAvailableInstances = 0;
 		synchronized (this.globalLock) {
@@ -818,7 +928,8 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 
 		return numberAvailableInstances;
 	}
-	
+
+	/** 获取还有有效{@code Slot}的{@code TaskManager}实例的个数 */
 	public int getNumberOfInstancesWithAvailableSlots() {
 		synchronized (globalLock) {
 			processNewlyAvailableInstances();
@@ -826,7 +937,8 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 			return instancesWithAvailableResources.size();
 		}
 	}
-	
+
+	/** 获取{@link allInstancesByHost}的一个拷贝 */
 	public Map<String, List<Instance>> getInstancesByHost() {
 		synchronized (globalLock) {
 			HashMap<String, List<Instance>> copy = new HashMap<String, List<Instance>>();
@@ -852,6 +964,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	
 	// --------------------------------------------------------------------------------------------
 
+	/** 将{@link newlyAvailableInstances}这个队列中的元素添加到{@link instancesWithAvailableResources}这个map中 */
 	private void processNewlyAvailableInstances() {
 		synchronized (globalLock) {
 			Instance instance;
@@ -867,6 +980,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 
 	// ------------------------------------------------------------------------
 	//  Utilities
+	//  工具
 	// ------------------------------------------------------------------------
 
 	private static String getHostnamesFromInstances(Iterable<TaskManagerLocation> locations) {
@@ -887,6 +1001,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	
 	// ------------------------------------------------------------------------
 	//  Nested members
+	//  内嵌成员
 	// ------------------------------------------------------------------------
 
 	/**
