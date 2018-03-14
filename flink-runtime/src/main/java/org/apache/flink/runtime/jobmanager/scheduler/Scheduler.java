@@ -76,40 +76,71 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 	
 	
-	/** All modifications to the scheduler structures are performed under a global scheduler lock */
+	/**
+	 * All modifications to the scheduler structures are performed under a global scheduler lock
+	 * 针对调度器结构的所有修改都在一个全局调度锁下执行
+	 */
 	private final Object globalLock = new Object();
 	
-	/** All instances that the scheduler can deploy to */
+	/**
+	 * All instances that the scheduler can deploy to
+	 * 调度器可以部署的所有实例(TaskManager)
+	 */
 	private final Set<Instance> allInstances = new HashSet<Instance>();
 	
-	/** All instances by hostname */
+	/**
+	 * All instances by hostname
+	 * hostname -> Set<Instance>
+	 * 一个主机上, 部署多个TaskManager实例 ?
+	 */
 	private final HashMap<String, Set<Instance>> allInstancesByHost = new HashMap<String, Set<Instance>>();
 	
-	/** All instances that still have available resources */
+	/**
+	 * All instances that still have available resources
+	 * 仍然还有空闲有效资源的实例
+	 */
 	private final Map<ResourceID, Instance> instancesWithAvailableResources = new LinkedHashMap<>();
 	
-	/** All tasks pending to be scheduled */
+	/**
+	 * All tasks pending to be scheduled
+	 * 悬挂等待被调度的所有任务
+	 */
 	private final Queue<QueuedTask> taskQueue = new ArrayDeque<QueuedTask>();
-	
-	
+
+	/**
+	 * 新添加的Instance, 等到异步处理
+	 */
 	private final BlockingQueue<Instance> newlyAvailableInstances = new LinkedBlockingQueue<Instance>();
 	
-	/** The number of slot allocations that had no location preference */
+	/**
+	 * The number of slot allocations that had no location preference
+	 * 没有位置偏好的分配的槽的数量
+	 */
 	private int unconstrainedAssignments;
 
-	/** The number of slot allocations where locality could be respected */
+	/**
+	 * The number of slot allocations where locality could be respected
+	 * 指定位置分配的槽的数量
+	 */
 	private int localizedAssignments;
 
-	/** The number of slot allocations where locality could not be respected */
+	/**
+	 * The number of slot allocations where locality could not be respected
+	 * 非指定位置的槽分配数量
+	 */
 	private int nonLocalizedAssignments;
 
-	/** The Executor which is used to execute newSlotAvailable futures. */
+	/**
+	 * The Executor which is used to execute newSlotAvailable futures.
+	 * 用来执行{@link #newSlotAvailable} futures 的执行器
+	 */
 	private final Executor executor;
 
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates a new scheduler.
+	 * 创建一个新的调度器
 	 */
 	public Scheduler(Executor executor) {
 		this.executor = Preconditions.checkNotNull(executor);
@@ -117,9 +148,13 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	
 	/**
 	 * Shuts the scheduler down. After shut down no more tasks can be added to the scheduler.
+	 * 关闭调度器。
+	 * 关闭后, 就不能再向调度器添加任务了。
 	 */
 	public void shutdown() {
+		// 先加锁
 		synchronized (globalLock) {
+			// 依次释放
 			for (Instance i : allInstances) {
 				i.removeSlotListener();
 				i.cancelAndReleaseAllSlots();
@@ -133,6 +168,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 
 	// ------------------------------------------------------------------------
 	//  Scheduling
+	//  调度
 	// ------------------------------------------------------------------------
 
 
@@ -146,15 +182,18 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 			final Object ret = scheduleTask(task, allowQueued, preferredLocations);
 
 			if (ret instanceof SimpleSlot) {
+				// 如果返回的就是一个SimpleSlot, 则构建一个future
 				return CompletableFuture.completedFuture((SimpleSlot) ret);
 			}
 			else if (ret instanceof CompletableFuture) {
+				// 如果返回的就是future, 则强制类型转换后, 返回
 				@SuppressWarnings("unchecked")
 				CompletableFuture<SimpleSlot> typed = (CompletableFuture<SimpleSlot>) ret;
 				return typed;
 			}
 			else {
 				// this should never happen, simply guard this case with an exception
+				// 这个分支应该从不会发生才对, 如果发生, 就抛出异常
 				throw new RuntimeException();
 			}
 		} catch (NoResourceAvailableException e) {
@@ -536,6 +575,17 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		//                             (2) scheduler (to check whether to take a new task item
 		// 
 		// that leads with a high probability to deadlocks, when scheduling fast
+		/**
+		 * 警告: 这里采用异步是必要的, 因为我们不能保障锁的获取顺序(global scheduler, instance), 然后可能会导致潜在的死锁:
+		 *
+		 * -> scheduler 需要占用 (1) global scheduler lock
+		 *                      (2) slot/instance lock
+		 *
+		 * -> slot releasing 需要占用 (1) slot/instance (用于释放)
+		 *                           (2) scheduler (检查是否有新任务)
+		 *
+		 * 当调度快时, 很容易导致死锁。
+		 */
 
 		newlyAvailableInstances.add(instance);
 
@@ -551,14 +601,18 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 		
 		synchronized (globalLock) {
 			Instance instance = this.newlyAvailableInstances.poll();
+
+			/** 如果从队列中拿到的元素为null, 或者instance中没有有效的资源, 即槽位, 则结束本次执行 */
 			if (instance == null || !instance.hasResourcesAvailable()) {
 				// someone else took it
 				return;
 			}
-			
+
+			/** 从等待执行的任务队列中, 拿出head处的任务, 这里还没有从taskQueue这个队列中删除 */
 			QueuedTask queued = taskQueue.peek();
 			
 			// the slot was properly released, we can allocate a new one from that instance
+			/** 槽位可能被释放了, 我们可以从那个instance分配一个新的槽位 */
 			
 			if (queued != null) {
 				ScheduledUnit task = queued.getTask();
@@ -590,6 +644,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 				}
 			}
 			else {
+				/** 如果没有新的任务需要分配操作, 则将这个instance记录在可用资源map中 */
 				this.instancesWithAvailableResources.put(instance.getTaskManagerID(), instance);
 			}
 		}
@@ -699,6 +754,7 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 			throw new NullPointerException();
 		}
 
+		/** 从{@code Instance}实例集合中, 删除当前传入的这个实例 */
 		allInstances.remove(instance);
 		instancesWithAvailableResources.remove(instance.getTaskManagerID());
 
@@ -836,6 +892,8 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	/**
 	 * An entry in the queue of schedule requests. Contains the task to be scheduled and
 	 * the future that tracks the completion.
+	 * 调度请求队列中的一个实例。
+	 * 包含等待调度的任务, 以及跟踪完成情况的future。
 	 */
 	private static final class QueuedTask {
 		

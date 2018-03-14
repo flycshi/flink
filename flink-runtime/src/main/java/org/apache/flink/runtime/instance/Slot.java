@@ -387,7 +387,7 @@ public abstract class Slot {
 	 * 
 	 * If this slot is a simple slot, it will be returned to its instance. If it is a shared slot,
 	 * it will release all of its sub-slots and release itself.
-	 * 如果该slot时一个 SimpleSlot，它将归还给它的实例。
+	 * 如果该slot是一个 SimpleSlot，它将归还给它的实例。
 	 * 如果是一个 SharedSlot，他将释放所有子slot，再释放自己。
 	 */
 	public abstract void releaseSlot();

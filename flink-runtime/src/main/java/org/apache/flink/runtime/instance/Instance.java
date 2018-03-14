@@ -18,26 +18,20 @@
 
 package org.apache.flink.runtime.instance;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-
 import org.apache.flink.api.common.JobID;
 import org.apache.flink.runtime.clusterframework.types.ResourceID;
 import org.apache.flink.runtime.jobmanager.scheduler.SlotAvailabilityListener;
 import org.apache.flink.runtime.jobmanager.slots.SlotOwner;
 import org.apache.flink.runtime.jobmanager.slots.TaskManagerGateway;
 import org.apache.flink.runtime.taskmanager.TaskManagerLocation;
-
 import org.apache.flink.util.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.flink.util.Preconditions.checkNotNull;
+import java.util.*;
+
 import static org.apache.flink.util.Preconditions.checkArgument;
+import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * An instance represents a {@link org.apache.flink.runtime.taskmanager.TaskManager}
@@ -394,6 +388,7 @@ public class Instance implements SlotOwner {
 
 	public void cancelAndReleaseAllSlots() {
 		// we need to do this copy because of concurrent modification exceptions
+		// 因为可能发生并发修改的异常, 所以需要通过copy一份进行操作
 		List<Slot> copy;
 		synchronized (instanceLock) {
 			copy = new ArrayList<Slot>(this.allocatedSlots);
