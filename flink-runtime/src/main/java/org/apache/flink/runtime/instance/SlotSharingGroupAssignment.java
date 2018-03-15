@@ -581,7 +581,10 @@ public class SlotSharingGroupAssignment {
 						throw new IllegalArgumentException("Slot was not associated with this SlotSharingGroup before.");
 					}
 
-					/** 从父亲{@link SharedSlot}中，移除这个子节点 */
+					/**
+					 * 从父亲{@link SharedSlot}中，移除这个子节点
+					 * 对于属于一个{@code SlotSharedGroup}的{@code SimpleSlot}, 其parent肯定是不会为null, 所以这里不用对parent进行null判断
+					 */
 					int parentRemaining = parent.removeDisposedChildSlot(simpleSlot);
 
 					if (parentRemaining > 0) {
