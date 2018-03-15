@@ -56,6 +56,11 @@ public class CoLocationGroup implements java.io.Serializable {
 	/**
 	 * The constraints, which hold the shared slots for the co-located operators
 	 * 约束, 为 co-location 操作符 持有 SharedSlots
+	 *
+	 * 这个{@code CoLocationGroup}中关联的所有{@code JobVertex}的第i个子任务,
+	 * 需要通过一个{@code CoLocationConstraint}实例来进行执行所在的TaskManager的限定约束
+	 * 所有{@link #constraints}这个list的索引和{@code JobVertex}的子任务的索引是对应的,
+	 * 这样也就理解了{@link #getLocationConstraint(int)}这个方法的入参的含义了。
 	 */
 	private transient ArrayList<CoLocationConstraint> constraints;
 	

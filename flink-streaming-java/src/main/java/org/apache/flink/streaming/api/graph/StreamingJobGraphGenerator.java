@@ -165,8 +165,12 @@ public class StreamingJobGraphGenerator {
 		setPhysicalEdges();
 
 		/**
-		 * 据group name，为每个 JobVertex 指定所属的 SlotSharingGroup,
-		 * 以及针对 Iteration的头尾设置  CoLocationGroup
+		 * 1) 根据为每个{@code StreamNode}设置的的{@link StreamNode#getSlotSharingGroup()},
+		 * 给对应的{@code JobVertex}设置对应的{@code SlotSharedGroup}实例,
+		 * 如果两个{@code StreamNode}的{@code StreamNode#getSlotSharingGroup()}一样,
+		 * 则给对应的{@link JobVertex#setSlotSharingGroup(SlotSharingGroup)}设置的也是相同的实例
+		 *
+		 * 2) 给相关的节点设置{@code CoLocationGroup}
 		 */
 		setSlotSharing();
 
@@ -648,6 +652,7 @@ public class StreamingJobGraphGenerator {
 
 		Map<String, SlotSharingGroup> slotSharingGroups = new HashMap<>();
 
+		/** 设置{@code SlotSharedGroup} */
 		for (Entry<Integer, JobVertex> entry : jobVertices.entrySet()) {
 
 			String slotSharingGroup = streamGraph.getStreamNode(entry.getKey()).getSlotSharingGroup();
@@ -660,6 +665,7 @@ public class StreamingJobGraphGenerator {
 			entry.getValue().setSlotSharingGroup(group);
 		}
 
+		/** 设置{@code CoLocationGroup} */
 		for (Tuple2<StreamNode, StreamNode> pair : streamGraph.getIterationSourceSinkPairs()) {
 
 			CoLocationGroup ccg = new CoLocationGroup();

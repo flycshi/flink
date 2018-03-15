@@ -187,6 +187,12 @@ public class ExecutionGraphBuilder {
 		if (log.isDebugEnabled()) {
 			log.debug("Adding {} vertices from job graph {} ({}).", sortedTopology.size(), jobName, jobId);
 		}
+		/**
+		 * 1、这里就是将{@code JobGraph}中的各个{@code JobVertex}, 按上面排好的顺序,
+		 * 依次转化成{@code ExecutionJobVertex}, 添加到{@code ExecutionGraph}中,
+		 * 2、在{@code ExecutionJobVertex}的构造函数中, 会根据并行度, 构建相应的子任务集合{@code ExecutionVertex}
+		 * 3、在{@code ExecutionVertex}的构造函数中, 会构建当前要执行的{@code Execution}
+		 */
 		executionGraph.attachJobGraph(sortedTopology);
 
 		if (log.isDebugEnabled()) {

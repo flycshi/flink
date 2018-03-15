@@ -170,6 +170,7 @@ public class ExecutionVertex implements AccessExecutionVertex, Archiveable<Archi
 			timeout);
 
 		// create a co-location scheduling hint, if necessary
+		// 如果需要, 创建一个 co-location 调度 hint
 		CoLocationGroup clg = jobVertex.getCoLocationGroup();
 		if (clg != null) {
 			this.locationConstraint = clg.getLocationConstraint(subTaskIndex);
@@ -733,6 +734,7 @@ public class ExecutionVertex implements AccessExecutionVertex, Archiveable<Archi
 	void notifyStateTransition(Execution execution, ExecutionState newState, Throwable error) {
 		// only forward this notification if the execution is still the current execution
 		// otherwise we have an outdated execution
+		// 只有currentExecution与execution是同一个时, 才转发, 否则就是一个过期的
 		if (currentExecution == execution) {
 			getExecutionGraph().notifyExecutionChange(execution, newState, error);
 		}

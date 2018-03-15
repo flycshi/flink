@@ -139,7 +139,10 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 	 * to resolve conflicts between concurrent modification by global and local failover actions. */
 	private final long globalModVersion;
 
-	/** The timestamps when state transitions occurred, indexed by {@link ExecutionState#ordinal()} */ 
+	/**
+	 * The timestamps when state transitions occurred, indexed by {@link ExecutionState#ordinal()}
+	 * 每个状态开始的时间, 索引就是{@link ExecutionState#ordinal()}
+	 */
 	private final long[] stateTimestamps;
 
 	private final int attemptNumber;
@@ -261,6 +264,9 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 	/**
 	 * Tries to assign the given slot to the execution. The assignment works only if the
 	 * Execution is in state SCHEDULED. Returns true, if the resource could be assigned.
+	 * 尝试将给定的slot分配给execution。
+	 * 只能在 'SCHEDULED' 状态下, 才能进行分配。
+	 * 如果资源分配成功, 则返回true
 	 *
 	 * @param slot to assign to this execution
 	 * @return true if the slot could be assigned to the execution, otherwise false
@@ -271,9 +277,12 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 
 		// only allow to set the assigned resource in state SCHEDULED or CREATED
 		// note: we also accept resource assignment when being in state CREATED for testing purposes
+		// 只允许在 SCHEDULED or CREATED 状态下进行资源分配
+		// 注意: 在 CREATED 状态下接受资源分配是用于测试的目的
 		if (state == SCHEDULED || state == CREATED) {
 			if (ASSIGNED_SLOT_UPDATER.compareAndSet(this, null, slot)) {
 				// check for concurrent modification (e.g. cancelling call)
+				// 检查并发修改的问题(比如 cancelling 了)
 				if (state == SCHEDULED || state == CREATED) {
 					checkState(!taskManagerLocationFuture.isDone(), "The TaskManagerLocationFuture should not be set if we haven't assigned a resource yet.");
 					taskManagerLocationFuture.complete(slot.getTaskManagerLocation());
@@ -281,15 +290,18 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 					return true;
 				} else {
 					// free assigned resource and return false
+					// 释放分配的资源, 并返回 false
 					ASSIGNED_SLOT_UPDATER.set(this, null);
 					return false;
 				}
 			} else {
 				// the slot already has another slot assigned
+				// 已经被分配过slot了
 				return false;
 			}
 		} else {
 			// do not allow resource assignment if we are not in state SCHEDULED
+			// 其他状态不允许资源分配
 			return false;
 		}
 	}
@@ -414,10 +426,11 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 
 	/**
 	 * Allocates and assigns a slot obtained from the slot provider to the execution.
+	 * 从 slot provider 中为 execution 申请分配一个 slot
 	 *
 	 * @param slotProvider to obtain a new slot from
 	 * @param queued if the allocation can be queued
-	 * @param locationPreferenceConstraint constraint for the location preferences
+	 * @param locationPreferenceConstraint constraint for the location preferences	位置偏好的约束
 	 * @return Future which is completed with this execution once the slot has been assigned
 	 * 			or with an exception if an error occurred.
 	 * @throws IllegalExecutionStateException if this method has been called while not being in the CREATED state
@@ -433,14 +446,19 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 		final CoLocationConstraint locationConstraint = vertex.getLocationConstraint();
 
 		// sanity check
+		// 位置约束不为null, 而共享组为null, 这种情况是不可能出现的, 出现了肯定就是异常了
 		if (locationConstraint != null && sharingGroup == null) {
 			throw new IllegalStateException(
 					"Trying to schedule with co-location constraint but without slot sharing allowed.");
 		}
 
 		// this method only works if the execution is in the state 'CREATED'
+		// 只有状态是 'CREATED' 时, 这个方法才能正常工作
 		if (transitionState(CREATED, SCHEDULED)) {
 
+			/**
+			 * ScheduleUnit 实例就是在这里构造出来的
+			 */
 			ScheduledUnit toSchedule = locationConstraint == null ?
 					new ScheduledUnit(this, sharingGroup) :
 					new ScheduledUnit(this, sharingGroup, locationConstraint);
@@ -1197,6 +1215,7 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 
 	/**
 	 * Calculates the preferred locations based on the location preference constraint.
+	 * 基于"位置偏好约束"计算优先考虑的位置
 	 *
 	 * @param locationPreferenceConstraint constraint for the location preference
 	 * @return Future containing the collection of preferred locations. This might not be completed if not all inputs
@@ -1256,6 +1275,7 @@ public class Execution implements AccessExecution, Archiveable<ArchivedExecution
 
 			// make sure that the state transition completes normally.
 			// potential errors (in listeners may not affect the main logic)
+			// 确保状态转换正常完成。在通知的过程中可能有异常(不过是在监听器中, 不影响主逻辑)
 			try {
 				vertex.notifyStateTransition(this, targetState, error);
 			}

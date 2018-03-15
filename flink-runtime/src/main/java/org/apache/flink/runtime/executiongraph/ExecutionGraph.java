@@ -1806,6 +1806,9 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 			final ExecutionState newExecutionState,
 			final Throwable error) {
 
+		/**
+		 * 依次通知注册的"执行状态监听器"
+		 */
 		if (executionListeners.size() > 0) {
 			final ExecutionJobVertex vertex = execution.getVertex().getJobVertex();
 			final String message = error == null ? null : ExceptionUtils.stringifyException(error);

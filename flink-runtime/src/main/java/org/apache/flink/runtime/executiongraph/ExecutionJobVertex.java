@@ -490,7 +490,9 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 	 * Acquires a slot for all the execution vertices of this ExecutionJobVertex. The method returns
 	 * pairs of the slots and execution attempts, to ease correlation between vertices and execution
 	 * attempts.
-	 * 
+	 *
+	 * 为这个{@code ExecutionJobVertex}的所有{@code ExecutionVertex}请求一个slot。
+	 *
 	 * <p>If this method throws an exception, it makes sure to release all so far requested slots.
 	 * 
 	 * @param resourceProvider The resource provider from whom the slots are requested.
@@ -517,6 +519,7 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 		}
 
 		// all good, we acquired all slots
+		// 很好, 我们请求到了所有的slots
 		return Arrays.asList(slots);
 	}
 

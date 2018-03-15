@@ -1381,6 +1381,9 @@ class JobManager(
       /**
         * 异步执行恢复/向 [[SubmittedJobGraphStore]] 写入 JobGraph
         * 因为这个操作是阻塞的
+        *
+        * 1、注册 JobGraph
+        * 2、调度 ExecutionGraph
         */
       future {
         try {
