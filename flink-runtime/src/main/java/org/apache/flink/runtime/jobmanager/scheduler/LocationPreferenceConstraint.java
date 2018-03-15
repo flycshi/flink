@@ -31,5 +31,7 @@ package org.apache.flink.runtime.jobmanager.scheduler;
  */
 public enum LocationPreferenceConstraint {
 	ALL, // wait for all inputs to have a location assigned
+		 // 等待所有的输入节点都被分配好了，并将这些节点作为"偏好位置"，开始自身节点的分配
 	ANY // only consider those inputs who already have a location assigned
+		// 只考虑那些已经分配好的输入的位置，作为"偏好位置"
 }

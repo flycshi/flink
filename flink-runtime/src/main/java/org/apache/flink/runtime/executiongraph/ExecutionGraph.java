@@ -1238,11 +1238,15 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 	/**
 	 * Fails the execution graph globally. This failure will not be recovered by a specific
 	 * failover strategy, but results in a full restart of all tasks.
+	 * 全局fail这个{@code ExecutionGraph}。
+	 * 这个fail不会通过一个指定的failover策略进行恢复，而是进行所有task的重启。
 	 *
 	 * <p>This global failure is meant to be triggered in cases where the consistency of the
 	 * execution graph' state cannot be guaranteed any more (for example when catching unexpected
 	 * exceptions that indicate a bug or an unexpected call race), and where a full restart is the
 	 * safe way to get consistency back.
+	 * 当{@code ExecutionGraph}的状态一致性不能再得到保障了(比如捕获由于bug或一个不期望的调用链导致的异常)，
+	 * 并且一个完全的重启是比较安全的方式可以获取一致性时，会触发这个全局fail。
 	 *
 	 * @param errorInfo ErrorInfo containing the exception that caused the failure.
 	 */

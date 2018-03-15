@@ -481,11 +481,19 @@ public class ExecutionVertex implements AccessExecutionVertex, Archiveable<Archi
 	 * If there are more than MAX_DISTINCT_LOCATIONS_TO_CONSIDER different locations of source data, this
 	 * method returns {@code null} to indicate no location preference.
 	 *
+	 * 获取这个vertex的当前execution的位置偏好，偏好是基于它接收的输入数据的前置处理器的位置来决定的。
+	 *
+	 * 逻辑：
+	 * 1）如果没有输入源，那说明自身就是输入源，则返回空集合；
+	 * 2）如果有输入源，则从所有输入源中，找出那个分布节点最少的输入源，所分布的节点集合作为偏好位置，
+	 * 	  在查找过程中，如果某个输入源的分布节点数量超过了{@link MAX_DISTINCT_LOCATIONS_TO_CONSIDER}，则这个输入源的位置不考虑
+	 *
 	 * @return The preferred locations based in input streams, or an empty iterable,
 	 *         if there is no input-based preference.
 	 */
 	public Collection<CompletableFuture<TaskManagerLocation>> getPreferredLocationsBasedOnInputs() {
 		// otherwise, base the preferred locations on the input connections
+		// 如果没有输入，则返回空集合，否则，基于输入连接确定偏好位置
 		if (inputEdges == null) {
 			return Collections.emptySet();
 		}
@@ -494,17 +502,21 @@ public class ExecutionVertex implements AccessExecutionVertex, Archiveable<Archi
 			Set<CompletableFuture<TaskManagerLocation>> inputLocations = new HashSet<>(getTotalNumberOfParallelSubtasks());
 
 			// go over all inputs
+			// 遍历所有inputs
 			for (int i = 0; i < inputEdges.length; i++) {
 				inputLocations.clear();
 				ExecutionEdge[] sources = inputEdges[i];
 				if (sources != null) {
 					// go over all input sources
+					// 遍历所有输入源
 					for (int k = 0; k < sources.length; k++) {
 						// look-up assigned slot of input source
+						// 查询输入源的分配slot
 						CompletableFuture<TaskManagerLocation> locationFuture = sources[k].getSource().getProducer().getCurrentTaskManagerLocationFuture();
 						// add input location
 						inputLocations.add(locationFuture);
 						// inputs which have too many distinct sources are not considered
+						// 如果某个输入源有太多的节点分布，则不考虑这个输入源的节点位置了
 						if (inputLocations.size() > MAX_DISTINCT_LOCATIONS_TO_CONSIDER) {
 							inputLocations.clear();
 							break;
@@ -512,9 +524,10 @@ public class ExecutionVertex implements AccessExecutionVertex, Archiveable<Archi
 					}
 				}
 				// keep the locations of the input with the least preferred locations
-				if (locations.isEmpty() || // nothing assigned yet
+				// 保留具有最少分布位置的输入的位置
+				if (locations.isEmpty() || // nothing assigned yet 当前还没有分配的位置
 						(!inputLocations.isEmpty() && inputLocations.size() < locations.size())) {
-					// current input has fewer preferred locations
+					// current input has fewer preferred locations 当前的输入具有更少的偏好位置
 					locations.clear();
 					locations.addAll(inputLocations);
 				}
