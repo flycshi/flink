@@ -755,6 +755,7 @@ public class ExecutionVertex implements AccessExecutionVertex, Archiveable<Archi
 
 	/**
 	 * Creates a task deployment descriptor to deploy a subtask to the given target slot.
+	 * 创建用来向一个给定的目标slot部署一个子任务的{@code TaskDeploymentDescriptor}
 	 *
 	 * TODO: This should actually be in the EXECUTION
 	 */
@@ -765,9 +766,11 @@ public class ExecutionVertex implements AccessExecutionVertex, Archiveable<Archi
 			int attemptNumber) throws ExecutionGraphException {
 		
 		// Produced intermediate results
+		// 生产的中间结果
 		List<ResultPartitionDeploymentDescriptor> producedPartitions = new ArrayList<>(resultPartitions.size());
 		
 		// Consumed intermediate results
+		// 消费中间结果
 		List<InputGateDeploymentDescriptor> consumedPartitions = new ArrayList<>(inputEdges.length);
 		
 		boolean lazyScheduling = getExecutionGraph().getScheduleMode().allowLazyDeployment();

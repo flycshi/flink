@@ -387,18 +387,22 @@ class TaskManager(
   /**
    * Handler for messages concerning the deployment and status updates of
    * tasks.
+    *
+    * 任务的部署和状态更新的相关消息的处理句柄
    *
    * @param message The task message.
    */
   private def handleTaskMessage(message: TaskMessage): Unit = {
 
     // at very first, check that we are actually currently associated with a JobManager
+    // 首先，检查我们当前确实与一个JobManager关联着
     if (!isConnected) {
       log.debug(s"Dropping message $message because the TaskManager is currently " +
         "not connected to a JobManager.")
     } else {
       // we order the messages by frequency, to make sure the code paths for matching
       // are as short as possible
+      /** 我们是基于消息请求频次排序的，为了确保代码路径匹配尽量短 */
       message match {
 
         // tell the task about the availability of a new input partition
@@ -463,6 +467,7 @@ class TaskManager(
           unregisterTaskAndNotifyFinalState(executionID)
 
         // starts a new task on the TaskManager
+          // 在TaskManager上启动给一个新的task
         case SubmitTask(tdd) =>
           submitTask(tdd)
 
@@ -1110,12 +1115,15 @@ class TaskManager(
    * Receives a [[TaskDeploymentDescriptor]] describing the task to be executed. It eagerly
    * acknowledges the task reception to the sender and asynchronously starts the initialization of
    * the task.
+    * 收到一个描述将被执行的task的[[TaskDeploymentDescriptor]]。
+    * 这里会立即向发送者(JobManager)告知task已经收到，并且异步的启动task的初始化工作
    *
    * @param tdd TaskDeploymentDescriptor describing the task to be executed on this [[TaskManager]]
    */
   private def submitTask(tdd: TaskDeploymentDescriptor): Unit = {
     try {
       // grab some handles and sanity check on the fly
+      // 校验
       val jobManagerActor = currentJobManager match {
         case Some(jm) => jm
         case None =>
@@ -1147,6 +1155,11 @@ class TaskManager(
       // create the task. this does not grab any TaskManager resources or download
       // any libraries except for offloaded TaskDeploymentDescriptor data which
       // was too big for the RPC - the operation may only block for the latter
+      /**
+        * 创建task。
+        * 这不会占用任何 TaskManager 资源，也不会下载任何库，
+        * 除非由于数据过大不方便通过RPC传输而卸载的TaskDeploymentDescriptor数据 —— 操作可能只会阻塞后者。
+        */
 
       val jobManagerGateway = new AkkaActorGateway(jobManagerActor, leaderSessionID.orNull)
 
@@ -1163,6 +1176,10 @@ class TaskManager(
         case e @ (_: IOException | _: ClassNotFoundException) =>
           throw new IOException("Could not deserialize the job information.", e)
       }
+
+      /**
+        * 校验jobID信息
+        */
       if (tdd.getJobId != jobInformation.getJobId) {
         throw new IOException(
           "Inconsistent job ID information inside TaskDeploymentDescriptor (" +
@@ -1225,14 +1242,17 @@ class TaskManager(
 
       val execId = tdd.getExecutionAttemptId
       // add the task to the map
+      // 将task添加到map
       val prevTask = runningTasks.put(execId, task)
       if (prevTask != null) {
         // already have a task for that ID, put if back and report an error
+        // 对于ID已经存在一个task，则恢复回来，并报告一个错误
         runningTasks.put(execId, prevTask)
         throw new IllegalStateException("TaskManager already contains a task for id " + execId)
       }
       
       // all good, we kick off the task, which performs its own initialization
+      // 一切都好，我们启动task，让它开始自己的初始化
       task.startTaskThread()
 
       sender ! decorateMessage(Acknowledge.get())

@@ -524,6 +524,7 @@ public class Task implements Runnable, TaskActions {
 
 	/**
 	 * The core work method that bootstraps the task and executes its code
+	 * 核心工作方法，用来启动task并执行其code
 	 */
 	@Override
 	public void run() {
