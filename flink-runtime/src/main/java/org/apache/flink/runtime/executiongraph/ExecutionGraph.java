@@ -228,7 +228,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 
 	/**
 	 * {@code true} if all source tasks are stoppable.
-	 * 如果所有数据源任务都可停止的, 那就返回true
+	 * 如果所有数据源任务都可停止的, 那就是可停止的, 否则就是不可停止的
 	 */
 	private boolean isStoppable = true;
 
@@ -919,12 +919,16 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 
 		for (JobVertex jobVertex : topologiallySorted) {
 
+			/** 对于每个jobVertex都进行判断, 只要有一个数据源, 且不可能停止, 那整个ExecutionGraph就是不可停止的 */
 			if (jobVertex.isInputVertex() && !jobVertex.isStoppable()) {
 				this.isStoppable = false;
 			}
 
 			// create the execution job vertex and attach it to the graph
-			/** 创建{@link ExecutionJobVertex}，并附加到这个graph中 */
+			/**
+			 * 创建{@link ExecutionJobVertex}，并附加到这个graph中
+			 * 这里终于看到默认的并行度了, 如果之前一直没有设置过, 则默认值就是1
+			 */
 			ExecutionJobVertex ejv = new ExecutionJobVertex(
 				this,
 				jobVertex,
@@ -933,6 +937,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 				globalModVersion,
 				createTimestamp);
 
+			/** 将新建的ExecutionJobVertex实例, 与其前置处理器建立连接 */
 			ejv.connectToPredecessors(this.intermediateResults);
 
 			ExecutionJobVertex previousTask = this.tasks.putIfAbsent(jobVertex.getID(), ejv);
@@ -941,6 +946,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 						jobVertex.getID(), ejv, previousTask));
 			}
 
+			/** 将这个ExecutionGraph中的所有临时结果IntermediateResult实例, 都保存到{@link intermediateResults}这个map中 */
 			for (IntermediateResult res : ejv.getProducedDataSets()) {
 				IntermediateResult previousDataSet = this.intermediateResults.putIfAbsent(res.getId(), res);
 				if (previousDataSet != null) {

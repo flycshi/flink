@@ -164,7 +164,8 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 		if (graph == null || jobVertex == null) {
 			throw new NullPointerException();
 		}
-		
+
+		/** 记录当前实例所属的ExecutionGraph, 以及JobVertex */
 		this.graph = graph;
 		this.jobVertex = jobVertex;
 
@@ -178,6 +179,7 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 		this.maxParallelismConfigured = (VALUE_NOT_SET != configuredMaxParallelism);
 
 		// if no max parallelism was configured by the user, we calculate and set a default
+		/** 如果用户没有设置maxParallelism, 那么就计算并设置一个默认的 */
 		setMaxParallelismInternal(maxParallelismConfigured ?
 				configuredMaxParallelism : KeyGroupRangeAssignment.computeDefaultMaxParallelism(parallelism));
 
@@ -190,6 +192,7 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 		this.inputs = new ArrayList<>(jobVertex.getInputs().size());
 		
 		// take the sharing group
+		// slot共享相关配置
 		this.slotSharingGroup = jobVertex.getSlotSharingGroup();
 		this.coLocationGroup = jobVertex.getCoLocationGroup();
 		
@@ -199,6 +202,7 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 		}
 		
 		// create the intermediate results
+		// 创建临时结果
 		this.producedDataSets = new IntermediateResult[jobVertex.getNumberOfProducedIntermediateDataSets()];
 
 		for (int i = 0; i < jobVertex.getProducedDataSets().size(); i++) {
@@ -217,6 +221,7 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 				JobManagerOptions.MAX_ATTEMPTS_HISTORY_SIZE.defaultValue();
 
 		// create all task vertices
+		// 创建所有的task节点, 即 ExecutionVertex
 		for (int i = 0; i < numTaskVertices; i++) {
 			ExecutionVertex vertex = new ExecutionVertex(
 					this,
@@ -231,6 +236,7 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 		}
 
 		// sanity check for the double referencing between intermediate result partitions and execution vertices
+		// 双重校验
 		for (IntermediateResult ir : this.producedDataSets) {
 			if (ir.getNumberOfAssignedPartitions() != parallelism) {
 				throw new RuntimeException("The intermediate result's partitions were not correctly assigned.");
@@ -422,7 +428,8 @@ public class ExecutionJobVertex implements AccessExecutionJobVertex, Archiveable
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(String.format("Connecting ExecutionJobVertex %s (%s) to %d predecessors.", jobVertex.getID(), jobVertex.getName(), inputs.size()));
 		}
-		
+
+		/** 如果当前实例对应的 jobVertex 是一个数据源, 则这里的循环是空 */
 		for (int num = 0; num < inputs.size(); num++) {
 			JobEdge edge = inputs.get(num);
 			
