@@ -79,11 +79,18 @@ public class Instance implements SlotOwner {
 	private final int numberOfSlots;
 
 	/**
+	 * {@link availableSlots}和{@link allocatedSlots}这两个变量用来维护当前{@code Instance}中的槽位
+	 * 1) 每次分配一个slot, 就会从{@code availableSlots}poll出一个元素,
+	 *    1.1) 如果该队列中没有元素了, 则不能分配新的槽位
+	 *    1.2) 如果poll出一个元素, 则新建一个slot, 并添加到{@code allocatedSlots}中
+	 * 2) 每次归还一个slot, 就会从{@code allocatedSlots}集合中, 将相应的slot删除, 同时将slot对应的slotNumber归还到{@code availableSlots}队列中
+	 */
+
+	/**
 	 * A list of available slot positions
 	 * 有效槽位位置的一个集合
 	 */
 	private final Queue<Integer> availableSlots;
-
 	/**
 	 * Allocated slots on this taskManager
 	 * 这个 TaskManager 上的已分配槽位

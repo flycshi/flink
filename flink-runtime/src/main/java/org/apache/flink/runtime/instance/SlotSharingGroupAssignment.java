@@ -212,6 +212,11 @@ public class SlotSharingGroupAssignment {
 			
 			SimpleSlot subSlot;
 			AbstractID groupIdForMap;
+
+			/**
+			 * 1) "位置协调约束"为null, 也就是没有位置上的约束, 则直接分配slot
+			 * 2) "位置协调约束"不为null, 则先在sharedSlot中分配一个新的constraintGroupSlot, 然后在新的里面, 再分配一个slot
+			 */
 					
 			if (constraint == null) {
 				// allocate us a sub slot to return
@@ -268,7 +273,10 @@ public class SlotSharingGroupAssignment {
 				// can place a task into this slot.
 				/** 让其他 groups 知道，这个slot已经存在，并且他们可以将任务放到这个slot中 */
 				boolean entryForNewJidExists = false;
-				
+
+				/**
+				 * 由于针对当前groupIdFomMap这个group分配的slot, 可以被其他的group所共享使用, 所以将其添加到其他group的可用列表中
+				 */
 				for (Map.Entry<AbstractID, Map<ResourceID, List<SharedSlot>>> entry : availableSlotsPerJid.entrySet()) {
 					// there is already an entry for this groupID
 					// 对这个groupID，已经存在一个entry了
@@ -546,6 +554,11 @@ public class SlotSharingGroupAssignment {
 			// try to transition to the CANCELED state. That state marks
 			// that the releasing is in progress
 			/** 尝试将状态转换为{@link Slot#CANCELLED}状态。表示已经开始进行releasing操作 */
+
+			/**
+			 * 1) 首先将自身标记为 CANCELLED 状态
+			 * 2) 再将状态从 CANCELLED 状态转换为 RELEASED 状态
+			 */
 			if (simpleSlot.markCancelled()) {
 
 				// sanity checks

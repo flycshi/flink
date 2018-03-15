@@ -322,7 +322,8 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 						locations = preferredLocations;
 						localOnly = forceExternalLocation;
 					}
-					
+
+					/** 这里, 一般刚开始分配是, 共享槽中是没有可用slot的, 这是需要新分配, 并添加到共享槽中 */
 					newSlot = getNewSlotForSharingGroup(vertex, locations, assignment, constraint, localOnly);
 
 					/**
@@ -597,7 +598,16 @@ public class Scheduler implements InstanceListener, SlotAvailabilityListener, Sl
 	 *
 	 * @param requestedLocations The list of preferred instances. May be null or empty, which indicates that
 	 *                           no locality preference exists.   
-	 * @param localOnly Flag to indicate whether only one of the exact local instances can be chosen.  
+	 * @param localOnly Flag to indicate whether only one of the exact local instances can be chosen.
+	 *
+	 * <p>
+	 * 1) 如果入参requestedLocations不为空
+	 *    1.1) 优先从入参提供的TaskManagerLocation的集合requestedLocations中, 找出一个还有有效资源的TaskManager对应的Instance, 并且为 LOCAL
+	 *    1.2) 上述步骤没有找到, 则localOnly的值决定后续操作
+	 *         1.2.1) 如果localOnly为true, 则此时只能返回null了
+	 *         1.2.2) 如果localOnly为false, 则还可以从{@code instancesWithAvailableResources}中拿出第一个, 为 NON_LOCAL
+	 * 2) 如果入参requestedLocations为空, 则从{@code instancesWithAvailableResources}中拿出第一个, 为 UNCONSTRAINED
+	 *
 	 */
 	private Pair<Instance, Locality> findInstance(Iterable<TaskManagerLocation> requestedLocations, boolean localOnly) {
 		
