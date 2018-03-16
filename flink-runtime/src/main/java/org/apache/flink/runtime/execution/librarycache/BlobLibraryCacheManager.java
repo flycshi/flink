@@ -104,6 +104,7 @@ public class BlobLibraryCacheManager implements LibraryCacheManager {
 		checkNotNull(jobId, "The JobId must not be null.");
 		checkNotNull(task, "The task execution id must not be null.");
 
+		/** 两个jar相关集合如果为null, 则分别赋值为空集合 */
 		if (requiredJarFiles == null) {
 			requiredJarFiles = Collections.emptySet();
 		}
@@ -119,12 +120,14 @@ public class BlobLibraryCacheManager implements LibraryCacheManager {
 				int count = 0;
 				try {
 					// add URLs to locally cached JAR files
+					/** 将requiredJarFiles集合中的key, 转化成本地缓存的jar文件的url */
 					for (PermanentBlobKey key : requiredJarFiles) {
 						urls[count] = blobService.getFile(jobId, key).toURI().toURL();
 						++count;
 					}
 
 					// add classpaths
+					/** 添加requiredClasspaths集合中的urls */
 					for (URL url : requiredClasspaths) {
 						urls[count] = url;
 						++count;

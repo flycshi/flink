@@ -414,17 +414,20 @@ public class JobGraph implements Serializable {
 			return Collections.emptyList();
 		}
 
+		/** 从source开始的，排好序的JobVertex列表 */
 		List<JobVertex> sorted = new ArrayList<JobVertex>(this.taskVertices.size());
+		/** 还没有进入sorted集合，等待排序的JobVertex集合，初始值就是JobGraph中所有JobVertex的集合 */
 		Set<JobVertex> remaining = new LinkedHashSet<JobVertex>(this.taskVertices.values());
 
 		// start by finding the vertices with no input edges
 		// and the ones with disconnected inputs (that refer to some standalone data set)
-		/** 找出没有输入的JobVertex */
+		/** 找出数据源节点，也就是那些没有输入的JobVertex，以及指向独立数据集的JobVertex */
 		{
 			Iterator<JobVertex> iter = remaining.iterator();
 			while (iter.hasNext()) {
 				JobVertex vertex = iter.next();
 
+				/** 如果该节点没有任何输入，则表示该节点是数据源，添加到sorted集合，同时从remaining集合中移除 */
 				if (vertex.hasNoConnectedInputs()) {
 					sorted.add(vertex);
 					iter.remove();
@@ -432,6 +435,7 @@ public class JobGraph implements Serializable {
 			}
 		}
 
+		/** sorted集合中开始遍历的起始位置，也就是从第一个元素开始遍历 */
 		int startNodePos = 0;
 
 		// traverse from the nodes that were added until we found all elements
@@ -443,6 +447,10 @@ public class JobGraph implements Serializable {
 			/**
 			 * 检查开始检查的节点的位置编号是否大于总的可遍历的节点的个数
 			 * 如果大于，则说明出现循环图，这是不允许的
+			 *
+			 * 处理一个节点后，startNodePos就会加1，
+			 * 如果startNodePos大于sorted的集合中元素个数，
+			 * 则说明经过一次处理，并没有找到新的JobVertex添加到sorted集合中，这表明在graph中存在了循环，这是不允许的
 			 */
 			if (startNodePos >= sorted.size()) {
 				throw new InvalidProgramException("The job graph is cyclic.");
@@ -461,8 +469,12 @@ public class JobGraph implements Serializable {
 	private void addNodesThatHaveNoNewPredecessors(JobVertex start, List<JobVertex> target, Set<JobVertex> remaining) {
 
 		// forward traverse over all produced data sets and all their consumers
-		/** 向前遍历产生的所有数据集，以及它们的消费者 */
+		/**
+		 * 向前遍历产生的所有数据集，以及它们的消费者
+		 * 遍历start节点的所有输出中间数据集合
+		 */
 		for (IntermediateDataSet dataSet : start.getProducedDataSets()) {
+			/** 对于每个中间数据集合，遍历其所有的输出JobEdge */
 			for (JobEdge edge : dataSet.getConsumers()) {
 
 				// a vertex can be added, if it has no predecessors that are still in the 'remaining' set
@@ -490,6 +502,7 @@ public class JobGraph implements Serializable {
 						continue;
 					}
 
+					/** 只要有一个输入还在remaining集合中，说明当前它还不能添加到target集合，直接结束这层内循环 */
 					IntermediateDataSet source = e.getSource();
 					if (remaining.contains(source.getProducer())) {
 						hasNewPredecessors = true;

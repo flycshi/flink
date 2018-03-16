@@ -83,6 +83,7 @@ public abstract class RestartStrategyFactory implements Serializable {
 	 * @throws Exception which indicates that the RestartStrategy could not be instantiated.
 	 */
 	public static RestartStrategyFactory createRestartStrategyFactory(Configuration configuration) throws Exception {
+		/** 从配置文件中, 根据 restart-strategy 这个key查找对应的配置, 如果没有, 则返回none */
 		String restartStrategyName = configuration.getString(ConfigConstants.RESTART_STRATEGY, "none");
 
 		switch (restartStrategyName.toLowerCase()) {

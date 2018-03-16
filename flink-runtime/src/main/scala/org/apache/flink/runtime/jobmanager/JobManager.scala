@@ -466,6 +466,7 @@ class JobManager(
       sender ! decorateMessage(instanceManager.getTotalNumberOfSlots)
 
     case SubmitJob(jobGraph, listeningBehaviour) =>
+      /** 处理客户端提交过来的job */
       val client = sender()
 
       val jobInfo = new JobInfo(client, listeningBehaviour, System.currentTimeMillis(),
@@ -1264,6 +1265,8 @@ class JobManager(
         // unsuccessful
         /**
           * 重要：我们需要确保类库注册时第一步操作，因为这可以确保在不成功的情况下，可以清除上传的jar包
+          *
+          * 将job所需jar包相关信息注册到library管理器中, 如果注册失败, 则抛出JobSubmissionException异常
           */
         try {
           libraryCacheManager.registerJob(
@@ -1275,7 +1278,7 @@ class JobManager(
               "Cannot set up the user code libraries: " + t.getMessage, t)
         }
 
-        /** 获取用户类加载器 */
+        /** 获取用户类加载器，如果获取的类加载器为null，则抛出异常 */
         val userCodeLoader = libraryCacheManager.getClassLoader(jobGraph.getJobID)
         if (userCodeLoader == null) {
           throw new JobSubmissionException(jobId,
@@ -1287,7 +1290,7 @@ class JobManager(
           throw new JobSubmissionException(jobId, "The given job is empty")
         }
 
-        /** 获取重启策略 */
+        /** 优先采用JobGraph配置的重启策略，如果没有配置，则采用JobManager中配置的重启策略 */
         val restartStrategy =
           Option(jobGraph.getSerializedExecutionConfig()
             .deserializeValue(userCodeLoader)
@@ -1302,10 +1305,11 @@ class JobManager(
 
         val jobMetrics = jobManagerMetricGroup.addJob(jobGraph)
 
+        /** 获取注册在调度器上的所有TaskManager实例的总的slot数量 */
         val numSlots = scheduler.getTotalNumberOfSlots()
 
         // see if there already exists an ExecutionGraph for the corresponding job ID
-        // 针对jobID，看是否已经存在 ExecutionGraph
+        /** 针对jobID，看是否已经存在 ExecutionGraph，如果有，则直接获取已有的，并将registerNewGraph标识为false */
         val registerNewGraph = currentJobs.get(jobGraph.getJobID) match {
           case Some((graph, currentJobInfo)) =>
             executionGraph = graph
@@ -1357,22 +1361,28 @@ class JobManager(
         case t: Throwable =>
           log.error(s"Failed to submit job $jobId ($jobName)", t)
 
+          /** 进行jar包的注册回滚 */
           libraryCacheManager.unregisterJob(jobId)
           blobServer.cleanupJob(jobId)
+          /** 移除上面注册的graph */
           currentJobs.remove(jobId)
 
+          /** 如果executionGraph不为null，还需要执行failGlobal操作 */
           if (executionGraph != null) {
             executionGraph.failGlobal(t)
           }
 
+          /** 构建JobExecutionException移除 */
           val rt: Throwable = if (t.isInstanceOf[JobExecutionException]) {
             t
           } else {
             new JobExecutionException(jobId, s"Failed to submit job $jobId ($jobName)", t)
           }
 
+          /** 通知客户端，job失败了 */
           jobInfo.notifyClients(
             decorateMessage(JobResultFailure(new SerializedThrowable(rt))))
+          /** 退出submitJob方法 */
           return
       }
 

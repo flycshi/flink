@@ -919,7 +919,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 
 		for (JobVertex jobVertex : topologiallySorted) {
 
-			/** 对于每个jobVertex都进行判断, 只要有一个数据源, 且不可能停止, 那整个ExecutionGraph就是不可停止的 */
+			/** 对于ExecutionGraph来说，只要有一个不能停止的输入源JobVertex，那ExecutionGraph就是不可停止的 */
 			if (jobVertex.isInputVertex() && !jobVertex.isStoppable()) {
 				this.isStoppable = false;
 			}
@@ -940,6 +940,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 			/** 将新建的ExecutionJobVertex实例, 与其前置处理器建立连接 */
 			ejv.connectToPredecessors(this.intermediateResults);
 
+			/** 将构建好的ejv，记录下来，如果发现对一个的jobVertexID已经存在一个ExecutionJobVertex，则需要抛异常 */
 			ExecutionJobVertex previousTask = this.tasks.putIfAbsent(jobVertex.getID(), ejv);
 			if (previousTask != null) {
 				throw new JobException(String.format("Encountered two job vertices with ID %s : previous=[%s] / new=[%s]",
@@ -955,7 +956,9 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 				}
 			}
 
+			/** 将ejv按创建顺序记录下来 */
 			this.verticesInCreationOrder.add(ejv);
+			/** 统计所有ejv的并行度 */
 			this.numVerticesTotal += ejv.getParallelism();
 			newExecJobVertices.add(ejv);
 		}
