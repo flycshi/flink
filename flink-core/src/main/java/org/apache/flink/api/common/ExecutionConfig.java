@@ -337,6 +337,7 @@ public class ExecutionConfig implements Serializable, Archiveable<ArchivedExecut
 
 	/**
 	 * Gets the interval (in milliseconds) between consecutive attempts to cancel a running task.
+	 * 连续尝试取消一个正在执行的task, 两次之间的时间间隔, 单位毫秒
 	 */
 	public long getTaskCancellationInterval() {
 		return this.taskCancellationIntervalMillis;
@@ -355,9 +356,12 @@ public class ExecutionConfig implements Serializable, Archiveable<ArchivedExecut
 	/**
 	 * Returns the timeout (in milliseconds) after which an ongoing task
 	 * cancellation leads to a fatal TaskManager error.
+	 * 取消一个正在运行的任务的超时时间, 单位毫秒, 超时会导致一个致命错误
 	 *
 	 * <p>The value <code>0</code> means that the timeout is disabled. In
 	 * this case a stuck cancellation will not lead to a fatal error.
+	 * <code>0</code>表示timeout被禁止。
+	 * 在这种情况下, 一个被阻塞的取消操作不会导致一个致命错误。
 	 */
 	@PublicEvolving
 	public long getTaskCancellationTimeout() {

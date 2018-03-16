@@ -535,13 +535,16 @@ public class Task implements Runnable, TaskActions {
 		while (true) {
 			ExecutionState current = this.executionState;
 			if (current == ExecutionState.CREATED) {
+				/** 如果是CREATED状态, 则先将状态转换为DEPLOYING, 然后退出循环 */
 				if (transitionState(ExecutionState.CREATED, ExecutionState.DEPLOYING)) {
 					// success, we can start our work
+					/** 如果成功, 则说明我们可以开始启动我们的work了 */
 					break;
 				}
 			}
 			else if (current == ExecutionState.FAILED) {
 				// we were immediately failed. tell the TaskManager that we reached our final state
+				/** 如果当前状态是FAILED, 则立即执行失败操作, 告诉TaskManager, 我们已经到达最终状态了, 然后直接返回 */
 				notifyFinalState();
 				if (metrics != null) {
 					metrics.close();
@@ -551,6 +554,7 @@ public class Task implements Runnable, TaskActions {
 			else if (current == ExecutionState.CANCELING) {
 				if (transitionState(ExecutionState.CANCELING, ExecutionState.CANCELED)) {
 					// we were immediately canceled. tell the TaskManager that we reached our final state
+					/** 如果是CANCELING状态, 则告诉TaskManager, 我们到达最终状态了, 然后直接返回 */
 					notifyFinalState();
 					if (metrics != null) {
 						metrics.close();
@@ -559,6 +563,7 @@ public class Task implements Runnable, TaskActions {
 				}
 			}
 			else {
+				/** 如果是其他状态, 则抛出异常 */
 				if (metrics != null) {
 					metrics.close();
 				}
@@ -568,6 +573,10 @@ public class Task implements Runnable, TaskActions {
 
 		// all resource acquisitions and registrations from here on
 		// need to be undone in the end
+		/**
+		 * 从这里开始, 进行所有资源的申请和注册
+		 * 在结束的时候, 需要归还
+		 */
 		Map<String, Future<Path>> distributedCacheEntries = new HashMap<String, Future<Path>>();
 		AbstractInvokable invokable = null;
 
@@ -585,6 +594,10 @@ public class Task implements Runnable, TaskActions {
 
 			// first of all, get a user-code classloader
 			// this may involve downloading the job's JAR files and/or classes
+			/**
+			 * 首先, 获取一个 user-code 类加载器
+			 * 这可能涉及下载作业的JAR文件和/或类。
+			 */
 			LOG.info("Loading JAR files for task {}.", this);
 
 			userCodeClassLoader = createUserCodeClassloader();
@@ -592,17 +605,27 @@ public class Task implements Runnable, TaskActions {
 
 			if (executionConfig.getTaskCancellationInterval() >= 0) {
 				// override task cancellation interval from Flink config if set in ExecutionConfig
+				/** 尝试取消task时, 两次尝试之间的时间间隔, 单位毫秒 */
 				taskCancellationInterval = executionConfig.getTaskCancellationInterval();
 			}
 
 			if (executionConfig.getTaskCancellationTimeout() >= 0) {
 				// override task cancellation timeout from Flink config if set in ExecutionConfig
+				/** 取消任务的超时时间, 可以在flink的配置中覆盖 */
 				taskCancellationTimeout = executionConfig.getTaskCancellationTimeout();
 			}
 
 			// now load the task's invokable code
+			/**
+			 * 实例化AbstractInvokable的具体子类
+			 * {@see StreamGraph#addOperator}
+			 * {@see StoppableSourceStreamTask}
+			 * {@see SourceStreamTask}
+			 * {@see OneInputStreamTask}
+			 */
 			invokable = loadAndInstantiateInvokable(userCodeClassLoader, nameOfInvokableClass);
 
+			/** 如果当前状态'CANCELING'、'CANCELED'、'FAILED', 则抛出异常 */
 			if (isCanceledOrFailed()) {
 				throw new CancelTaskException();
 			}
@@ -641,6 +664,7 @@ public class Task implements Runnable, TaskActions {
 			}
 
 			// next, kick off the background copying of files for the distributed cache
+			/** 接下来, 启动为分布式缓存进行文件的后台拷贝 */
 			try {
 				for (Map.Entry<String, DistributedCache.DistributedCacheEntry> entry :
 						DistributedCache.readFileInfoFromConfig(jobConfiguration))
@@ -656,12 +680,14 @@ public class Task implements Runnable, TaskActions {
 					e);
 			}
 
+			/** 再次校验状态 */
 			if (isCanceledOrFailed()) {
 				throw new CancelTaskException();
 			}
 
 			// ----------------------------------------------------------------
 			//  call the user code initialization methods
+			//  调用用户代码的初始化方法
 			// ----------------------------------------------------------------
 
 			TaskKvStateRegistry kvStateRegistry = network
@@ -676,6 +702,7 @@ public class Task implements Runnable, TaskActions {
 				checkpointResponder, taskManagerConfig, metrics, this);
 
 			// let the task code create its readers and writers
+			/** 让task代码创建它的readers和writers */
 			invokable.setEnvironment(env);
 
 			// the very last thing before the actual execution starts running is to inject
@@ -697,38 +724,47 @@ public class Task implements Runnable, TaskActions {
 
 			// ----------------------------------------------------------------
 			//  actual task core work
+			//  真正的task核心逻辑执行
 			// ----------------------------------------------------------------
 
 			// we must make strictly sure that the invokable is accessible to the cancel() call
 			// by the time we switched to running.
+			/** 在我们将状态切换到'RUNNING'状态时, 我们可以方法cancel方法 */
 			this.invokable = invokable;
 
 			// switch to the RUNNING state, if that fails, we have been canceled/failed in the meantime
+			/** 将状态从'DEPLOYING'切换到'RUNNING', 如果失败, 已经是在同一时间, 发生了 canceled/failed 操作。 */
 			if (!transitionState(ExecutionState.DEPLOYING, ExecutionState.RUNNING)) {
 				throw new CancelTaskException();
 			}
 
 			// notify everyone that we switched to running
+			/** 告诉每个人, 我们切换到'RUNNING'状态了 */
 			notifyObservers(ExecutionState.RUNNING, null);
 			taskManagerActions.updateTaskExecutionState(new TaskExecutionState(jobId, executionId, ExecutionState.RUNNING));
 
 			// make sure the user code classloader is accessible thread-locally
+			/** 设置线程上下文类加载器 */
 			executingThread.setContextClassLoader(userCodeClassLoader);
 
 			// run the invokable
+			/** run，这里就是真正开始执行处理逻辑的地方 */
 			invokable.invoke();
 
 			// make sure, we enter the catch block if the task leaves the invoke() method due
 			// to the fact that it has been canceled
+			/** 确保, 如果task由于被取消而退出了invoke()方法, 我们可以进入catch逻辑块 */
 			if (isCanceledOrFailed()) {
 				throw new CancelTaskException();
 			}
 
 			// ----------------------------------------------------------------
 			//  finalization of a successful execution
+			//  一个成功执行的结束
 			// ----------------------------------------------------------------
 
 			// finish the produced partitions. if this fails, we consider the execution failed.
+			/** 完成生产数据分区。如果这里失败, 我们也任务执行失败 */
 			for (ResultPartition partition : producedPartitions) {
 				if (partition != null) {
 					partition.finish();
@@ -737,6 +773,10 @@ public class Task implements Runnable, TaskActions {
 
 			// try to mark the task as finished
 			// if that fails, the task was canceled/failed in the meantime
+			/**
+			 * 尝试将状态从'RUNNING'修改为'FINISHED'
+			 * 如果失败, 那么task是同一时间被执行了 canceled/failed 操作
+			 */
 			if (transitionState(ExecutionState.RUNNING, ExecutionState.FINISHED)) {
 				notifyObservers(ExecutionState.FINISHED, null);
 			}
@@ -758,11 +798,16 @@ public class Task implements Runnable, TaskActions {
 
 			try {
 				// check if the exception is unrecoverable
+				/** 检查是否是可恢复异常 */
 				if (ExceptionUtils.isJvmFatalError(t) || 
 					(t instanceof OutOfMemoryError && taskManagerConfig.shouldExitJvmOnOutOfMemoryError()))
 				{
 					// terminate the JVM immediately
 					// don't attempt a clean shutdown, because we cannot expect the clean shutdown to complete
+					/**
+					 * 立即终止JVM
+					 * 不尝试清理关闭了, 因为我们不能期望清理关闭能够完成
+					 */
 					try {
 						LOG.error("Encountered fatal error {} - terminating the JVM", t.getClass().getName(), t);
 					} finally {
@@ -773,6 +818,11 @@ public class Task implements Runnable, TaskActions {
 				// transition into our final state. we should be either in DEPLOYING, RUNNING, CANCELING, or FAILED
 				// loop for multiple retries during concurrent state changes via calls to cancel() or
 				// to failExternally()
+				/**
+				 * 将状态转换为最终状态。
+				 * 应该是这些状态中的一种, 'DEPLOYING', 'RUNNING', 'CANCELING', or 'FAILED'
+				 * 由于调用 cancel() or failExternally() 方法导致状态并发变化时, 进行循环多次尝试
+				 */
 				while (true) {
 					ExecutionState current = this.executionState;
 

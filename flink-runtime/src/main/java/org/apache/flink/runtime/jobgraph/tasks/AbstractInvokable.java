@@ -38,18 +38,26 @@ import org.apache.flink.runtime.operators.BatchTask;
  */
 public abstract class AbstractInvokable {
 
-	/** The environment assigned to this invokable. */
+	/**
+	 * The environment assigned to this invokable.
+	 * 指派给该invokable的环境
+	 */
 	private Environment environment;
 
 	/**
 	 * Starts the execution.
+	 * 启动这个execution
 	 *
 	 * <p>Must be overwritten by the concrete task implementation. This method
 	 * is called by the task manager when the actual execution of the task
 	 * starts.
+	 * 具体的实现子类必须重写该方法。
+	 * 当真正开始执行task时, TaskManager会调用该方法。
 	 *
 	 * <p>All resources should be cleaned up when the method returns. Make sure
 	 * to guard the code with <code>try-finally</code> blocks where necessary.
+	 * 在该方法返回的时候, 所有申请的资源需要清理归还。
+	 * 确保代码是采用 try-finally 结构。
 	 * 
 	 * @throws Exception
 	 *         Tasks may forward their exceptions for the TaskManager to handle through failure/recovery.
@@ -59,6 +67,8 @@ public abstract class AbstractInvokable {
 	/**
 	 * This method is called when a task is canceled either as a result of a user abort or an execution failure. It can
 	 * be overwritten to respond to shut down the user code properly.
+	 * 当一个task要么是用户终止或者异常失败, 导致task被取消时, 该方法会被调用。
+	 * 它可以被覆写来相应关闭用户代码。
 	 *
 	 * @throws Exception
 	 *         thrown if any exception occurs during the execution of the user code
@@ -69,6 +79,7 @@ public abstract class AbstractInvokable {
 	
 	/**
 	 * Sets the environment of this task.
+	 * 设置环境变量
 	 * 
 	 * @param environment
 	 *        the environment of this task
@@ -79,6 +90,7 @@ public abstract class AbstractInvokable {
 
 	/**
 	 * Returns the environment of this task.
+	 * 获取环境变量
 	 * 
 	 * @return The environment of this task.
 	 */
