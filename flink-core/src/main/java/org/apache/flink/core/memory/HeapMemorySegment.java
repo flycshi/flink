@@ -30,12 +30,16 @@ import java.util.Objects;
  * This class represents a piece of heap memory managed by Flink.
  * The segment is backed by a byte array and features random put and get methods for the basic types,
  * as well as compare and swap methods.
+ * 这个类描述一个被Flink管理的堆内存片。
+ * 这个segment的背后是一个字节数组，为基础类型提供了随机存取特性，以及比较和交换方法。
  *
  * <p>This class specializes byte access and byte copy calls for heap memory, while reusing the
  * multi-byte type accesses and cross-segment operations from the MemorySegment.
+ * 这个类专门用于对堆内存进行字节访问和字节复制，同时重用{@code MemorySegment}中的多字节类型访问和跨段操作。
  *
  * <p>Note that memory segments should usually not be allocated manually, but rather through the
  * {@link MemorySegmentFactory}.
+ * 注意的是，{@code MemorySegment}不应该手动分配，而是通过{@code MemorySegmentFactory}
  */
 @SuppressWarnings("unused")
 @Internal

@@ -24,11 +24,16 @@ import java.nio.ByteBuffer;
 
 /**
  * A factory for (hybrid) memory segments ({@link HybridMemorySegment}).
+ * 一个工厂类
  *
  * <p>The purpose of this factory is to make sure that all memory segments for heap data are of the
  * same type. That way, the runtime does not mix the various specializations of the {@link
  * MemorySegment}. Not mixing them has shown to be beneficial to method specialization by the JIT
  * and to overall performance.
+ * 这个工厂类的目的是确保堆上数据的所有{@code MemorySegment}都是相同类型。
+ * 这样，运行时就不会混合{@code MemorySegment}的各种个性化实现。
+ * 没有将它们混合在一起，表明了通过JIT优化后的方法是由专有好处的。
+ *
  */
 @Internal
 public final class MemorySegmentFactory {

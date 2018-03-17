@@ -62,6 +62,9 @@ public class MemoryUtils {
 		}
 	}
 
-	/** Should not be instantiated. */
+	/**
+	 * Should not be instantiated.
+	 * 构造函数私有，不允许实例化
+	 */
 	private MemoryUtils() {}
 }

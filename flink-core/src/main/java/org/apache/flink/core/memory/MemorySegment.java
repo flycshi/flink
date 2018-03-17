@@ -127,6 +127,7 @@ public abstract class MemorySegment {
 
 	/**
 	 * The beginning of the byte array contents, relative to the byte array object.
+	 * 字节数组的起始位置，相对字节数组对象
 	 */
 	@SuppressWarnings("restriction")
 	protected static final long BYTE_ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
@@ -134,6 +135,8 @@ public abstract class MemorySegment {
 	/**
 	 * Constant that flags the byte order. Because this is a boolean constant, the JIT compiler can
 	 * use this well to aggressively eliminate the non-applicable code paths.
+	 * 表示字节序的常量。
+	 * 因为这是一个布尔常量，JIT编译器可以使用这个功能来积极地消除不适用的代码路径
 	 */
 	private static final boolean LITTLE_ENDIAN = (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN);
 
@@ -147,38 +150,51 @@ public abstract class MemorySegment {
 	 * off the heap. If we have this buffer, we must never void this reference, or the memory
 	 * segment will point to undefined addresses outside the heap and may in out-of-order execution
 	 * cases cause segmentation faults.
+	 * 如果是堆内存，该字段不能为null，如果是堆外内存，则是null。
+	 * 如果我们有这个缓冲区，我们就永远不能取消这个引用，
+	 * 或者{@code MemorySegment}将指向堆外的未定义的地址，并且可能在无序的执行情况下导致内存块错误。
 	 */
 	protected final byte[] heapMemory;
 
 	/**
 	 * The address to the data, relative to the heap memory byte array. If the heap memory byte
 	 * array is <tt>null</tt>, this becomes an absolute memory address outside the heap.
+	 * 相对于堆内存字节数组的，数据的地址。
+	 * 如果堆内存字节数组是null，这个就是一个堆外的绝对内存地址。
+	 * 其实就是字节的起始位置
 	 */
 	protected long address;
 
 	/**
 	 * The address one byte after the last addressable byte, i.e. <tt>address + size</tt> while the
 	 * segment is not disposed.
+	 * 最后可定位字节后的一个字节的位置，在segment没有被取消时，就是<tt>address + size</tt>
+	 * 起始就是有效字节的地址结尾
 	 */
 	protected final long addressLimit;
 
 	/**
 	 * The size in bytes of the memory segment.
+	 * {@code MemorySegment}的字节大小
 	 */
 	protected final int size;
 
 	/**
 	 * Optional owner of the memory segment.
+	 * {@code MemorySegment}的所有者
 	 */
 	private final Object owner;
 
 	/**
 	 * Creates a new memory segment that represents the memory of the byte array.
+	 * 创建表示字节数组的内存的一个新的{@code MemorySegment}
 	 *
 	 * <p>Since the byte array is backed by on-heap memory, this memory segment holds its
 	 * data on heap. The buffer must be at least of size 8 bytes.
+	 * 因为字节数组是在堆内存上的，{@code MemorySegment}在堆维护它的数据。buffer必须至少8字节。
 	 *
 	 * @param buffer The byte array whose memory is represented by this memory segment.
+	 *               这个{@code MemorySegment}所表示的内存对应的字节数组。
 	 */
 	MemorySegment(byte[] buffer, Object owner) {
 		if (buffer == null) {
@@ -195,9 +211,10 @@ public abstract class MemorySegment {
 	/**
 	 * Creates a new memory segment that represents the memory at the absolute address given
 	 * by the pointer.
+	 * 创建通过绝对地址指针表示的内存的一个新{@code MemorySegment}
 	 *
-	 * @param offHeapAddress The address of the memory represented by this memory segment.
-	 * @param size The size of this memory segment.
+	 * @param offHeapAddress The address of the memory represented by this memory segment. {@code MemorySegment}表示的内存的地址
+	 * @param size The size of this memory segment. {@code MemorySegment}的大小
 	 */
 	MemorySegment(long offHeapAddress, int size, Object owner) {
 		if (offHeapAddress <= 0) {
@@ -218,6 +235,7 @@ public abstract class MemorySegment {
 
 	// ------------------------------------------------------------------------
 	// Memory Segment Operations
+	// 操作
 	// ------------------------------------------------------------------------
 
 	/**
@@ -231,6 +249,7 @@ public abstract class MemorySegment {
 
 	/**
 	 * Checks whether the memory segment was freed.
+	 * 检查{@code MemorySegment}是否被释放
 	 *
 	 * @return <tt>true</tt>, if the memory segment has been freed, <tt>false</tt> otherwise.
 	 */
@@ -240,10 +259,13 @@ public abstract class MemorySegment {
 
 	/**
 	 * Frees this memory segment.
+	 * 释放这个{@code MemorySegment}
 	 *
 	 * <p>After this operation has been called, no further operations are possible on the memory
 	 * segment and will fail. The actual memory (heap or off-heap) will only be released after this
 	 * memory segment object has become garbage collected.
+	 * 这个操作被调用后，在{@code MemorySegment}上进行的操作都是失败。
+	 * 真正的内存(堆内或堆外)只有在这个{@code MemorySegment}对象呗gc后才会释放。
 	 */
 	public void free() {
 		// this ensures we can place no more data and trigger
@@ -264,6 +286,7 @@ public abstract class MemorySegment {
 	/**
 	 * Wraps the chunk of the underlying memory located between <tt>offset</tt> and
 	 * <tt>length</tt> in a NIO ByteBuffer.
+	 * 将<tt>offset</tt> 和 <tt>length</tt> 之间的内存块封装到一个 NIO ByteBuffer 对象中。
 	 *
 	 * @param offset The offset in the memory segment.
 	 * @param length The number of bytes to be wrapped as a buffer.
@@ -286,6 +309,7 @@ public abstract class MemorySegment {
 
 	// ------------------------------------------------------------------------
 	//                    Random Access get() and put() methods
+	//                    随机访问方法
 	// ------------------------------------------------------------------------
 
 	//------------------------------------------------------------------------
@@ -301,6 +325,7 @@ public abstract class MemorySegment {
 
 	/**
 	 * Reads the byte at the given position.
+	 * 读取在给定位置的字节
 	 *
 	 * @param index The position from which the byte will be read
 	 * @return The byte at the given position.
@@ -403,6 +428,7 @@ public abstract class MemorySegment {
 
 	/**
 	 * Reads a char value from the given position, in the system's native byte order.
+	 * 在系统原生字节序下，从给定位置，读取一个字符
 	 *
 	 * @param index The position from which the memory will be read.
 	 * @return The char value at the given position.
@@ -1171,6 +1197,7 @@ public abstract class MemorySegment {
 
 	// -------------------------------------------------------------------------
 	//                     Bulk Read and Write Methods
+	//                     块读写方法
 	// -------------------------------------------------------------------------
 
 	public abstract void get(DataOutput out, int offset, int length) throws IOException;
@@ -1229,6 +1256,9 @@ public abstract class MemorySegment {
 	 * Bulk copy method. Copies {@code numBytes} bytes from this memory segment, starting at position
 	 * {@code offset} to the target memory segment. The bytes will be put into the target segment
 	 * starting at position {@code targetOffset}.
+	 * 块拷贝方法。
+	 * 从{@code MemorySegment}复制{@code numBytes}字节，起始位置是{@code offset}，到目标{@code MemorySegment}中。
+	 * 这些字节将被写入目标{@code MemorySegment}的起始位置是{@code targetOffset}。
 	 *
 	 * @param offset The position where the bytes are started to be read from in this memory segment.
 	 * @param target The memory segment to copy the bytes to.
@@ -1264,10 +1294,12 @@ public abstract class MemorySegment {
 
 	// -------------------------------------------------------------------------
 	//                      Comparisons & Swapping
+	//                      比较 & 交换
 	// -------------------------------------------------------------------------
 
 	/**
 	 * Compares two memory segment regions.
+	 * 比较两个{@code MemorySegment}
 	 *
 	 * @param seg2 Segment to compare this segment with
 	 * @param offset1 Offset of this segment to start comparing
@@ -1275,6 +1307,9 @@ public abstract class MemorySegment {
 	 * @param len Length of the compared memory region
 	 *
 	 * @return 0 if equal, -1 if seg1 &lt; seg2, 1 otherwise
+	 * 			0 —— 相等；
+	 * 			-1 —— seg1 < seg2；
+	 * 			1 —— seg1 > seg2
 	 */
 	public final int compare(MemorySegment seg2, int offset1, int offset2, int len) {
 		while (len >= 8) {

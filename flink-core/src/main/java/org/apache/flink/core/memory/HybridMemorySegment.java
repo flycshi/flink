@@ -406,6 +406,7 @@ public final class HybridMemorySegment extends MemorySegment {
 
 	/**
 	 * The reflection fields with which we access the off-heap pointer from direct ByteBuffers.
+	 *
 	 */
 	private static final Field ADDRESS_FIELD;
 
