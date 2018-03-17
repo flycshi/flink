@@ -32,12 +32,16 @@ import java.nio.ReadOnlyBufferException;
 /**
  * This class represents a piece of memory managed by Flink. The memory can be on-heap or off-heap,
  * this is transparently handled by this class.
+ * 这个类表示被Flink管理的一片内存。
+ * 被这个类持有的内存可以是堆内或者堆外。
  *
  * <p>This class specializes byte access and byte copy calls for heap memory, while reusing the
  * multi-byte type accesses and cross-segment operations from the MemorySegment.
+ * 这个类提供了对堆内存的字节访问和字节拷贝的个性访问，同时重用了{@code MemorySegment}中的多字节类型访问和跨segment操作。
  *
  * <p>This class subsumes the functionality of the {@link org.apache.flink.core.memory.HeapMemorySegment},
  * but is a bit less efficient for operations on individual bytes.
+ * 这个类具有{@link org.apache.flink.core.memory.HeapMemorySegment}的功能，但是在独立字节操作上，效率稍微低一些。
  *
  * <p>Note that memory segments should usually not be allocated manually, but rather through the
  * {@link MemorySegmentFactory}.
@@ -49,6 +53,8 @@ public final class HybridMemorySegment extends MemorySegment {
 	 * The direct byte buffer that allocated the off-heap memory. This memory segment holds a
 	 * reference to that buffer, so as long as this memory segment lives, the memory will not be
 	 * released.
+	 * 堆外内存上分配的{@link java.nio.DirectByteBuffer}。
+	 * 这个{@code MemorySegment}持有这个buffer的引用，所以只要这个{@code MemorySegment}，这个堆外内存就不会被释放。
 	 */
 	private final ByteBuffer offHeapBuffer;
 
@@ -402,11 +408,12 @@ public final class HybridMemorySegment extends MemorySegment {
 
 	// --------------------------------------------------------------------------------------------
 	//  Utilities for native memory accesses and checks
+	//  用于原生内存访问和检查的工具方法
 	// --------------------------------------------------------------------------------------------
 
 	/**
 	 * The reflection fields with which we access the off-heap pointer from direct ByteBuffers.
-	 *
+	 * 用来访问{@link java.nio.DirectByteBuffer}中的堆外内存指针对应属性的反射字段。
 	 */
 	private static final Field ADDRESS_FIELD;
 
