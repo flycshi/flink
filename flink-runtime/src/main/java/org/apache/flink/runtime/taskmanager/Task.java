@@ -108,72 +108,132 @@ import static org.apache.flink.util.Preconditions.checkState;
  * produce its results (intermediate result partitions) and communicate
  * with the JobManager.
  *
+ * <p>{@code Task}表示在一个并行子任务在一个{@code TaskManager}上一次执行。
+ * 一个{@code Task}中包含一个Flink的操作符(可坑是一个用户函数)，并运行它，提供了所有必要的服务，比如消费输入数据，
+ * 生产结果数据(中间结果分区)，以及与{@code JobManager}进行通信。
+ *
  * <p>The Flink operators (implemented as subclasses of
  * {@link AbstractInvokable} have only data readers, -writers, and certain event callbacks.
  * The task connects those to the network stack and actor messages, and tracks the state
  * of the execution and handles exceptions.
+ * <p>Flink操作符({@code AbstractInvokable}的实现子类)只有进行数据读取、写出，以及特定的事件回调。
+ * {@code Task}将这些链接到{@code network stack and actor messages}，并跟踪执行状态，以及处理异常。
  *
  * <p>Tasks have no knowledge about how they relate to other tasks, or whether they
  * are the first attempt to execute the task, or a repeated attempt. All of that
  * is only known to the JobManager. All the task knows are its own runnable code,
  * the task's configuration, and the IDs of the intermediate results to consume and
  * produce (if any).
+ * {@code Task}是不知道他们是如何与其他{@code Task}相关联的，或者他们是否是首次尝试执行任务，或者是否是一个重复的尝试。
+ * 这些只有{@code JobManager}知道。
+ * {@code Task}所知道的是它自己的运行代码、任务的配置，以及生产(如果有的话)和消费的中间结果集的IDs。
  *
  * <p>Each Task is run by one dedicated thread.
+ * <p>每个人都在一个专有线程中运行。
  */
 public class Task implements Runnable, TaskActions {
 
 	/** The class logger. */
 	private static final Logger LOG = LoggerFactory.getLogger(Task.class);
 
-	/** The tread group that contains all task threads */
+	/**
+	 * The tread group that contains all task threads
+	 * 包含了所有任务线程的线程组，一个{@code TaskManager}实例上就有一个这样的分组。
+	 */
 	private static final ThreadGroup TASK_THREADS_GROUP = new ThreadGroup("Flink Task Threads");
 
-	/** For atomic state updates */
+	/**
+	 * For atomic state updates
+	 * 用于原子状态更新
+	 */
 	private static final AtomicReferenceFieldUpdater<Task, ExecutionState> STATE_UPDATER =
 			AtomicReferenceFieldUpdater.newUpdater(Task.class, ExecutionState.class, "executionState");
 
 	// ------------------------------------------------------------------------
 	//  Constant fields that are part of the initial Task construction
+	//  构造函数中进行初始化的属性
 	// ------------------------------------------------------------------------
 
-	/** The job that the task belongs to */
+	/**
+	 * The job that the task belongs to
+	 * task归属的job的id
+	 */
 	private final JobID jobId;
 
-	/** The vertex in the JobGraph whose code the task executes */
+	/**
+	 * The vertex in the JobGraph whose code the task executes
+	 * task执行的代码所归属的{@code JobGraph}中的{@code JobVertex}
+	 */
 	private final JobVertexID vertexId;
 
-	/** The execution attempt of the parallel subtask */
+	/**
+	 * The execution attempt of the parallel subtask
+	 * 这个并行子任务的执行尝试ID
+	 */
 	private final ExecutionAttemptID executionId;
 
-	/** ID which identifies the slot in which the task is supposed to run */
+	/**
+	 * ID which identifies the slot in which the task is supposed to run
+	 * 标识了该task应该运行所在的slot的ID
+	 */
 	private final AllocationID allocationId;
 
-	/** TaskInfo object for this task */
+	/**
+	 * TaskInfo object for this task
+	 * 这个task的{@code TaskInfo}
+	 */
 	private final TaskInfo taskInfo;
 
-	/** The name of the task, including subtask indexes */
+	/**
+	 * The name of the task, including subtask indexes
+	 * 任务的名称，包含了子任务的索引
+	 */
 	private final String taskNameWithSubtask;
 
-	/** The job-wide configuration object */
+	/**
+	 * The job-wide configuration object
+	 * job范围的配置对象
+	 */
 	private final Configuration jobConfiguration;
 
-	/** The task-specific configuration */
+	/**
+	 * The task-specific configuration
+	 * task特定的配置
+	 */
 	private final Configuration taskConfiguration;
 
-	/** The jar files used by this task */
+	/**
+	 * The jar files used by this task
+	 * 这个任务所使用到的jar文件
+	 */
 	private final Collection<PermanentBlobKey> requiredJarFiles;
 
-	/** The classpaths used by this task */
+	/**
+	 * The classpaths used by this task
+	 * 这个任务所使用的{@code classpaths}
+	 */
 	private final Collection<URL> requiredClasspaths;
 
-	/** The name of the class that holds the invokable code */
+	/**
+	 * The name of the class that holds the invokable code
+	 * 持有调用代码的类的名称
+	 * {@see StreamGraph#addOperator}
+	 * {@see StoppableSourceStreamTask}
+	 * {@see SourceStreamTask}
+	 * {@see OneInputStreamTask}
+	 */
 	private final String nameOfInvokableClass;
 
-	/** Access to task manager configuration and host names*/
+	/**
+	 * Access to task manager configuration and host names
+	 * 获取{@code TaskManager}的配置和主机名称
+	 */
 	private final TaskManagerRuntimeInfo taskManagerConfig;
 	
-	/** The memory manager to be used by this task */
+	/**
+	 * The memory manager to be used by this task
+	 * 这个task所使用的内存管理器
+	 */
 	private final MemoryManager memoryManager;
 
 	/** The I/O manager to be used by this task */
@@ -244,7 +304,10 @@ public class Task implements Runnable, TaskActions {
 	/** The invokable of this task, if initialized */
 	private volatile AbstractInvokable invokable;
 
-	/** The current execution state of the task */
+	/**
+	 * The current execution state of the task
+	 * task的当前执行状态
+	 */
 	private volatile ExecutionState executionState = ExecutionState.CREATED;
 
 	/** The observed exception, in case the task execution failed */
@@ -531,6 +594,7 @@ public class Task implements Runnable, TaskActions {
 
 		// ----------------------------
 		//  Initial State transition
+		//  初始化状态转换
 		// ----------------------------
 		while (true) {
 			ExecutionState current = this.executionState;

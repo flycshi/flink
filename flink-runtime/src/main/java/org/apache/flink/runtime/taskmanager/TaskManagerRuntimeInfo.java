@@ -22,11 +22,13 @@ import org.apache.flink.configuration.Configuration;
 
 /**
  * Interface to access {@link TaskManager} information.
+ * 获取{@code TaskManager}信息的接口
  */
 public interface TaskManagerRuntimeInfo {
 
 	/**
 	 * Gets the configuration that the TaskManager was started with.
+	 * 获取{@code TaskManager}启动所用的配置
 	 *
 	 * @return The configuration that the TaskManager was started with.
 	 */
@@ -34,6 +36,7 @@ public interface TaskManagerRuntimeInfo {
 
 	/**
 	 * Gets the list of temporary file directories.
+	 * 获取临时文件目录列表
 	 * 
 	 * @return The list of temporary file directories.
 	 */
@@ -42,6 +45,7 @@ public interface TaskManagerRuntimeInfo {
 	/**
 	 * Checks whether the TaskManager should exit the JVM when the task thread throws
 	 * an OutOfMemoryError.
+	 * 检查当任务线程抛出一个OOM错误时，{@code TaskManager}是否应该退出JVM。
 	 * 
 	 * @return True to terminate the JVM on an OutOfMemoryError, false otherwise.
 	 */

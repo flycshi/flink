@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Lightweight configuration object which stores key/value pairs.
+ * 存储{@code key/value}对的轻量级配置对象
  */
 @Public
 public class Configuration extends ExecutionConfig.GlobalJobParameters 
@@ -57,7 +58,10 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
 	private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
 
-	/** Stores the concrete key/value pairs of this configuration object. */
+	/**
+	 * Stores the concrete key/value pairs of this configuration object.
+	 * 用来存储这个配置对象的具体{@code key/value}对的属性
+	 */
 	protected final HashMap<String, Object> confData;
 
 	// --------------------------------------------------------------------------------------------

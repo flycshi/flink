@@ -92,6 +92,7 @@ public final class MathUtils {
 
 	/**
 	 * Checks whether the given value is a power of two.
+	 * 检查给定的值是否是2的幂次方
 	 *
 	 * @param value The value to check.
 	 * @return True, if the value is a power of two, false otherwise.

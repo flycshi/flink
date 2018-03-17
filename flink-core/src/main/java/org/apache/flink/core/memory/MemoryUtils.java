@@ -25,15 +25,22 @@ import java.nio.ByteOrder;
 
 /**
  * Utility class for memory operations.
+ * 内存操作的工具类
  */
 @Internal
 public class MemoryUtils {
 
-	/** The "unsafe", which can be used to perform native memory accesses. */
+	/**
+	 * The "unsafe", which can be used to perform native memory accesses.
+	 * "unsafe"，可以用来进行原生内存访问
+	 */
 	@SuppressWarnings("restriction")
 	public static final sun.misc.Unsafe UNSAFE = getUnsafe();
 
-	/** The native byte order of the platform on which the system currently runs. */
+	/**
+	 * The native byte order of the platform on which the system currently runs.
+	 * 系统当前运行的平台的原生字节序
+	 */
 	public static final ByteOrder NATIVE_BYTE_ORDER = ByteOrder.nativeOrder();
 
 	@SuppressWarnings("restriction")

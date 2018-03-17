@@ -22,6 +22,7 @@ import org.apache.flink.annotation.Internal;
 
 /**
  * The class of memory, such as heap or off-heap.
+ * 内存类型
  */
 @Internal
 public enum MemoryType {
@@ -32,7 +33,7 @@ public enum MemoryType {
 	HEAP,
 
 	/**
-	 * Denotes memory that is outside the Java heap (but still part of tha Java process).
+	 * Denotes memory that is outside the Java heap (but still part of the Java process).
 	 */
 	OFF_HEAP
 }

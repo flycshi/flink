@@ -25,6 +25,7 @@ import static org.apache.flink.util.Preconditions.checkArgument;
 
 /**
  * Encapsulates task-specific information: name, index of subtask, parallelism and attempt number.
+ * 封装了任务的特定信息：名称，子任务的索引，并行度，尝试编号。
  */
 @Internal
 public class TaskInfo {

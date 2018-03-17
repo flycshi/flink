@@ -40,6 +40,7 @@ import java.io.File;
 
 /**
  * Configuration object for {@link TaskExecutor}.
+ * {@code TaskExecutor}的配置对象
  */
 public class TaskManagerConfiguration implements TaskManagerRuntimeInfo {
 

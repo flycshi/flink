@@ -29,37 +29,39 @@ import java.nio.ReadOnlyBufferException;
 
 /**
  * This class represents a piece of memory managed by Flink.
- * 这个类描述了被flink管理的一小块内存。
  * The segment may be backed by heap memory (byte array) or by off-heap memory.
+ * 这个类描述了被flink管理的一小块内存。
  * 内存块的内部可能是堆内存(字节数组), 或者对外内存。
  *
  * <p>The methods for individual memory access are specialized in the classes
- * 对于个性化内存操作方法, 在下面类中有所实现。
  * {@link org.apache.flink.core.memory.HeapMemorySegment} and
  * {@link org.apache.flink.core.memory.HybridMemorySegment}.
  * All methods that operate across two memory segments are implemented in this class,
  * to transparently handle the mixing of memory segment types.
+ * 对于个性化内存操作方法, 在其具体的实现类{@code HeapMemorySegment}和{@code HybridMemorySegment}中有所实现。
  * 跨内存块操作的所有方法都在该类中实现, 显式的操作数据块的混合。
  *
  * <p>This class fulfills conceptually a similar purpose as Java's {@link java.nio.ByteBuffer}.
- * 这个类与ByteBuffer的出发点相似。
  * We add this specialized class for various reasons:
+ * 这个类与ByteBuffer的出发点相似。
  * 新增该类处于如下几个原因:
  * <ul>
  *     <li>It offers additional binary compare, swap, and copy methods.</li>
- *     		提供了字节比较、交换、拷贝等方法
+ *     		提供了额外的字节比较、交换、拷贝等方法
  *     <li>It uses collapsed checks for range check and memory segment disposal.</li>
+ *     		它为范围检查和内存块清理采用崩溃检查
  *     <li>It offers absolute positioning methods for bulk put/get methods, to guarantee
  *         thread safe use.</li>
- *         对put、get方法,提供了相对的位置方法, 线程安全
+ *         对put、get方法, 提供了相对的位置方法, 线程安全
  *     <li>It offers explicit big-endian / little-endian access methods, rather than tracking internally
  *         a byte order.</li>
+ *         它提供了 big-endian / little-endian 访问方法，而不是跟踪字节顺序。
  *     <li>It transparently and efficiently moves data between on-heap and off-heap variants.</li>
- *     		在堆内存和堆外内存之间进行高效的数据copy
+ *     		在堆内存和堆外内存之间进行高效的数据移动
  * </ul>
  *
  * <p><i>Comments on the implementation</i>:
- * 备注:
+ * 实现上的注释:
  * We make heavy use of operations that are supported by native
  * instructions, to achieve a high efficiency. Multi byte types (int, long, float, double, ...)
  * are read and written with "unsafe" native commands.
@@ -72,6 +74,8 @@ import java.nio.ReadOnlyBufferException;
  * <i>-XX:+UnlockDiagnosticVMOptions -XX:CompileCommand=print,*MemorySegment.putLongBigEndian</i>.
  * Note that this code realizes both the byte order swapping and the reinterpret cast access to
  * get a long from the byte array.
+ * 以下是一个{@link HeapMemorySegment#putLongBigEndian(int, long)}函数在即时编译器下产生的例子。
+ * 请注意，此代码实现了字节顺序交换和重新解释cast访问，以从字节数组获得一个长整型。
  *
  * <p><pre>
  * [Verified Entry Point]
@@ -95,15 +99,21 @@ import java.nio.ReadOnlyBufferException;
  * </pre>
  *
  * <p><i>Note on efficiency</i>:
+ * 效率上的注意点：
  * For best efficiency, the code that uses this class should make sure that only one
  * subclass is loaded, or that the methods that are abstract in this class are used only from one of the
  * subclasses (either the {@link org.apache.flink.core.memory.HeapMemorySegment}, or the
  * {@link org.apache.flink.core.memory.HybridMemorySegment}).
+ * 为了更好的效率，使用这个类的代码应该确保只有一个子类被加载，
+ * 或者这个类中的抽象方法只从其中一个子类中调用(要么是{@code HeapMemorySegment}，要么是{@code HybridMemorySegment})
  *
  * <p>That way, all the abstract methods in the MemorySegment base class have only one loaded
  * actual implementation. This is easy for the JIT to recognize through class hierarchy analysis,
  * or by identifying that the invocations are monomorphic (all go to the same concrete
  * method implementation). Under these conditions, the JIT can perfectly inline methods.
+ * 也就是说，在{@code MemoryManager}这个基类中的所有抽象方法只会被加载一个真实的实现。
+ * 这样JIT可以通过类层次结构分析，或者通过识别调用是单一的(所有都进入同一个具体方法实现)，容易识别出来。
+ * 在这些条件下，JIT可以优化在线方法。
  */
 @Internal
 public abstract class MemorySegment {
