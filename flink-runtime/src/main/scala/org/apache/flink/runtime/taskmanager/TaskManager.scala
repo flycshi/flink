@@ -1619,6 +1619,7 @@ object TaskManager {
     }
 
     // In Standalone mode, we generate a resource identifier.
+    /** 在独立模式下，我们产生一个资源标识 */
     val resourceId = ResourceID.generate()
 
     // run the TaskManager (if requested in an authentication enabled context)

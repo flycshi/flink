@@ -34,6 +34,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * The facade for the provided I/O manager services.
+ * 提供 I/O 管理服务
  */
 public abstract class IOManager {
 
@@ -55,13 +56,19 @@ public abstract class IOManager {
 	/** Logging */
 	protected static final Logger LOG = LoggerFactory.getLogger(IOManager.class);
 
-	/** The temporary directories for files */
+	/**
+	 * The temporary directories for files
+	 * 文件的临时路径
+	 */
 	private final File[] paths;
 
 	/** A random number generator for the anonymous ChannelIDs. */
 	private final Random random;
 
-	/** The number of the next path to use. */
+	/**
+	 * The number of the next path to use.
+	 * 下一个要使用的路径编号
+	 */
 	private volatile int nextPath;
 
 	// -------------------------------------------------------------------------
@@ -70,6 +77,7 @@ public abstract class IOManager {
 
 	/**
 	 * Constructs a new IOManager.
+	 * 构造一个新的{@code IOManager}实例
 	 *
 	 * @param tempDirs The basic directories for files underlying anonymous channels.
 	 */

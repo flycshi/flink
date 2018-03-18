@@ -24,6 +24,7 @@ import org.apache.flink.runtime.jobgraph.IntermediateDataSetID;
 
 /**
  * Actions which can be performed on a {@link Task}.
+ * 可以应用在{@code Task}上的动作
  */
 public interface TaskActions {
 

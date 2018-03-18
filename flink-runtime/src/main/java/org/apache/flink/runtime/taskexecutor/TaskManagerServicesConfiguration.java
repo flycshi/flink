@@ -46,6 +46,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * Configuration for the task manager services such as the network environment, the memory manager,
  * the io manager and the metric registry.
+ * {@code TaskManagerServices}的配置，比如网络环境，内存管理器，io管理器，以及统计注册器等
  */
 public class TaskManagerServicesConfiguration {
 	private static final Logger LOG = LoggerFactory.getLogger(TaskManagerServicesConfiguration.class);
@@ -129,6 +130,7 @@ public class TaskManagerServicesConfiguration {
 
 	/**
 	 * Returns the size of the managed memory (in megabytes), if configured.
+	 * 返回管理的内存大小，单位MB，如果配置了的话
 	 *
 	 * @return managed memory or a default value (currently <tt>-1</tt>) if not configured
 	 *
@@ -153,6 +155,7 @@ public class TaskManagerServicesConfiguration {
 	/**
 	 * Utility method to extract TaskManager config parameters from the configuration and to
 	 * sanity check them.
+	 * 从配置中提取{@code TaskManager}的配置参数，并进行校验
 	 *
 	 * @param configuration The configuration.
 	 * @param remoteAddress identifying the IP address under which the TaskManager will be accessible
@@ -166,6 +169,7 @@ public class TaskManagerServicesConfiguration {
 			boolean localCommunication) throws Exception {
 
 		// we need this because many configs have been written with a "-1" entry
+		/** 因为很多配置会把这里设置为-1，所以这里需要校验 */
 		int slots = configuration.getInteger(ConfigConstants.TASK_MANAGER_NUM_TASK_SLOTS, 1);
 		if (slots == -1) {
 			slots = 1;
@@ -185,6 +189,7 @@ public class TaskManagerServicesConfiguration {
 				parseQueryableStateConfiguration(configuration);
 
 		// extract memory settings
+		/** 提取内存设置 */
 		long configuredMemory = configuration.getLong(TaskManagerOptions.MANAGED_MEMORY_SIZE);
 		checkConfigParameter(
 			configuredMemory == TaskManagerOptions.MANAGED_MEMORY_SIZE.defaultValue() ||
@@ -274,11 +279,13 @@ public class TaskManagerServicesConfiguration {
 		checkNetworkBufferConfig(pageSize, networkBufFraction, networkBufMin, networkBufMax);
 
 		// fallback: number of network buffers
+		// 后备参数：网络缓存的数量
 		final int numNetworkBuffers = configuration.getInteger(TaskManagerOptions.NETWORK_NUM_BUFFERS);
 		checkNetworkConfigOld(numNetworkBuffers);
 
 		if (!hasNewNetworkBufConf(configuration)) {
 			// map old config to new one:
+			// 将旧配置映射到新配置参数上
 			networkBufMin = networkBufMax = ((long) numNetworkBuffers) * pageSize;
 		} else {
 			if (configuration.contains(TaskManagerOptions.NETWORK_NUM_BUFFERS)) {

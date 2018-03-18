@@ -154,6 +154,7 @@ public class TaskManagerServices {
 			ResourceID resourceID) throws Exception {
 
 		// pre-start checks
+		// 启动前的检查
 		checkTempDirs(taskManagerServicesConfiguration.getTmpDirPaths());
 
 		final NetworkEnvironment network = createNetworkEnvironment(taskManagerServicesConfiguration);
@@ -212,10 +213,15 @@ public class TaskManagerServices {
 	private static MemoryManager createMemoryManager(TaskManagerServicesConfiguration taskManagerServicesConfiguration) throws Exception {
 		// computing the amount of memory to use depends on how much memory is available
 		// it strictly needs to happen AFTER the network stack has been initialized
+		/**
+		 * 基于有效内存计算可使用的内存大小。
+		 * 需要在网络栈初始化后才可计算。
+		 */
 
 		MemoryType memType = taskManagerServicesConfiguration.getNetworkConfig().memoryType();
 
 		// check if a value has been configured
+		// 检查是否设置了相应的值
 		long configuredMemory = taskManagerServicesConfiguration.getConfiguredMemory();
 
 		final long memorySize;
@@ -235,6 +241,10 @@ public class TaskManagerServices {
 
 			if (memType == MemoryType.HEAP) {
 				// network buffers already allocated -> use memoryFraction of the remaining heap:
+				/**
+				 * 如果设置了最大JVM堆大小，则 max - total + free
+				 * 如果没有设置最大JVM堆大小，则 totalPhysical * 0.25 - total + free
+				 */
 				long relativeMemSize = (long) (EnvironmentInformation.getSizeOfFreeHeapMemoryWithDefrag() * memoryFraction);
 				if (preAllocateMemory) {
 					LOG.info("Using {} of the currently free heap space for managed heap memory ({} MB)." ,
@@ -265,6 +275,7 @@ public class TaskManagerServices {
 		}
 
 		// now start the memory manager
+		/** 现在启动{@code MemoryManager} */
 		final MemoryManager memoryManager;
 		try {
 			memoryManager = new MemoryManager(
@@ -290,6 +301,7 @@ public class TaskManagerServices {
 
 	/**
 	 * Creates the {@link NetworkEnvironment} from the given {@link TaskManagerServicesConfiguration}.
+	 * 创建{@code NetworkEnvironment}实例
 	 *
 	 * @param taskManagerServicesConfiguration to construct the network environment from
 	 * @return Network environment
@@ -358,6 +370,7 @@ public class TaskManagerServices {
 				new DisabledKvStateRequestStats());
 
 		// we start the network first, to make sure it can allocate its buffers first
+		// 先启动网络，确保它可以分配到内存
 		return new NetworkEnvironment(
 			networkBufferPool,
 			connectionManager,
@@ -376,6 +389,7 @@ public class TaskManagerServices {
 	/**
 	 * Calculates the amount of memory used for network buffers based on the total memory to use and
 	 * the according configuration parameters.
+	 * 基于可使用的总内存大小和配置参数，计算网络缓存可使用的内存大小
 	 *
 	 * <p>The following configuration parameters are involved:
 	 * <ul>
@@ -384,6 +398,14 @@ public class TaskManagerServices {
 	 * 	<li>{@link TaskManagerOptions#NETWORK_BUFFERS_MEMORY_MAX}, and</li>
 	 *  <li>{@link TaskManagerOptions#NETWORK_NUM_BUFFERS} (fallback if the ones above do not exist)</li>
 	 * </ul>.
+	 *
+	 * <p>两种方式：
+	 * <ul>
+	 *     <li>旧版配置：根据每个segment大小，默认32KB；
+	 *     要分配的segment的个数，默认2048；
+	 *     两者相乘作为总的网络缓存大小，且需要小于总的内存大小</li>
+	 *     <li>新版配置：网络缓存占比，最小值，最大值，以及total，total乘以占比，作为网络缓存大小，且大于最小值，小于最大值</li>
+	 * </ul>
 	 *
 	 * @param totalJavaMemorySize
 	 * 		overall available memory to use (heap and off-heap, in bytes)
@@ -396,6 +418,7 @@ public class TaskManagerServices {
 	public static long calculateNetworkBufferMemory(long totalJavaMemorySize, Configuration config) {
 		Preconditions.checkArgument(totalJavaMemorySize > 0);
 
+		// 每个segment的大小，默认32KB
 		int segmentSize = config.getInteger(TaskManagerOptions.MEMORY_SEGMENT_SIZE);
 
 		final long networkBufBytes;
@@ -421,6 +444,7 @@ public class TaskManagerServices {
 						totalJavaMemorySize + " (total JVM memory size)");
 		} else {
 			// use old (deprecated) network buffers parameter
+			// 网络缓存的个数，默认2048
 			int numNetworkBuffers = config.getInteger(TaskManagerOptions.NETWORK_NUM_BUFFERS);
 			networkBufBytes = (long) numNetworkBuffers * (long) segmentSize;
 
@@ -466,6 +490,7 @@ public class TaskManagerServices {
 
 		if (networkBufMin == networkBufMax) {
 			// fixed network buffer pool size
+			// 这种情况是网络缓存池大小是固定的
 			return networkBufMin;
 		}
 
@@ -537,6 +562,7 @@ public class TaskManagerServices {
 	/**
 	 * Calculates the amount of heap memory to use (to set via <tt>-Xmx</tt> and <tt>-Xms</tt>)
 	 * based on the total memory to use and the given configuration parameters.
+	 * 计算将要使用的堆内存大小(通过<tt>-Xmx</tt> and <tt>-Xms</tt>设置)，计算是基于要使用的总内存大小，以及配合参数
 	 *
 	 * @param totalJavaMemorySizeMB
 	 * 		overall available memory to use (heap and off-heap)
@@ -551,6 +577,7 @@ public class TaskManagerServices {
 		final long totalJavaMemorySize = totalJavaMemorySizeMB << 20; // megabytes to bytes
 
 		// split the available Java memory between heap and off-heap
+		// 在堆内和堆外上分配有效的java内存
 
 		final boolean useOffHeap = config.getBoolean(TaskManagerOptions.MEMORY_OFF_HEAP);
 
@@ -558,6 +585,7 @@ public class TaskManagerServices {
 		if (useOffHeap) {
 
 			// subtract the Java memory used for network buffers
+			// 使用在网络上的java内存
 			final long networkBufMB = calculateNetworkBufferMemory(totalJavaMemorySize, config) >> 20; // bytes to megabytes
 			final long remainingJavaMemorySizeMB = totalJavaMemorySizeMB - networkBufMB;
 
@@ -587,6 +615,7 @@ public class TaskManagerServices {
 	/**
 	 * Validates that all the directories denoted by the strings do actually exist or can be created, are proper
 	 * directories (not files), and are writable.
+	 * 校验给定的所有路径都是真实存在或者可以被创建的，并且都是路径(不是文件)，并且可以被写入的
 	 *
 	 * @param tmpDirs The array of directory paths to check.
 	 * @throws IOException Thrown if any of the directories does not exist and cannot be created or is not writable

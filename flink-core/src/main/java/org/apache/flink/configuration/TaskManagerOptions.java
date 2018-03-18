@@ -79,6 +79,8 @@ public class TaskManagerOptions {
 	/**
 	 * Amount of memory to be allocated by the task manager's memory manager (in megabytes). If not
 	 * set, a relative fraction will be allocated, as defined by {@link #MANAGED_MEMORY_FRACTION}.
+	 * {@code TaskManager}的{@code MemoryManager}分配的内存大小，单位MB。
+	 * 如果没有设置，通过{@link #MANAGED_MEMORY_FRACTION}设置一个相对比例。
 	 */
 	public static final ConfigOption<Long> MANAGED_MEMORY_SIZE =
 			key("taskmanager.memory.size")
@@ -87,6 +89,7 @@ public class TaskManagerOptions {
 	/**
 	 * Fraction of free memory allocated by the memory manager if {@link #MANAGED_MEMORY_SIZE} is
 	 * not set.
+	 * 内存比例
 	 */
 	public static final ConfigOption<Float> MANAGED_MEMORY_FRACTION =
 			key("taskmanager.memory.fraction")
@@ -95,6 +98,7 @@ public class TaskManagerOptions {
 	/**
 	 * Memory allocation method (JVM heap or off-heap), used for managed memory of the TaskManager
 	 * as well as the network buffers.
+	 * 内存分配类型，heap or off-heap，用于TaskManager管理的内存类型，以及网络缓存的内存类型
 	 **/
 	public static final ConfigOption<Boolean> MEMORY_OFF_HEAP =
 			key("taskmanager.memory.off-heap")
@@ -102,6 +106,7 @@ public class TaskManagerOptions {
 
 	/**
 	 * Whether TaskManager managed memory should be pre-allocated when the TaskManager is starting.
+	 * 当{@code TaskManager}启动的时候，内存管理器是否需要预分配内存，默认false
 	 */
 	public static final ConfigOption<Boolean> MANAGED_MEMORY_PRE_ALLOCATE =
 			key("taskmanager.memory.preallocate")

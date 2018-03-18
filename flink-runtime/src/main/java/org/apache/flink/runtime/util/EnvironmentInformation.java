@@ -114,9 +114,12 @@ public class EnvironmentInformation {
 
 	/**
 	 * The maximum JVM heap size, in bytes.
+	 * JVM最大堆大小，单位字节
 	 * 
 	 * <p>This method uses the <i>-Xmx</i> value of the JVM, if set. If not set, it returns (as
 	 * a heuristic) 1/4th of the physical memory size.
+	 * 如果设置了 -Xmx，则使用其设置值。
+	 * 如果没有设置，返回物理内存的 1/4
 	 * 
 	 * @return The maximum JVM heap size, in bytes.
 	 */
@@ -127,9 +130,11 @@ public class EnvironmentInformation {
 			return maxMemory;
 		} else {
 			// max JVM heap size is not set - use the heuristic to use 1/4th of the physical memory
+			/** 最大JVM堆大小没有设置 - 物理内存的四分之一 */
 			final long physicalMemory = Hardware.getSizeOfPhysicalMemory();
 			if (physicalMemory != -1) {
 				// got proper value for physical memory
+				/** 获取合适的物理内存 */
 				return physicalMemory / 4;
 			} else {
 				throw new RuntimeException("Could not determine the amount of free memory.\n" +
@@ -140,10 +145,12 @@ public class EnvironmentInformation {
 
 	/**
 	 * Gets an estimate of the size of the free heap memory.
+	 * 获取空闲堆内存的一个估算大小
 	 * 
 	 * NOTE: This method is heavy-weight. It triggers a garbage collection to reduce fragmentation and get
 	 * a better estimate at the size of free memory. It is typically more accurate than the plain version
 	 * {@link #getSizeOfFreeHeapMemory()}.
+	 * 注意：该方法是一个重量级的操作。它触发了一次GC，以此来减少内存碎片，并获取一个更准确的空闲内存估算值。
 	 * 
 	 * @return An estimate of the size of the free heap memory, in bytes.
 	 */

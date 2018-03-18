@@ -58,6 +58,7 @@ public class Hardware {
 
 	/**
 	 * Returns the size of the physical memory in bytes.
+	 * 返回物理内存的字节大小
 	 * 
 	 * @return the size of the physical memory in bytes or {@code -1}, if
 	 *         the size could not be determined.

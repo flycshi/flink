@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 
 /**
  * Configuration object for the network stack.
+ * 网络栈的配置对象
  */
 public class NetworkEnvironmentConfiguration {
 

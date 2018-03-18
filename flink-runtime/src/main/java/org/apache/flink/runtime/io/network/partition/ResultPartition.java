@@ -45,18 +45,28 @@ import static org.apache.flink.util.Preconditions.checkState;
 
 /**
  * A result partition for data produced by a single task.
+ * 一个task产生的数据的一个结果分区
  *
  * <p> This class is the runtime part of a logical {@link IntermediateResultPartition}. Essentially,
  * a result partition is a collection of {@link Buffer} instances. The buffers are organized in one
  * or more {@link ResultSubpartition} instances, which further partition the data depending on the
  * number of consuming tasks and the data {@link DistributionPattern}.
  *
+ * 这个类是一个逻辑{@link IntermediateResultPartition}的运行时部分。
+ * 实际上，结果分区是{@link Buffer}实例的集合。
+ * 缓冲区被组织在一个或多个{@link ResultSubpartition}实例中，它根据数据消费者的数量和数据{@link DistributionPattern}对数据进行进一步划分。
+ *
  * <p> Tasks, which consume a result partition have to request one of its subpartitions. The request
  * happens either remotely (see {@link RemoteInputChannel}) or locally (see {@link LocalInputChannel})
  *
+ * 消费一个结果分区的任务必须请求其中一个分区。
+ * 该请求可以远程执行(参见{@link RemoteInputChannel})或本地(参见{@link LocalInputChannel})
+ *
  * <h2>Life-cycle</h2>
+ * 生命周期
  *
  * The life-cycle of each result partition has three (possibly overlapping) phases:
+ * 每个结果分区的生命周期有三个(可能重叠)阶段
  * <ol>
  * <li><strong>Produce</strong>: </li>
  * <li><strong>Consume</strong>: </li>
@@ -64,11 +74,17 @@ import static org.apache.flink.util.Preconditions.checkState;
  * </ol>
  *
  * <h2>Lazy deployment and updates of consuming tasks</h2>
+ * 消费任务的延迟部署和更新
  *
  * Before a consuming task can request the result, it has to be deployed. The time of deployment
  * depends on the PIPELINED vs. BLOCKING characteristic of the result partition. With pipelined
  * results, receivers are deployed as soon as the first buffer is added to the result partition.
  * With blocking results on the other hand, receivers are deployed after the partition is finished.
+ * 在一个消费任务可以请求结果之前，它必须被部署好。
+ * 部署的时间取决于结果分区的 PIPELINED vs. BLOCKING 特性。
+ * 使用流水线结果，当第一个缓冲区被添加到结果分区时，就会部署接收器。
+ * 另一方面，使用阻塞结果，在分区完成之后，才会部署接收器
+ *
  *
  * <h2>Buffer management</h2>
  *

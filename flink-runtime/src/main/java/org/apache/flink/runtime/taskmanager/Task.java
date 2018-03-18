@@ -236,7 +236,10 @@ public class Task implements Runnable, TaskActions {
 	 */
 	private final MemoryManager memoryManager;
 
-	/** The I/O manager to be used by this task */
+	/**
+	 * The I/O manager to be used by this task
+	 * 这个task使用的 I/O 管理器
+	 */
 	private final IOManager ioManager;
 
 	/** The BroadcastVariableManager to be used by this task */
@@ -473,6 +476,7 @@ public class Task implements Runnable, TaskActions {
 		invokableHasBeenCanceled = new AtomicBoolean(false);
 
 		// finally, create the executing thread, but do not start it
+		// 最后，创建执行线程，但是不启动它
 		executingThread = new Thread(TASK_THREADS_GROUP, this, taskNameWithSubtask);
 	}
 

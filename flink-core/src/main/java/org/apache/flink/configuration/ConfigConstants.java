@@ -1318,6 +1318,8 @@ public final class ConfigConstants {
 	/**
 	 * The default network port the task manager expects to receive transfer envelopes on. The {@code 0} means that
 	 * the TaskManager searches for a free port.
+	 * {@code TaskManager}期望接收传输数据的默认网络端口。
+	 * {@code 0}意味着{@code TaskManager}会搜寻一个空闲端口
 	 */
 	public static final int DEFAULT_TASK_MANAGER_DATA_PORT = 0;
 

@@ -125,6 +125,7 @@ public final class FileUtils {
 
 	/**
 	 * Deletes the given directory recursively.
+	 * 递归删除给定的目录
 	 * 
 	 * <p>If the directory does not exist, this does not throw an exception, but simply does nothing.
 	 * It considers the fact that a directory-to-be-deleted is not present a success.
