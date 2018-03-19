@@ -28,12 +28,17 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * A thread factory intended for use by critical thread pools. Critical thread pools here
  * mean thread pools that support Flink's core coordination and processing work, and which
  * must not simply cause unnoticed errors.
- * 用于重要线程池的一个线程工厂。
+ * 准备被严格线程池使用的一个线程工厂。
+ * 这里的严格线程池是指支持Flink的核心协调和处理工作的线程池, 并且必须不能导致被忽视的错误。
+ *
  * 
  * <p>The thread factory can be given an {@link UncaughtExceptionHandler} for the threads.
  * If no handler is explicitly given, the default handler for uncaught exceptions will log
  * the exceptions and kill the process afterwards. That guarantees that critical exceptions are
  * not accidentally lost and leave the system running in an inconsistent state.
+ * 线程池可以给线程提供一个{@code UncaughtExceptionHandler}。
+ * 如果没有具备被显式提供, 默认的句柄会打印日志, 并kill掉进程。
+ * 保障不会丢失故障, 然后让系统在不一致状态下运行。
  * 
  * <p>Threads created by this factory are all called '(pool-name)-thread-n', where
  * <i>(pool-name)</i> is configurable, and <i>n</i> is an incrementing number.

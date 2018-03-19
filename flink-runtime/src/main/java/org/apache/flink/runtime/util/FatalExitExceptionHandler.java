@@ -23,9 +23,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handler for uncaught exceptions that will log the exception and kill the process afterwards.
+ * 未捕获异常的处理句柄, 会将异常打日志, 并接着kill掉进程
  *
  * <p>This guarantees that critical exceptions are not accidentally lost and leave the system
  * running in an inconsistent state.
+ * 这个保障了不会丢失严重的异常, 然后让系统在不一致的状态下运行。
  */
 public final class FatalExitExceptionHandler implements Thread.UncaughtExceptionHandler {
 
