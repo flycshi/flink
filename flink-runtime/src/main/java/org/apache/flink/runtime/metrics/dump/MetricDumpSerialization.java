@@ -49,6 +49,7 @@ import static org.apache.flink.runtime.metrics.dump.QueryScopeInfo.INFO_CATEGORY
 
 /**
  * Utility class for the serialization of metrics.
+ * 用来序列化metrics的工具类
  */
 public class MetricDumpSerialization {
 
@@ -59,21 +60,27 @@ public class MetricDumpSerialization {
 
 	/**
 	 * This class encapsulates all serialized metrics and a count for each metric type.
+	 * 这个类封装了所有的序列化的metrics, 以及每个metric类型的数量
 	 *
 	 * <p>The counts are stored separately from the metrics since the final count for any given type can only be
 	 * determined after all metrics of that type were serialized. Storing them together in a single byte[] would
 	 * require an additional copy of all serialized metrics, as you would first have to serialize the metrics into a
 	 * temporary buffer to calculate the counts, write the counts to the final output and copy all metrics from the
 	 * temporary buffer.
+	 * 每个metrics类型的数量的与metrics独立存储是因为, 对于任何类型的最终统计只有在所有这个类型的metrics被序列化后才能确定。
+	 * 将他们存储在一个独立的字节数组中, 将需要一个额外的所有序列化的metrics的拷贝, 因为你需要首先将metrics序列化到一个临时的缓存来计算统计,
+	 * 将统计写入到最终的输出, 然后从临时缓存中拷贝所有的metrics
 	 *
 	 * <p>Note that while one could implement the serialization in such a way so that at least 1 byte (a validity flag)
 	 * is written for each metric, this would require more bandwidth due to the sheer number of metrics.
+	 * 注意，虽然可以以这样一种方式实现序列化，这样至少为每个指标编写了1个字节(有效性标志)，但这需要更多的带宽，这是由于大量的度量标准造成的。
 	 */
 	public static class MetricSerializationResult implements Serializable {
 
 		private static final long serialVersionUID = 6928770855951536906L;
 
 		public final byte[] serializedMetrics;
+		/** Counter 度量的数量 */
 		public final int numCounters;
 		public final int numGauges;
 		public final int numMeters;
@@ -102,10 +109,12 @@ public class MetricDumpSerialization {
 	 */
 	public static class MetricDumpSerializer {
 
+		/** 创建一个起始字节数组大小为32KB的输出序列化器 */
 		private DataOutputSerializer buffer = new DataOutputSerializer(1024 * 32);
 
 		/**
 		 * Serializes the given metrics and returns the resulting byte array.
+		 * 序列化给定的metrics, 并返回结果字节数组。
 		 *
 		 * <p>Should a {@link Metric} accessed in this method throw an exception it will be omitted from the returned
 		 * {@link MetricSerializationResult}.
@@ -114,6 +123,9 @@ public class MetricDumpSerialization {
 		 * is partially corrupted. Such a result can be deserialized safely by
 		 * {@link MetricDumpDeserializer#deserialize(MetricSerializationResult)}; however only metrics that were
 		 * fully serialized before the failure will be returned.
+		 * 如果然后原生类型或字符串的序列化失败了, 那么返回的{@code MetricSerializationResult}是部分损坏的。
+		 * 这样的一个结果, 可以被{@code MetricDumpDeserializer#deserialize(MetricSerializationResult)}安全的反序列回来,
+		 * 当然只有在失败发生前被完全序列化的metrics才会被返回。
 		 *
 		 * @param counters   counters to serialize
 		 * @param gauges     gauges to serialize
@@ -275,6 +287,7 @@ public class MetricDumpSerialization {
 	public static class MetricDumpDeserializer {
 		/**
 		 * De-serializes metrics from the given byte array and returns them as a list of {@link MetricDump}.
+		 * 从给定的字节数组反序列化metrics, 并返回一个MetricDump列表
 		 *
 		 * @param data serialized metrics
 		 * @return A list containing the deserialized metrics.

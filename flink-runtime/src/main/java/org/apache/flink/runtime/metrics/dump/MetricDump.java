@@ -22,9 +22,13 @@ import org.apache.flink.util.Preconditions;
 
 /**
  * A container for a dumped metric that contains the scope, name and value(s) of the metric.
+ * 包含metric的scope、name 和 value的一个dumped metric的容器
  */
 public abstract class MetricDump {
-	/** Categories to be returned by {@link MetricDump#getCategory()} to avoid instanceof checks. */
+	/**
+	 * Categories to be returned by {@link MetricDump#getCategory()} to avoid instanceof checks.
+	 * {@link MetricDump#getCategory()}返回的类目, 用来避免类型检查
+	 */
 	public static final byte METRIC_CATEGORY_COUNTER = 0;
 	public static final byte METRIC_CATEGORY_GAUGE = 1;
 	public static final byte METRIC_CATEGORY_HISTOGRAM = 2;

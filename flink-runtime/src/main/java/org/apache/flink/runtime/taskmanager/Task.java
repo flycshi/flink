@@ -286,7 +286,10 @@ public class Task implements Runnable, TaskActions {
 	/** The thread that executes the task */
 	private final Thread executingThread;
 
-	/** Parent group for all metrics of this task */
+	/**
+	 * Parent group for all metrics of this task
+	 * 这个任务的所有统计的父组
+	 */
 	private final TaskMetricGroup metrics;
 
 	/** Partition producer state checker to request partition states from */
@@ -1053,6 +1056,7 @@ public class Task implements Runnable, TaskActions {
 
 	/**
 	 * Try to transition the execution state from the current state to the new state.
+	 * 尝试将执行状态从当前状态转换成新的状态
 	 *
 	 * @param currentState of the execution
 	 * @param newState of the execution
@@ -1068,7 +1072,7 @@ public class Task implements Runnable, TaskActions {
 	 * @param currentState of the execution
 	 * @param newState of the execution
 	 * @param cause of the transition change or null
-	 * @return true if the transition was successful, otherwise false
+	 * @return true if the transition was successful, otherwise false	转换成功为true, 否则为false
 	 */
 	private boolean transitionState(ExecutionState currentState, ExecutionState newState, Throwable cause) {
 		if (STATE_UPDATER.compareAndSet(this, currentState, newState)) {

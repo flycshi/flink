@@ -36,8 +36,10 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Special {@link org.apache.flink.metrics.MetricGroup} representing a Flink runtime Task.
+ * 描述一个Flink运行时任务的特定{@code MetricGroup}
  *
  * <p>Contains extra logic for adding operators.
+ * 包含添加操作符的额外逻辑
  */
 @Internal
 public class TaskMetricGroup extends ComponentMetricGroup<TaskManagerJobMetricGroup> {

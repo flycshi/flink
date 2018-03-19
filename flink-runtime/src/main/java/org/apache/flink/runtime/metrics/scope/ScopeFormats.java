@@ -23,6 +23,7 @@ import org.apache.flink.configuration.MetricOptions;
 
 /**
  * A container for component scope formats.
+ * 组件范围格式的容器
  */
 public final class ScopeFormats {
 
@@ -37,6 +38,7 @@ public final class ScopeFormats {
 
 	/**
 	 * Creates all scope formats, based on the given scope format strings.
+	 * 基于给定的范围格式字符串, 创建所有的范围格式
 	 */
 	private ScopeFormats(
 			String jobManagerFormat,

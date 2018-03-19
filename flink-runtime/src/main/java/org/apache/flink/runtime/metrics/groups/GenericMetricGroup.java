@@ -26,10 +26,14 @@ import org.apache.flink.runtime.metrics.dump.QueryScopeInfo;
 /**
  * A simple named {@link org.apache.flink.metrics.MetricGroup} that is used to hold
  * subgroups of metrics.
+ * 一个简单的被命名的{@code MetricGroup}, 被用来维护metrics的子groups
  */
 @Internal
 public class GenericMetricGroup extends AbstractMetricGroup<AbstractMetricGroup<?>> {
-	/** The name of this group. */
+	/**
+	 * The name of this group.
+	 * 这个group的名称
+	 */
 	private String name;
 
 	public GenericMetricGroup(MetricRegistry registry, AbstractMetricGroup parent, String name) {

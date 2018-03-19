@@ -34,6 +34,8 @@ import java.util.Set;
 
 /**
  * A configuration that manages a subset of keys with a common prefix from a given configuration.
+ * 在一个给定的配置集合中, 通过一个公用的前缀, 来管理一个key的子集, 对应的配置
+ *
  */
 public final class DelegatingConfiguration extends Configuration {
 

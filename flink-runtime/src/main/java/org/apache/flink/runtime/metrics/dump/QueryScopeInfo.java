@@ -20,16 +20,23 @@ package org.apache.flink.runtime.metrics.dump;
 
 /**
  * Container for scope related information as required by the MetricQueryService.
+ * 范围相关信息的容器
  */
 public abstract class QueryScopeInfo {
-	/** Categories to be returned by {@link QueryScopeInfo#getCategory()} to avoid instanceof checks. */
+	/**
+	 * Categories to be returned by {@link QueryScopeInfo#getCategory()} to avoid instanceof checks.
+	 * {@link QueryScopeInfo#getCategory()}返回的类别, 为了避免类型检查
+	 */
 	public static final byte INFO_CATEGORY_JM = 0;
 	public static final byte INFO_CATEGORY_TM = 1;
 	public static final byte INFO_CATEGORY_JOB = 2;
 	public static final byte INFO_CATEGORY_TASK = 3;
 	public static final byte INFO_CATEGORY_OPERATOR = 4;
 
-	/** The remaining scope not covered by specific fields. */
+	/**
+	 * The remaining scope not covered by specific fields.
+	 * 未被特定字段覆盖的剩余范围。
+	 */
 	public final String scope;
 
 	private QueryScopeInfo(String scope) {
@@ -46,6 +53,7 @@ public abstract class QueryScopeInfo {
 
 	/**
 	 * Returns the category for this QueryScopeInfo.
+	 * 返回这个QueryScopeInfo的类别
 	 *
 	 * @return category
      */

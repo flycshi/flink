@@ -49,6 +49,7 @@ public interface Counter extends Metric {
 
 	/**
 	 * Returns the current count.
+	 * 返回当前的计数值
 	 *
 	 * @return current count
 	 */

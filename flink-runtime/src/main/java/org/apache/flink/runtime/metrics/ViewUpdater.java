@@ -30,6 +30,7 @@ import static org.apache.flink.metrics.View.UPDATE_INTERVAL_SECONDS;
 
 /**
  * The ViewUpdater is responsible for updating all metrics that implement the {@link View} interface.
+ * {@code ViewUpdater}负责更新所有实现了{@code View}接口的metrics
  */
 public class ViewUpdater {
 	private final Set<View> toAdd = new HashSet<>();
@@ -43,6 +44,7 @@ public class ViewUpdater {
 
 	/**
 	 * Notifies this ViewUpdater of a new metric that should be regularly updated.
+	 * 通知这个{@code ViewUpdater}, 一个新的metric应该被定期更新
 	 *
 	 * @param view metric that should be regularly updated
 	 */
@@ -54,6 +56,7 @@ public class ViewUpdater {
 
 	/**
 	 * Notifies this ViewUpdater of a metric that should no longer be regularly updated.
+	 * 告诉这个{@code ViewUpdater}, 一个metric不应该再被定期更新了
 	 *
 	 * @param view metric that should no longer be regularly updated
 	 */
@@ -65,6 +68,7 @@ public class ViewUpdater {
 
 	/**
 	 * The TimerTask doing the actual updating.
+	 * 进行真正更新的定时任务
 	 */
 	private static class ViewUpdaterTask extends TimerTask {
 		private final Object lock;

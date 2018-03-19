@@ -27,6 +27,8 @@ public class MetricOptions {
 	/**
 	 * The list of named reporters. Names are defined here and per-reporter configs
 	 * are given with the reporter config prefix and the reporter name.
+	 * 被命名的报告器列表。
+	 * 名称是在这里定义的, 每个报告器被配置了前缀和名称
 	 *
 	 * Example:
 	 * <pre>{@code
@@ -43,12 +45,19 @@ public class MetricOptions {
 		key("metrics.reporters")
 			.noDefaultValue();
 
-	/** The delimiter used to assemble the metric identifier. */
+	/**
+	 * The delimiter used to assemble the metric identifier.
+	 * 用来组装度量标识的分隔符
+	 */
 	public static final ConfigOption<String> SCOPE_DELIMITER =
 		key("metrics.scope.delimiter")
 			.defaultValue(".");
 
-	/** The scope format string that is applied to all metrics scoped to a JobManager. */
+	/**
+	 * The scope format string that is applied to all metrics scoped to a JobManager.
+	 * 应用到一个{@code JobManager}上的所有度量范围的范围格式
+	 *
+	 */
 	public static final ConfigOption<String> SCOPE_NAMING_JM =
 		key("metrics.scope.jm")
 			.defaultValue("<host>.jobmanager");

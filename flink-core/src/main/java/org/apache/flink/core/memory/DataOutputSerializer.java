@@ -30,21 +30,27 @@ import java.util.Arrays;
 
 /**
  * A simple and efficient serializer for the {@link java.io.DataOutput} interface.
+ * 一个简单高效的序列化器
  */
 public class DataOutputSerializer implements DataOutputView {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DataOutputSerializer.class);
 
+	/** 缓存清理的阈值, 缓存大小大于这个阈值, 就会被清理掉 */
 	private static final int PRUNE_BUFFER_THRESHOLD = 5 * 1024 * 1024;
 
 	// ------------------------------------------------------------------------
 
+	/** 缓存数组的初始字节数组, 也就是buffer的起始字节数组 */
 	private final byte[] startBuffer;
 
+	/** 缓存数据的字节数组 */
 	private byte[] buffer;
 
+	/** 表示当前缓存数据的大小, 也是当前在buffer中写入数据的位置 */
 	private int position;
 
+	/** 包裹在buffer上的ByteBuffer */
 	private ByteBuffer wrapper;
 
 	// ------------------------------------------------------------------------
@@ -214,13 +220,28 @@ public class DataOutputSerializer implements DataOutputView {
 		this.buffer[this.position++] = (byte) (v & 0xff);
 	}
 
+	/**
+	 * UTF-8编码规则：
+	 * 1、如果只有一个字节则其最高二进制位为0；
+	 * 2、如果是多字节，其第一个字节从最高位开始，连续的二进制位值为1的个数决定了其编码的字节数，其余各字节均以10开头
+	 *
+	 * Unicode			bit位	UTF-8							byte数
+	 * 0000 ~ 007F		0~7		0XXX XXXX						1
+	 * 0080 ~ 07FF		8~11	110X XXXX 10XX XXXX				2
+	 * 0800 ~ FFFF		12~16	1110 XXXX 10XX XXXX 10XX XXXX	3
+	 *
+	 * 在数据压缩时, 应该是把每个字节开头的 0、110、10 给压缩掉了, 所以在下述序列化时, 才出现了右移6位、12位的操作
+     */
 	@Override
 	public void writeUTF(String str) throws IOException {
 		int strlen = str.length();
 		int utflen = 0;
 		int c;
 
-		/* use charAt instead of copying String to char array */
+		/**
+		 * use charAt instead of copying String to char array
+		 * 使用 charAt 替代拷贝字符串到字符数组
+		 */
 		for (int i = 0; i < strlen; i++) {
 			c = str.charAt(i);
 			if ((c >= 0x0001) && (c <= 0x007F)) {
@@ -258,7 +279,6 @@ public class DataOutputSerializer implements DataOutputView {
 			c = str.charAt(i);
 			if ((c >= 0x0001) && (c <= 0x007F)) {
 				bytearr[count++] = (byte) c;
-
 			} else if (c > 0x07FF) {
 				bytearr[count++] = (byte) (0xE0 | ((c >> 12) & 0x0F));
 				bytearr[count++] = (byte) (0x80 | ((c >>  6) & 0x3F));
@@ -273,16 +293,19 @@ public class DataOutputSerializer implements DataOutputView {
 	}
 
 	private void resize(int minCapacityAdd) throws IOException {
+		/** 在buffer长度的2倍, 和buffer长度+minCapacityAdd, 这两者中的最大值, 作为新的长度 */
 		int newLen = Math.max(this.buffer.length * 2, this.buffer.length + minCapacityAdd);
 		byte[] nb;
 		try {
 			nb = new byte[newLen];
 		}
 		catch (NegativeArraySizeException e) {
+			/** int 是32位的, 最大是4GB, 如果这里抛异常, 那说明是newLen大于最大整数了, 也就是buffer当前长度已经大于2G了 */
 			throw new IOException("Serialization failed because the record length would exceed 2GB (max addressable array size in Java).");
 		}
 		catch (OutOfMemoryError e) {
 			// this was too large to allocate, try the smaller size (if possible)
+			/** 分配了太大的内存空间了, 尝试小点的大小, 如果可能的话, 也就是 buffer.length * 2 > buffer.length + minCapacityAdd 的情况 */
 			if (newLen > this.buffer.length + minCapacityAdd) {
 				newLen = this.buffer.length + minCapacityAdd;
 				try {
@@ -290,6 +313,7 @@ public class DataOutputSerializer implements DataOutputView {
 				}
 				catch (OutOfMemoryError ee) {
 					// still not possible. give an informative exception message that reports the size
+					/** 如果还是不行, 那就只能抛出异常, 报告大小 */
 					throw new IOException("Failed to serialize element. Serialized size (> "
 							+ newLen + " bytes) exceeds JVM heap space", ee);
 				}
@@ -304,6 +328,7 @@ public class DataOutputSerializer implements DataOutputView {
 		this.wrapper = ByteBuffer.wrap(this.buffer);
 	}
 
+	/** 在buffer这个字节数组中, 跳过numBytes个, 不写入新的数据 */
 	@Override
 	public void skipBytesToWrite(int numBytes) throws IOException {
 		if (buffer.length - this.position < numBytes){
@@ -313,6 +338,7 @@ public class DataOutputSerializer implements DataOutputView {
 		this.position += numBytes;
 	}
 
+	/** 从source中读入numBytes个字节, 写入buffer中, 如果buffer放的下的话, 如果放不下, 就跑出eof异常 */
 	@Override
 	public void write(DataInputView source, int numBytes) throws IOException {
 		if (buffer.length - this.position < numBytes){

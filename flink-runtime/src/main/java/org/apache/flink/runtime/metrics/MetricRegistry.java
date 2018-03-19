@@ -27,11 +27,13 @@ import javax.annotation.Nullable;
 
 /**
  * Interface for a metric registry.
+ * 一个度量注册器的接口
  */
 public interface MetricRegistry {
 
 	/**
 	 * Returns the global delimiter.
+	 * 返回全局分隔符
 	 *
 	 * @return global delimiter
 	 */
@@ -39,6 +41,7 @@ public interface MetricRegistry {
 
 	/**
 	 * Returns the configured delimiter for the reporter with the given index.
+	 * 返回给定索引对应的报告器的配置分隔符
 	 *
 	 * @param index index of the reporter whose delimiter should be used
 	 * @return configured reporter delimiter, or global delimiter if index is invalid
@@ -47,11 +50,13 @@ public interface MetricRegistry {
 
 	/**
 	 * Returns the number of registered reporters.
+	 * 返回注册的报告器的数量
 	 */
 	int getNumberReporters();
 
 	/**
 	 * Registers a new {@link Metric} with this registry.
+	 * 在这个注册器中注册一个新的{@code Metric}
 	 *
 	 * @param metric      the metric that was added
 	 * @param metricName  the name of the metric
@@ -61,6 +66,7 @@ public interface MetricRegistry {
 
 	/**
 	 * Un-registers the given {@link Metric} with this registry.
+	 * 注销指定的{@code Metric}
 	 *
 	 * @param metric      the metric that should be removed
 	 * @param metricName  the name of the metric
@@ -70,6 +76,7 @@ public interface MetricRegistry {
 
 	/**
 	 * Returns the scope formats.
+	 * 返回范围格式
 	 *
 	 * @return scope formats
 	 */
@@ -77,6 +84,7 @@ public interface MetricRegistry {
 
 	/**
 	 * Returns the path of the {@link MetricQueryService} or null, if none is started.
+	 * 返回{@code MetricQueryService}的路径, 如果没有启动, 则返回null
 	 *
 	 * @return Path of the MetricQueryService or null, if none is started
 	 */

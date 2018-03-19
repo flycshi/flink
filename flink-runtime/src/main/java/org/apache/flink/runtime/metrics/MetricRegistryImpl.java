@@ -18,6 +18,10 @@
 
 package org.apache.flink.runtime.metrics;
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Kill;
+import akka.pattern.Patterns;
 import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.ConfigConstants;
@@ -36,16 +40,13 @@ import org.apache.flink.runtime.metrics.groups.FrontMetricGroup;
 import org.apache.flink.runtime.metrics.scope.ScopeFormats;
 import org.apache.flink.runtime.util.ExecutorThreadFactory;
 import org.apache.flink.util.Preconditions;
-
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.Kill;
-import akka.pattern.Patterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.FiniteDuration;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
@@ -53,13 +54,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.FiniteDuration;
-
 /**
  * A MetricRegistry keeps track of all registered {@link Metric Metrics}. It serves as the
  * connection between {@link MetricGroup MetricGroups} and {@link MetricReporter MetricReporters}.
+ * 一个{@code MetricRegistry}跟踪所有注册的{@code Metric}。
+ * 它作为{@code MetricGroup}和{@code MetricReporter}之间的桥梁
  */
 public class MetricRegistryImpl implements MetricRegistry {
 	static final Logger LOG = LoggerFactory.getLogger(MetricRegistryImpl.class);
@@ -83,12 +82,14 @@ public class MetricRegistryImpl implements MetricRegistry {
 
 	/**
 	 * Creates a new MetricRegistry and starts the configured reporter.
+	 * 构建一个新的{@code MetricRegistry}, 并启动配置的reporter
 	 */
 	public MetricRegistryImpl(MetricRegistryConfiguration config) {
 		this.scopeFormats = config.getScopeFormats();
 		this.globalDelimiter = config.getDelimiter();
 
 		// second, instantiate any custom configured reporters
+		// 第二步, 实例化任何用户配置的reporters
 		this.reporters = new ArrayList<>();
 
 		List<Tuple2<String, Configuration>> reporterConfigurations = config.getReporterConfigurations();

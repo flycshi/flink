@@ -42,23 +42,34 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Abstract {@link MetricGroup} that contains key functionality for adding metrics and groups.
+ * 包含了添加metrics和groups的关键功能的抽象{@code MetricGroup}
  *
  * <p><b>IMPORTANT IMPLEMENTATION NOTE</b>
+ * 重要的实现注意
  *
  * <p>This class uses locks for adding and removing metrics objects. This is done to
  * prevent resource leaks in the presence of concurrently closing a group and adding
  * metrics and subgroups.
+ * 这个类使用锁来进行添加和移除度量对象。
+ * 这样做是为了防止在并发关闭group和添加metrics和子group时的资源泄露。
+ *
  * Since closing groups recursively closes the subgroups, the lock acquisition order must
  * be strictly from parent group to subgroup. If at any point, a subgroup holds its group
  * lock and calls a parent method that also acquires the lock, it will create a deadlock
  * condition.
+ * 由于关闭组会递归地关闭子组, 因此锁捕获顺序必须严格地从父组到子组。
+ * 如果在任何点, 一个子组持有它的组锁, 同时调用了一个父类方法, 也需要请求这个锁, 将导致死锁。
  *
  * <p>An AbstractMetricGroup can be {@link #close() closed}. Upon closing, the group de-register all metrics
  * from any metrics reporter and any internal maps. Note that even closed metrics groups
  * return Counters, Gauges, etc to the code, to prevent exceptions in the monitored code.
  * These metrics simply do not get reported any more, when created on a closed group.
+ * 一个{@code AbstractMetricGroup}可以被关闭。
+ * 在结束时, 组会注销来自所有指标报告器和任何内部映射的所有指标。
+ * 请注意，即使是关闭的{@code MetricGroup}也会返回计数器、测量器等, 以防止被监控代码中的异常。
+ * 当在一个被关闭的组上创建时, 这些度量就不再被报告了。
  *
- * @param <A> The type of the parent MetricGroup
+ * @param <A> The type of the parent MetricGroup	父{@code MetricGroup}的类型
  */
 @Internal
 public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> implements MetricGroup {
@@ -67,37 +78,68 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 
 	// ------------------------------------------------------------------------
 
-	/** The parent group containing this group. */
+	/**
+	 * The parent group containing this group.
+	 * 包含这个group的父group
+	 */
 	protected final A parent;
 
-	/** The map containing all variables and their associated values, lazily computed. */
+	/**
+	 * The map containing all variables and their associated values, lazily computed.
+	 * 包含了所有变量和他们的关联值的map, 延迟计算
+	 */
 	protected volatile Map<String, String> variables;
 
-	/** The registry that this metrics group belongs to. */
+	/**
+	 * The registry that this metrics group belongs to.
+	 * 这个{@code MetricGroup}归属的注册器
+	 */
 	protected final MetricRegistry registry;
 
-	/** All metrics that are directly contained in this group. */
+	/**
+	 * All metrics that are directly contained in this group.
+	 * 直接包含在该group中的所有的metrics
+	 */
 	private final Map<String, Metric> metrics = new HashMap<>();
 
-	/** All metric subgroups of this group. */
+	/**
+	 * All metric subgroups of this group.
+	 * 这个group中的所有子MetricGroup
+	 */
 	private final Map<String, AbstractMetricGroup> groups = new HashMap<>();
 
-	/** The metrics scope represented by this group.
-	 *  For example ["host-7", "taskmanager-2", "window_word_count", "my-mapper" ]. */
+	/**
+	 * The metrics scope represented by this group.
+	 * For example ["host-7", "taskmanager-2", "window_word_count", "my-mapper" ].
+	 * 表示这个组的度量范围
+	 * 比如 ["host-7", "taskmanager-2", "window_word_count", "my-mapper" ]
+	 */
 	private final String[] scopeComponents;
 
-	/** Array containing the metrics scope represented by this group for each reporter, as a concatenated string, lazily computed.
-	 * For example: "host-7.taskmanager-2.window_word_count.my-mapper" */
+	/**
+	 * Array containing the metrics scope represented by this group for each reporter, as a concatenated string, lazily computed.
+	 * For example: "host-7.taskmanager-2.window_word_count.my-mapper"
+	 * 包含由这个组代表的每个报告器的度量范围的数组，作为连接字符串，延迟计算。
+	 */
 	private final String[] scopeStrings;
 
-	/** The logical metrics scope represented by this group, as a concatenated string, lazily computed.
-	 * For example: "taskmanager.job.task" */
+	/**
+	 * The logical metrics scope represented by this group, as a concatenated string, lazily computed.
+	 * For example: "taskmanager.job.task"
+	 * 这个group表示的逻辑度量范围, 作为一个连接字符, 延迟计算
+	 * 比如: "taskmanager.job.task"
+	 */
 	private String logicalScopeString;
 
-	/** The metrics query service scope represented by this group, lazily computed. */
+	/**
+	 * The metrics query service scope represented by this group, lazily computed.
+	 */
 	protected QueryScopeInfo queryServiceScopeInfo;
 
-	/** Flag indicating whether this group has been closed. */
+	/**
+	 * Flag indicating whether this group has been closed.
+	 * 标识这个group是否背关闭的flag
+	 */
 	private volatile boolean closed;
 
 	// ------------------------------------------------------------------------
@@ -138,6 +180,7 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 	/**
 	 * Returns the logical scope of this group, for example
 	 * {@code "taskmanager.job.task"}.
+	 * 返回这个group的逻辑范围, 比如 {@code "taskmanager.job.task"}
 	 *
 	 * @param filter character filter which is applied to the scope components
 	 * @return logical scope
@@ -155,9 +198,10 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 
 	/**
 	 * Returns the name for this group, meaning what kind of entity it represents, for example "taskmanager".
+	 * 返回这个group的名称, 也就是它表示的什么类型的实体, 比如 "taskmanager"
 	 *
-	 * @param filter character filter which is applied to the name
-	 * @return logical name for this group
+	 * @param filter character filter which is applied to the name	应用到名称上的字符过滤器
+	 * @return logical name for this group	这个group的逻辑名称
 	 */
 	protected abstract String getGroupName(CharacterFilter filter);
 
@@ -186,6 +230,7 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 
 	/**
 	 * Creates the metric query service scope for this group.
+	 * 为这个group构建 metric query service scope
 	 *
 	 * @param filter character filter
 	 * @return query service scope
@@ -218,6 +263,8 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 	/**
 	 * Returns the fully qualified metric name using the configured delimiter for the reporter with the given index, for example
 	 * {@code "host-7.taskmanager-2.window_word_count.my-mapper.metricName"}.
+	 * 为给定索引的报告者, 使用配置的分隔符, 构造全限定metric名称, 并返回。
+	 * 比如, {@code "host-7.taskmanager-2.window_word_count.my-mapper.metricName"}。
 	 *
 	 * @param metricName metric name
 	 * @param filter character filter which is applied to the scope components if not null.
@@ -253,6 +300,7 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 
 	// ------------------------------------------------------------------------
 	//  Closing
+	//  关闭
 	// ------------------------------------------------------------------------
 
 	public void close() {
@@ -261,12 +309,14 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 				closed = true;
 
 				// close all subgroups
+				// 关闭所有的子groups
 				for (AbstractMetricGroup group : groups.values()) {
 					group.close();
 				}
 				groups.clear();
 
 				// un-register all directly contained metrics
+				// 注销所有直接包含的metrics
 				for (Map.Entry<String, Metric> metric : metrics.entrySet()) {
 					registry.unregister(metric.getValue(), metric.getKey(), this);
 				}
@@ -281,6 +331,7 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 
 	// -----------------------------------------------------------------------------------------------------------------
 	//  Metrics
+	//  度量
 	// -----------------------------------------------------------------------------------------------------------------
 
 	@Override
@@ -340,6 +391,7 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 	/**
 	 * Adds the given metric to the group and registers it at the registry, if the group
 	 * is not yet closed, and if no metric with the same name has been registered before.
+	 * 如果group还没有被关闭, 并且没有相同名称的metric被注册过, 则将给定的metric添加到group, 并注册到registry。
 	 *
 	 * @param name the name to register the metric under
 	 * @param metric the metric to register
@@ -350,19 +402,27 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 			return;
 		}
 		// add the metric only if the group is still open
+		// 只有group仍然打开的情况下, 才添加这个metric
 		synchronized (this) {
 			if (!closed) {
-				// immediately put without a 'contains' check to optimize the common case (no collition)
+				// immediately put without a 'contains' check to optimize the common case (no collision)
 				// collisions are resolved later
+				/**
+				 * 在没有进行"contains"校验下, 立即进行put操作, 来优化常见的情况(没有碰撞)
+				 * 碰撞的情况后面会处理。
+				 */
 				Metric prior = metrics.put(name, metric);
 
 				// check for collisions with other metric names
+				// 检查与其他度量名称的冲突
 				if (prior == null) {
 					// no other metric with this name yet
+					// 这个名字还没有其他指标
 
 					if (groups.containsKey(name)) {
 						// we warn here, rather than failing, because metrics are tools that should not fail the
 						// program when used incorrectly
+						// 这里给出warn日志, 而不是fail, 因为metrics是工具, 当使用错误时, 不应该使得程序失败
 						LOG.warn("Name collision: Adding a metric with the same name as a metric subgroup: '" +
 								name + "'. Metric might not get properly reported. " + Arrays.toString(scopeComponents));
 					}
@@ -371,6 +431,7 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 				}
 				else {
 					// we had a collision. put back the original value
+					// 有碰撞, 放回原来的metric
 					metrics.put(name, prior);
 
 					// we warn here, rather than failing, because metrics are tools that should not fail the
@@ -384,6 +445,7 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 
 	// ------------------------------------------------------------------------
 	//  Groups
+	//  组
 	// ------------------------------------------------------------------------
 
 	@Override
@@ -398,6 +460,9 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 				// adding a group with the same name as a metric creates problems in many reporters/dashboards
 				// we warn here, rather than failing, because metrics are tools that should not fail the
 				// program when used incorrectly
+				/**
+				 * 添加与一个metric同名的group会导致在很多reporters/dashboards出问题。
+				 */
 				if (metrics.containsKey(name)) {
 					LOG.warn("Name collision: Adding a metric subgroup with the same name as an existing metric: '" +
 							name + "'. Metric might not get properly reported. " + Arrays.toString(scopeComponents));
@@ -407,15 +472,18 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 				AbstractMetricGroup prior = groups.put(name, newGroup);
 				if (prior == null) {
 					// no prior group with that name
+					// 没有同名注册过的group
 					return newGroup;
 				} else {
 					// had a prior group with that name, add the prior group back
+					// 有个同名注册过的group, 将prior设置回去
 					groups.put(name, prior);
 					return prior;
 				}
 			}
 			else {
 				// return a non-registered group that is immediately closed already
+				// 返回一个注销的组, 它被立即close掉了
 				GenericMetricGroup closedGroup = new GenericMetricGroup(registry, this, name);
 				closedGroup.close();
 				return closedGroup;

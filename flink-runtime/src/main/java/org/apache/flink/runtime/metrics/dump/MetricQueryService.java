@@ -45,11 +45,16 @@ import static org.apache.flink.runtime.metrics.dump.MetricDumpSerialization.Metr
 
 /**
  * The MetricQueryService creates a key-value representation of all metrics currently registered with Flink when queried.
+ * 在查询时, MetricQueryService 为当前在Flink中注册的所有指标, 创建了一个键值表示。
  *
  * <p>It is realized as an actor and can be notified of
  * - an added metric by calling {@link MetricQueryService#notifyOfAddedMetric(ActorRef, Metric, String, AbstractMetricGroup)}
  * - a removed metric by calling {@link MetricQueryService#notifyOfRemovedMetric(ActorRef, Metric)}
  * - a metric dump request by sending the return value of {@link MetricQueryService#getCreateDump()}
+ * 它是一个actor, 可以被通过如下消息
+ * - 增加一个metric
+ * - 移除一个metric
+ * - metric dump 请求
  */
 public class MetricQueryService extends UntypedActor {
 	private static final Logger LOG = LoggerFactory.getLogger(MetricQueryService.class);
@@ -123,11 +128,14 @@ public class MetricQueryService extends UntypedActor {
 	 * Lightweight method to replace unsupported characters.
 	 * If the string does not contain any unsupported characters, this method creates no
 	 * new string (and in fact no new objects at all).
+	 * 替换不支持字符的轻量级方法。
+	 * 如果字符串没有包含任何不支持的字符串, 这个方法不会创建新字符串(事实上, 不会创建新的对象)
 	 *
 	 * <p>Replacements:
 	 *
 	 * <ul>
 	 *     <li>{@code space : . ,} are replaced by {@code _} (underscore)</li>
+	 *     		{space : . ,} --> {_}
 	 * </ul>
 	 */
 	static String replaceInvalidChars(String str) {

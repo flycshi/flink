@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 /**
  * Configuration object for {@link MetricRegistryImpl}.
+ * 配置对象
  */
 public class MetricRegistryConfiguration {
 
@@ -43,16 +44,28 @@ public class MetricRegistryConfiguration {
 
 	private static volatile MetricRegistryConfiguration defaultConfiguration;
 
-	// regex pattern to split the defined reporters
+	/**
+	 * regex pattern to split the defined reporters
+	 * 分割定义的报告器的正则表达式
+	 */
 	private static final Pattern splitPattern = Pattern.compile("\\s*,\\s*");
 
-	// scope formats for the different components
+	/**
+	 * scope formats for the different components
+	 * 不同组件的范围格式
+	 */
 	private final ScopeFormats scopeFormats;
 
-	// delimiter for the scope strings
+	/**
+	 * delimiter for the scope strings
+	 * 字符串的分隔符
+	 */
 	private final char delimiter;
 
-	// contains for every configured reporter its name and the configuration object
+	/**
+	 * contains for every configured reporter its name and the configuration object
+	 * 包含了配置的每个reporter的名称和配置对象
+	 */
 	private final List<Tuple2<String, Configuration>> reporterConfigurations;
 
 	public MetricRegistryConfiguration(
@@ -87,6 +100,7 @@ public class MetricRegistryConfiguration {
 
 	/**
 	 * Create a metric registry configuration object from the given {@link Configuration}.
+	 * 从给定的{@code Configuration}构建一个metric注册配置对象
 	 *
 	 * @param configuration to generate the metric registry configuration from
 	 * @return Metric registry configuration generated from the configuration
@@ -108,6 +122,7 @@ public class MetricRegistryConfiguration {
 			delim = '.';
 		}
 
+		/** metrics.reporters = foo, bar */
 		final String definedReporters = configuration.getString(MetricOptions.REPORTERS_LIST);
 		List<Tuple2<String, Configuration>> reporterConfigurations;
 
@@ -132,6 +147,7 @@ public class MetricRegistryConfiguration {
 
 	public static MetricRegistryConfiguration defaultMetricRegistryConfiguration() {
 		// create the default metric registry configuration only once
+		// 创建默认的, 只一次
 		if (defaultConfiguration == null) {
 			synchronized (MetricRegistryConfiguration.class) {
 				if (defaultConfiguration == null) {

@@ -26,6 +26,7 @@ import java.nio.ByteOrder;
 
 /**
  * A simple and efficient deserializer for the {@link java.io.DataInput} interface.
+ * 一个简单高效的反序列化器
  */
 public class DataInputDeserializer implements DataInputView, java.io.Serializable {
 
@@ -71,6 +72,7 @@ public class DataInputDeserializer implements DataInputView, java.io.Serializabl
 
 			buffer.get(this.buffer);
 		} else {
+			/** ByteBuffer要么是基于堆上的字节数组, 要么是堆外buffer */
 			throw new IllegalArgumentException("The given buffer is neither an array-backed heap ByteBuffer, nor a direct ByteBuffer.");
 		}
 	}
@@ -249,6 +251,7 @@ public class DataInputDeserializer implements DataInputView, java.io.Serializabl
 			chararr[chararrCount++] = (char) c;
 		}
 
+		/** @see DataOutputSerializer#writeUTF(String), 结合着看, 就能明白这段逻辑了 */
 		while (count < utflen) {
 			c = (int) bytearr[count] & 0xff;
 			switch (c >> 4) {
@@ -296,6 +299,7 @@ public class DataInputDeserializer implements DataInputView, java.io.Serializabl
 			}
 		}
 		// The number of chars produced may be less than utflen
+		/** 最后得到的字符串的长度可能会比utflen小, 这是由于一个字符可能占用1、2、3个字节, 详见上面的while中的解析逻辑 */
 		return new String(chararr, 0, chararrCount);
 	}
 

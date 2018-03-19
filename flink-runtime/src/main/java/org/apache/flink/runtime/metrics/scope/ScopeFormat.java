@@ -30,11 +30,15 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * This class represents the format after which the "scope" (or namespace) of the various
  * component metric groups is built. Component metric groups are for example
  * "TaskManager", "Task", or "Operator".
+ * 这个类表示各组件的{@code MetricGroup}的范围(或命名空间)被构建后的格式。
+ * 组件的{@code MetricGroup}有"TaskManager", "Task", or "Operator"
  *
  * <p>User defined scope formats allow users to include or exclude
  * certain identifiers from the scope. The scope for metrics belonging to the "Task"
  * group could for example include the task attempt number (more fine grained identification), or
  * exclude it (continuity of the namespace across failure and recovery).
+ * 用户定义的范围格式允许用户在范围内包含或排除某些标识符。
+ * 属于“任务”组的度量的范围可以包括任务尝试号(更细粒度的标识)，或者排除它(在失败和恢复中命名空间的连续性)
  */
 public abstract class ScopeFormat {
 
@@ -47,15 +51,19 @@ public abstract class ScopeFormat {
 
 	// ------------------------------------------------------------------------
 	//  Scope Format Special Characters
+	//  范围格式特殊字符
 	// ------------------------------------------------------------------------
 
 	/**
 	 * If the scope format starts with this character, then the parent components scope
 	 * format will be used as a prefix.
+	 * 如果范围格式以这个字符开始, 那么父组件的范围格式将被它用作前缀
 	 *
 	 * <p>For example, if the TaskManager's job format is {@code "*.<job_name>"}, and the
 	 * TaskManager format is {@code "<host>"}, then the job's metrics
 	 * will have {@code "<host>.<job_name>"} as their scope.
+	 * 比如, 如果{@code TaskManager}的job格式是{@code "*.<job_name>"}, 并且{@code TaskManager}格式是{@code "<host>"},
+	 * 那么job的度量范围将是{@code "<host>.<job_name>"}
 	 */
 	public static final String SCOPE_INHERIT_PARENT = "*";
 
@@ -66,6 +74,7 @@ public abstract class ScopeFormat {
 
 	// ------------------------------------------------------------------------
 	//  Scope Variables
+	//  范围变量
 	// ------------------------------------------------------------------------
 
 	public static final String SCOPE_HOST = asVariable("host");
@@ -95,9 +104,38 @@ public abstract class ScopeFormat {
 
 	// ------------------------------------------------------------------------
 	//  Scope Format Base
+	//  范围格式基础
 	// ------------------------------------------------------------------------
 
-	/** The scope format. */
+	/**
+	 * 比如:
+	 * format = tm.<host>.<job_name>
+	 *
+	 * variables[0] = <job_name>
+	 * variables[1] = <host>
+	 *
+	 * 则
+	 * format = tm.<host>.<job_name>
+	 *
+	 * template[0] = tm
+	 * template[1] = <host>
+	 * template[2] = <job_name>
+	 *
+	 * 表示变量在template数组中的索引, 比如<host>的索引是1
+	 * templatePos[0] = 1
+	 * templatePos[1] = 2
+	 *
+	 * 表示变量在variables数组中的索引, 比如<host>的索引是1, <job_name>索引是0, 这样用户在定义时, 就很灵活了, 两边不用保持顺序一致
+	 * valuePos[0] = 1
+	 * valuePos[1] = 0
+	 *
+	 * 这样就建立了映射关系
+	 */
+
+	/**
+	 * The scope format.
+	 * 范围格式。这是原生的格式
+	 */
 	private final String format;
 
 	/** The format, split into components. */
@@ -112,9 +150,11 @@ public abstract class ScopeFormat {
 	protected ScopeFormat(String format, ScopeFormat parent, String[] variables) {
 		checkNotNull(format, "format is null");
 
+		/** 将format这个字符串分割 */
 		final String[] rawComponents = format.split("\\" + SCOPE_SEPARATOR);
 
 		// compute the template array
+		/** 根据是否有父组前缀, 计算模板数组 */
 		final boolean parentAsPrefix = rawComponents.length > 0 && rawComponents[0].equals(SCOPE_INHERIT_PARENT);
 		if (parentAsPrefix) {
 			if (parent == null) {
@@ -147,10 +187,12 @@ public abstract class ScopeFormat {
 			final String component = template[i];
 
 			// check if that is a variable
+			// 检查是否是一个变量
 			if (component != null && component.length() >= 3 &&
 					component.charAt(0) == '<' && component.charAt(component.length() - 1) == '>') {
 
 				// this is a variable
+				// 这是一个变量
 				Integer replacementPos = varToValuePos.get(component);
 				if (replacementPos != null) {
 					templatePos.add(i);
@@ -192,10 +234,12 @@ public abstract class ScopeFormat {
 
 	// ------------------------------------------------------------------------
 	//  Utilities
+	//  工具
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Formats the given string to resemble a scope variable.
+	 * 将给定字符格式化成一个范围变量的形式
 	 *
 	 * @param scope The string to format
 	 * @return The formatted string
@@ -219,6 +263,8 @@ public abstract class ScopeFormat {
 	/**
 	 * Concatenates the given component names separated by the delimiter character. Additionally
 	 * the character filter is applied to all component names.
+	 * 使用分隔符连接给定的组件名称。
+	 * 另外, 字符过滤器应用到所有的组件名称上。
 	 *
 	 * @param filter Character filter to be applied to the component names
 	 * @param delimiter Delimiter to separate component names
