@@ -190,6 +190,7 @@ public class StatsDReporter extends AbstractReporter implements Scheduled {
 		}
 	}
 
+	/** 将字符串中的":"转换为"-" */
 	@Override
 	public String filterCharacters(String input) {
 		char[] chars = null;

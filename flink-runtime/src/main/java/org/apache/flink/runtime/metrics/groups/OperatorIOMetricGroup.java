@@ -26,6 +26,8 @@ import org.apache.flink.runtime.metrics.MetricNames;
 /**
  * Metric group that contains shareable pre-defined IO-related metrics. The metrics registration is
  * forwarded to the parent operator metric group.
+ * 包含了预定义的IO相关的度量的{@code MetricGroup}。
+ * metrics的注册被转发给父{@code OperatorMetricGroup}处理
  */
 public class OperatorIOMetricGroup extends ProxyMetricGroup<OperatorMetricGroup> {
 

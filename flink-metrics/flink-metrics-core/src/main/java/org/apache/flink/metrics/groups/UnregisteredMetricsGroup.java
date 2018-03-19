@@ -32,6 +32,7 @@ import java.util.Map;
 /**
  * A special {@link MetricGroup} that does not register any metrics at the metrics registry
  * and any reporters.
+ * 一个特殊的{@code MetricGroup}，其在{@code MetricRegistry}和reporters中不注册任何metrics
  */
 public class UnregisteredMetricsGroup implements MetricGroup {
 

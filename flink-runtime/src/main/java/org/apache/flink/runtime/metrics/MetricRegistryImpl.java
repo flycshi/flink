@@ -102,9 +102,11 @@ public class MetricRegistryImpl implements MetricRegistry {
 		if (reporterConfigurations.isEmpty()) {
 			// no reporters defined
 			// by default, don't report anything
+			// 没有定义reporters，默认的，就不report任何数据
 			LOG.info("No metrics reporter configured, no metrics will be exposed/reported.");
 		} else {
 			// we have some reporters so
+			// 配置了一些reporters
 			for (Tuple2<String, Configuration> reporterConfiguration: reporterConfigurations) {
 				String namedReporter = reporterConfiguration.f0;
 				Configuration reporterConfig = reporterConfiguration.f1;
@@ -222,6 +224,7 @@ public class MetricRegistryImpl implements MetricRegistry {
 
 	/**
 	 * Returns whether this registry has been shutdown.
+	 * 返回这个registry是否已经被关闭了
 	 *
 	 * @return true, if this registry was shutdown, otherwise false
 	 */
@@ -303,6 +306,7 @@ public class MetricRegistryImpl implements MetricRegistry {
 
 	// ------------------------------------------------------------------------
 	//  Metrics (de)registration
+	//  注册和注销
 	// ------------------------------------------------------------------------
 
 	@Override
@@ -312,10 +316,15 @@ public class MetricRegistryImpl implements MetricRegistry {
 				LOG.warn("Cannot register metric, because the MetricRegistry has already been shut down.");
 			} else {
 				if (reporters != null) {
+					/** 通知所有的reporters，注册了一个metric，以及对应的metricName，group */
 					for (int i = 0; i < reporters.size(); i++) {
 						MetricReporter reporter = reporters.get(i);
 						try {
 							if (reporter != null) {
+								/**
+								 * 这里会将group，以及这个reporter在{@code MetricRegistry}中的索引，
+								 * 一起封装到一个{@code FrontMetricGroup}这个代理类中
+								 */
 								FrontMetricGroup front = new FrontMetricGroup<AbstractMetricGroup<?>>(i, group);
 								reporter.notifyOfAddedMetric(metric, metricName, front);
 							}
@@ -397,12 +406,20 @@ public class MetricRegistryImpl implements MetricRegistry {
 	/**
 	 * This task is explicitly a static class, so that it does not hold any references to the enclosing
 	 * MetricsRegistry instance.
+	 * 这个task是个静态类，所以它不持有任何闭包MetricsRegistry实例的引用
 	 *
 	 * <p>This is a subtle difference, but very important: With this static class, the enclosing class instance
 	 * may become garbage-collectible, whereas with an anonymous inner class, the timer thread
 	 * (which is a GC root) will hold a reference via the timer task and its enclosing instance pointer.
 	 * Making the MetricsRegistry garbage collectible makes the java.util.Timer garbage collectible,
 	 * which acts as a fail-safe to stop the timer thread and prevents resource leaks.
+	 *
+	 * 这是一个细微的差别，
+	 * 但是非常重要:
+	 * 在这个静态类中，封闭的类实例可能变成垃圾收集，
+	 * 而对于一个匿名的内部类，定时器线程(它是一个GC根)将通过定时器任务和它的封闭实例指针来保存一个引用。
+	 * 使MetricsRegistry垃圾收集可以使java.util.Timer可被垃圾回收，
+	 * 它作为一个故障保险来停止计时器线程并防止资源泄漏。
 	 */
 	private static final class ReporterTask extends TimerTask {
 

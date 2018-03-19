@@ -26,6 +26,11 @@ import org.apache.flink.metrics.CharacterFilter;
  * or {@link org.apache.flink.metrics.MetricGroup#getMetricIdentifier(String, CharacterFilter)}.
  * This allows us to use reporter-specific delimiters, without requiring any action by the reporter.
  *
+ * {@code MetricGroup}将所有注册调用转发到一个父组上,
+ * 在调用{@code MetricGroup#getMetricIdentifier(String)}或{@code MetricGroup#getMetricIdentifier(String, CharacterFilter)}时，
+ * 注入一个变量reporter的索引。
+ * 这允许我们使用报告特定的分隔符，而不需要请求reporter的任何动作。
+ *
  * @param <P> parentMetricGroup to {@link AbstractMetricGroup AbstractMetricGroup}
  */
 public class FrontMetricGroup<P extends AbstractMetricGroup<?>> extends ProxyMetricGroup<P> {

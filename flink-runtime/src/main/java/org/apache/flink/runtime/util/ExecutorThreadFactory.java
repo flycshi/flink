@@ -42,13 +42,18 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * 
  * <p>Threads created by this factory are all called '(pool-name)-thread-n', where
  * <i>(pool-name)</i> is configurable, and <i>n</i> is an incrementing number.
+ * 被这个工厂创建的线程的线程名称格式是 '(pool-name)-thread-n' ，(pool-name)是可配置的，n是一个自增数
  * 
  * <p>All threads created by this factory are daemon threads and have the default (normal)
  * priority.
+ * 这个工厂创建的所有线程都是deamon线程，具有默认的优先级(normal)
  */
 public class ExecutorThreadFactory implements ThreadFactory {
 
-	/** The thread pool name used when no explicit pool name has been specified */ 
+	/**
+	 * The thread pool name used when no explicit pool name has been specified
+	 * 当没有显式线程池名称被指定时，就使用这个名称
+	 */
 	private static final String DEFAULT_POOL_NAME = "flink-executor-pool";
 
 	private final AtomicInteger threadNumber = new AtomicInteger(1);
@@ -105,11 +110,13 @@ public class ExecutorThreadFactory implements ThreadFactory {
 		t.setDaemon(true);
 
 		// normalize the priority
+		// 优先级设置为normal
 		if (t.getPriority() != Thread.NORM_PRIORITY) {
 			t.setPriority(Thread.NORM_PRIORITY);
 		}
 
 		// optional handler for uncaught exceptions
+		// 设置未捕获异常处理句柄
 		if (exceptionHandler != null) {
 			t.setUncaughtExceptionHandler(exceptionHandler);
 		}

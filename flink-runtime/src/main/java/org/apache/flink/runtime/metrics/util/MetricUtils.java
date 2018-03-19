@@ -47,6 +47,7 @@ import java.util.List;
 
 /**
  * Utility class to register pre-defined metric sets.
+ * 注册预定义的metric集合的工机类
  */
 public class MetricUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(MetricUtils.class);

@@ -182,6 +182,7 @@ public class MetricQueryService extends UntypedActor {
 
 	/**
 	 * Utility method to notify a MetricQueryService of an added metric.
+	 * 用来通知一个{@link MetricQueryService}，添加了一个metric的工具方法
 	 *
 	 * @param service    MetricQueryService to notify
 	 * @param metric     added metric

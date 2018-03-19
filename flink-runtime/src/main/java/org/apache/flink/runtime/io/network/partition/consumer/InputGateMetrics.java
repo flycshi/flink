@@ -27,6 +27,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Collects metrics of an input gate.
+ * 收集一个输入门的metrics
  */
 public class InputGateMetrics {
 

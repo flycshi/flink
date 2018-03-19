@@ -627,6 +627,7 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
 
 	/**
 	 * Adds all entries in this {@code Configuration} to the given {@link Properties}.
+	 * 将这个{@code Configuration}中的所有实体都添加到{@code Properties}
 	 */
 	public void addAllToProperties(Properties props) {
 		synchronized (this.confData) {

@@ -25,6 +25,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Collects metrics of a result partition.
+ * 收集一个结果分区的metrics
  */
 public class ResultPartitionMetrics {
 

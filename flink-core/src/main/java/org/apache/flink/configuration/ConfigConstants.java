@@ -1172,13 +1172,25 @@ public final class ConfigConstants {
 	 */
 	public static final String METRICS_REPORTER_PREFIX = "metrics.reporter.";
 
-	/** The class of the reporter to use. This is used as a suffix in an actual reporter config */
+	/**
+	 * The class of the reporter to use. This is used as a suffix in an actual reporter config
+	 * 使用的reporter的类名。
+	 * 在真实的reporter的配置中，这个被用作后缀
+	 */
 	public static final String METRICS_REPORTER_CLASS_SUFFIX = "class";
 	
-	/** The interval between reports. This is used as a suffix in an actual reporter config */
+	/**
+	 * The interval between reports. This is used as a suffix in an actual reporter config
+	 * report的时间间隔。
+	 * 用作后缀
+	 */
 	public static final String METRICS_REPORTER_INTERVAL_SUFFIX = "interval";
 
-	/**	The delimiter used to assemble the metric identifier. This is used as a suffix in an actual reporter config. */
+	/**
+	 * The delimiter used to assemble the metric identifier. This is used as a suffix in an actual reporter config.
+	 * 用来组装metric标识的分隔符。
+	 * 被用作后缀
+	 */
 	public static final String METRICS_REPORTER_SCOPE_DELIMITER = "scope.delimiter";
 
 	/** @deprecated Use {@link MetricOptions#SCOPE_DELIMITER} instead. */

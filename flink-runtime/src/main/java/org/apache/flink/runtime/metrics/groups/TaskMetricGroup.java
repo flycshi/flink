@@ -50,7 +50,10 @@ public class TaskMetricGroup extends ComponentMetricGroup<TaskManagerJobMetricGr
 
 	private final TaskIOMetricGroup ioMetrics;
 
-	/** The execution Id uniquely identifying the executed task represented by this metrics group. */
+	/**
+	 * The execution Id uniquely identifying the executed task represented by this metrics group.
+	 * 这个{@code MetricGroup}表示的task的唯一标识
+	 */
 	private final AbstractID executionId;
 
 	@Nullable

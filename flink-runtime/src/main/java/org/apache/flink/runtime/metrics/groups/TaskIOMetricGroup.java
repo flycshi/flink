@@ -122,6 +122,7 @@ public class TaskIOMetricGroup extends ProxyMetricGroup<TaskMetricGroup> {
 
 	/**
 	 * Gauge measuring the number of queued input buffers of a task.
+	 * 测量一个任务的输入队列缓冲的元素数量
 	 */
 	private static final class InputBuffersGauge implements Gauge<Integer> {
 

@@ -37,6 +37,7 @@ import java.util.Map;
 
 /**
  * {@link MetricReporter} that exports {@link Metric Metrics} via SLF4J {@link Logger}.
+ * 以日志的形式报告metrics
  */
 public class Slf4jReporter extends AbstractReporter implements Scheduled {
 	private static final Logger LOG = LoggerFactory.getLogger(Slf4jReporter.class);

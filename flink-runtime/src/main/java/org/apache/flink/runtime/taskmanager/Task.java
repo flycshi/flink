@@ -713,16 +713,20 @@ public class Task implements Runnable, TaskActions {
 			network.registerTask(this);
 
 			// add metrics for buffers
+			/** 为缓存添加metrics */
 			this.metrics.getIOMetricGroup().initializeBufferMetrics(this);
 
 			// register detailed network metrics, if configured
+			/** 如果配置，则注册网络详情的metrics */
 			if (taskManagerConfig.getConfiguration().getBoolean(TaskManagerOptions.NETWORK_DETAILED_METRICS)) {
 				// similar to MetricUtils.instantiateNetworkMetrics() but inside this IOMetricGroup
+				/** 与{@link MetricUtils.instantiateNetworkMetrics()}类似，但是是在这个 IOMetricGroup 中注册的 */
 				MetricGroup networkGroup = this.metrics.getIOMetricGroup().addGroup("Network");
 				MetricGroup outputGroup = networkGroup.addGroup("Output");
 				MetricGroup inputGroup = networkGroup.addGroup("Input");
 
 				// output metrics
+				// 输出metrics
 				for (int i = 0; i < producedPartitions.length; i++) {
 					ResultPartitionMetrics.registerQueueLengthMetrics(
 						outputGroup.addGroup(i), producedPartitions[i]);

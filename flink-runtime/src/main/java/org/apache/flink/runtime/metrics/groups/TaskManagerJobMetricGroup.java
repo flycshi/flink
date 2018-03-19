@@ -35,13 +35,18 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * Special {@link org.apache.flink.metrics.MetricGroup} representing everything belonging to
  * a specific job, running on the TaskManager.
+ * 表示属于一个特定job的所有东西的特定MetricGroup，运行在TaskManager上
  *
  * <p>Contains extra logic for adding Tasks ({@link TaskMetricGroup}).
+ * 		包含添加tasks的额外逻辑
  */
 @Internal
 public class TaskManagerJobMetricGroup extends JobMetricGroup<TaskManagerMetricGroup> {
 
-	/** Map from execution attempt ID (task identifier) to task metrics. */
+	/**
+	 * Map from execution attempt ID (task identifier) to task metrics.
+	 * execution attempt ID --> metric
+	 */
 	private final Map<AbstractID, TaskMetricGroup> tasks = new HashMap<>();
 
 	// ------------------------------------------------------------------------

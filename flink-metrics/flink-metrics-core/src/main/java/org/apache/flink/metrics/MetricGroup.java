@@ -186,6 +186,7 @@ public interface MetricGroup {
 	/**
 	 * Returns the fully qualified metric name, for example
 	 * {@code "host-7.taskmanager-2.window_word_count.my-mapper.metricName"}.
+	 * 返回全限定metric名称，比如{@code "host-7.taskmanager-2.window_word_count.my-mapper.metricName"}
 	 *
 	 * @param metricName metric name
 	 * @param filter character filter which is applied to the scope components if not null.

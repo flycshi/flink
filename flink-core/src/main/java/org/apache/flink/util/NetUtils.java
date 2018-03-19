@@ -303,9 +303,15 @@ public class NetUtils {
 	
 	/**
 	 * Returns an iterator over available ports defined by the range definition.
+	 * 返回rangeDefinition定义的有效端口的迭代器
 	 *
 	 * @param rangeDefinition String describing a single port, a range of ports or multiple ranges.
+	 *                        描述一个独立端口，一个端口范围，或者多个范围的字符串
+	 *                        独立端口 —— 9000
+	 *                        一个范围 —— 9000-9010
+	 *                        多个范围 —— 8000,9000-9010,9020-9025,9045-9050
 	 * @return Set of ports from the range definition
+	 * 			定义的端口的集合
 	 * @throws NumberFormatException If an invalid string is passed.
 	 */
 	public static Iterator<Integer> getPortRangeFromString(String rangeDefinition) throws NumberFormatException {
@@ -319,6 +325,7 @@ public class NetUtils {
 			int dashIdx = range.indexOf('-');
 			if (dashIdx == -1) {
 				// only one port in range:
+				// 只有一个端口
 				final int port = Integer.valueOf(range);
 				if (port < 0 || port > 65535) {
 					throw new IllegalConfigurationException("Invalid port configuration. Port must be between 0" +
@@ -327,6 +334,7 @@ public class NetUtils {
 				rangeIterator = Collections.singleton(Integer.valueOf(range)).iterator();
 			} else {
 				// evaluate range
+				// 范围
 				final int start = Integer.valueOf(range.substring(0, dashIdx));
 				if (start < 0 || start > 65535) {
 					throw new IllegalConfigurationException("Invalid port configuration. Port must be between 0" +

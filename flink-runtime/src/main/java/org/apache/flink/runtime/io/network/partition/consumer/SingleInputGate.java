@@ -243,6 +243,7 @@ public class SingleInputGate implements InputGate {
 
 	public int getNumberOfQueuedBuffers() {
 		// re-try 3 times, if fails, return 0 for "unknown"
+		// 重试3次，如果失败，则返回0，表示"unknown"
 		for (int retry = 0; retry < 3; retry++) {
 			try {
 				int totalBuffers = 0;

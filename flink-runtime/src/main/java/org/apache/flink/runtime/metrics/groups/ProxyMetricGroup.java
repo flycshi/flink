@@ -31,6 +31,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Metric group which forwards all registration calls to its parent metric group.
+ * 代理
  *
  * @param <P> Type of the parent metric group
  */

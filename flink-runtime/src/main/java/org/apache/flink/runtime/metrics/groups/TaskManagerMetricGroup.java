@@ -33,6 +33,7 @@ import java.util.Map;
 
 /**
  * Special {@link org.apache.flink.metrics.MetricGroup} representing a TaskManager.
+ * 表示一个{@code TaskManager}的特殊{@code MetricGroup}
  *
  * <p>Contains extra logic for adding jobs with tasks, and removing jobs when they do
  * not contain tasks any more
@@ -67,6 +68,7 @@ public class TaskManagerMetricGroup extends ComponentMetricGroup<TaskManagerMetr
 
 	// ------------------------------------------------------------------------
 	//  job groups
+	//  job组
 	// ------------------------------------------------------------------------
 
 	public TaskMetricGroup addTaskForJob(
@@ -85,8 +87,12 @@ public class TaskManagerMetricGroup extends ComponentMetricGroup<TaskManagerMetr
 
 		// we cannot strictly lock both our map modification and the job group modification
 		// because it might lead to a deadlock
+		/**
+		 * 我们不能同时锁住我们自己的map修改和job组的修改，因为可能导致一个死锁。
+		 */
 		while (true) {
 			// get or create a jobs metric group
+			// 获取或创建一个jobs MetricGroup
 			TaskManagerJobMetricGroup currentJobGroup;
 			synchronized (this) {
 				currentJobGroup = jobs.get(jobId);
@@ -99,6 +105,10 @@ public class TaskManagerMetricGroup extends ComponentMetricGroup<TaskManagerMetr
 
 			// try to add another task. this may fail if we found a pre-existing job metrics
 			// group and it is closed concurrently
+			/**
+			 * 尝试添加另一个task。
+			 * 如果我们发现一个已经存在的MetricGroup，并且被同时关闭了，则这里可能失败。
+			 */
 			TaskMetricGroup taskGroup = currentJobGroup.addTask(
 				jobVertexId,
 				executionAttemptId,
@@ -108,10 +118,12 @@ public class TaskManagerMetricGroup extends ComponentMetricGroup<TaskManagerMetr
 
 			if (taskGroup != null) {
 				// successfully added the next task
+				// 添加成功
 				return taskGroup;
 			}
 
 			// else fall through the loop
+			// 失败，重新尝试
 		}
 	}
 

@@ -58,6 +58,7 @@ import java.util.Map;
 
 /**
  * {@link MetricReporter} that exports {@link Metric Metrics} via JMX.
+ * 通过JMX报告metrics
  *
  * <p>Largely based on the JmxReporter class of the dropwizard metrics library
  * https://github.com/dropwizard/metrics/blob/master/metrics-core/src/main/java/io/dropwizard/metrics/JmxReporter.java
@@ -79,13 +80,23 @@ public class JMXReporter implements MetricReporter {
 
 	// ------------------------------------------------------------------------
 
-	/** The server where the management beans are registered and deregistered. */
+	/**
+	 * The server where the management beans are registered and deregistered.
+	 * 注册和注销管理的beans的服务所在地
+	 */
 	private final MBeanServer mBeanServer;
 
-	/** The names under which the registered metrics have been added to the MBeanServer. */
+	/**
+	 * The names under which the registered metrics have been added to the MBeanServer.
+	 * 添加到MBeanServer中的注册过的metrics的名称
+	 */
 	private final Map<Metric, ObjectName> registeredMetrics;
 
-	/** The server to which JMX clients connect to. ALlows for better control over port usage. */
+	/**
+	 * The server to which JMX clients connect to. ALlows for better control over port usage.
+	 * JMX客户单连接的server。
+	 * 允许更好的控制端口
+	 */
 	private JMXServer jmxServer;
 
 	public JMXReporter() {
@@ -102,6 +113,7 @@ public class JMXReporter implements MetricReporter {
 		String portsConfig = config.getString(ARG_PORT, null);
 
 		if (portsConfig != null) {
+			/** 解析端口 */
 			Iterator<Integer> ports = NetUtils.getPortRangeFromString(portsConfig);
 
 			JMXServer server = new JMXServer();
@@ -111,6 +123,7 @@ public class JMXReporter implements MetricReporter {
 					server.start(port);
 					LOG.info("Started JMX server on port " + port + ".");
 					// only set our field if the server was actually started
+					// 如果启动成功，就设置属性
 					jmxServer = server;
 					break;
 				} catch (IOException ioe) { //assume port conflict
@@ -238,13 +251,18 @@ public class JMXReporter implements MetricReporter {
 	 * Lightweight method to replace unsupported characters.
 	 * If the string does not contain any unsupported characters, this method creates no
 	 * new string (and in fact no new objects at all).
+	 * 替换不支持的字符的轻量级方法。
+	 * 如果字符串不包含任何不支持的字符串，该方法不创建任何新对象
 	 *
 	 * <p>Replacements:
 	 *
 	 * <ul>
 	 *     <li>{@code "} is removed</li>
+	 *     		" --> 删除
 	 *     <li>{@code space} is replaced by {@code _} (underscore)</li>
+	 *     		空格 --> _
 	 *     <li>{@code , = ; : ? ' *} are replaced by {@code -} (hyphen)</li>
+	 *     		, = ; : ? ' * --> -
 	 * </ul>
 	 */
 	static String replaceInvalidChars(String str) {
@@ -301,6 +319,7 @@ public class JMXReporter implements MetricReporter {
 
 	/**
 	 * The common MBean interface for all metrics.
+	 * 所有metrics的基础MNean接口
 	 */
 	public interface MetricMBean {}
 

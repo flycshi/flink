@@ -30,9 +30,11 @@ import java.util.Map;
 
 /**
  * Special {@link org.apache.flink.metrics.MetricGroup} representing a JobManager.
+ * 表示一个{@code JobManager}的特定{@code MetricGroup}
  *
  * <p>Contains extra logic for adding jobs with tasks, and removing jobs when they do
  * not contain tasks any more
+ * 包含了添加有tasks的jobs，以及移除已经不再包含tasks的jobs的额外逻辑
  */
 public class JobManagerMetricGroup extends ComponentMetricGroup<JobManagerMetricGroup> {
 
