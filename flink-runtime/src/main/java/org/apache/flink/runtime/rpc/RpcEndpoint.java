@@ -37,22 +37,33 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Base class for RPC endpoints. Distributed components which offer remote procedure calls have to
- * extend the RPC endpoint base class. An RPC endpoint is backed by an {@link RpcService}. 
+ * extend the RPC endpoint base class. An RPC endpoint is backed by an {@link RpcService}.
+ * RPC端点的基类。
+ * 提供远程过程调用的分布式组件必须扩展RPC端点基类。
+ * RPC端点由{@link RpcService}支持。
  * 
  * <h1>Endpoint and Gateway</h1>
+ * 端点和网关
  * 
  * To be done...
+ * 擦, 竟然没写注释
  * 
  * <h1>Single Threaded Endpoint Execution </h1>
+ * 单线程端点执行
  * 
  * <p>All RPC calls on the same endpoint are called by the same thread
  * (referred to as the endpoint's <i>main thread</i>).
  * Thus, by executing all state changing operations within the main 
  * thread, we don't have to reason about concurrent accesses, in the same way in the Actor Model
  * of Erlang or Akka.
+ * 同一端点上的所有RPC调用都由相同的线程调用(称为端点的<i>主线程</i>)。
+ * 因此，通过在主线程中执行所有的状态更改操作，我们不需要以Erlang或Akka的Actor模型中同样的方式来考虑并发访问。
+ * 因为是单线程的, 所以就不存在什么并发问题了
  *
- * <p>The RPC endpoint provides provides {@link #runAsync(Runnable)}, {@link #callAsync(Callable, Time)}
+ * <p>The RPC endpoint provides {@link #runAsync(Runnable)}, {@link #callAsync(Callable, Time)}
  * and the {@link #getMainThreadExecutor()} to execute code in the RPC endpoint's main thread.
+ * RPC端点提供了{@link #runAsync(Runnable)}, {@link #callAsync(Callable, Time)}
+ * and the {@link #getMainThreadExecutor()}这些方法, 实现在RPC端口的主线程中执行代码。
  */
 public abstract class RpcEndpoint implements RpcGateway {
 
@@ -60,20 +71,34 @@ public abstract class RpcEndpoint implements RpcGateway {
 
 	// ------------------------------------------------------------------------
 
-	/** RPC service to be used to start the RPC server and to obtain rpc gateways */
+	/**
+	 * RPC service to be used to start the RPC server and to obtain rpc gateways
+	 * 用来启动rpc server, 并获取rpc gateways的rpc service
+	 */
 	private final RpcService rpcService;
 
-	/** Unique identifier for this rpc endpoint */
+	/**
+	 * Unique identifier for this rpc endpoint
+	 * 这个rpc端点的唯一标识
+	 */
 	private final String endpointId;
 
-	/** Interface to access the underlying rpc server */
+	/**
+	 * Interface to access the underlying rpc server
+	 * 访问底层rpc服务的接口
+	 */
 	protected final RpcServer rpcServer;
 
-	/** A reference to the endpoint's main thread, if the current method is called by the main thread */
+	/**
+	 * A reference to the endpoint's main thread, if the current method is called by the main thread
+	 *  如果当前方法被主线程调用, 这个变量就表示端点的主线程的一个引用
+	 */
 	final AtomicReference<Thread> currentMainThread = new AtomicReference<>(null);
 
-	/** The main thread executor to be used to execute future callbacks in the main thread
-	 * of the executing rpc server. */
+	/**
+	 * The main thread executor to be used to execute future callbacks in the main thread of the executing rpc server.
+	 * 用来在执行rpc server的主线程汇中执行future回调的主线程执行器
+	 */
 	private final MainThreadExecutor mainThreadExecutor;
 
 	/**
@@ -215,6 +240,7 @@ public abstract class RpcEndpoint implements RpcGateway {
 
 	/**
 	 * Gets the endpoint's RPC service.
+	 * 获取端点的rpc service
 	 *
 	 * @return The endpoint's RPC service
 	 */
@@ -284,15 +310,19 @@ public abstract class RpcEndpoint implements RpcGateway {
 
 	// ------------------------------------------------------------------------
 	//  Main Thread Validation
+	//  主线程校验
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Validates that the method call happens in the RPC endpoint's main thread.
+	 * 校验方法调用发生在rpc端点的主线程中
 	 * 
 	 * <p><b>IMPORTANT:</b> This check only happens when assertions are enabled,
 	 * such as when running tests.
+	 * 重要: 这个检查只有当断言开启时才会发生, 比如当运行测试时。
 	 * 
 	 * <p>This can be used for additional checks, like
+	 * 这个可以用来附加检查, 比如并发严格要求的方法中
 	 * <pre>{@code
 	 * protected void concurrencyCriticalMethod() {
 	 *     validateRunsInMainThread();
@@ -311,6 +341,7 @@ public abstract class RpcEndpoint implements RpcGateway {
 	
 	/**
 	 * Executor which executes runnables in the main thread context.
+	 * 在主线程上下文中执行runnable的执行器
 	 */
 	protected static class MainThreadExecutor implements Executor {
 

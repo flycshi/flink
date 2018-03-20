@@ -63,18 +63,28 @@ import static org.apache.flink.util.Preconditions.checkArgument;
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
- * The slot pool serves slot request issued by Scheduler or ExecutionGraph. It will will attempt to acquire new slots
+ * The slot pool serves slot request issued by Scheduler or ExecutionGraph. It will attempt to acquire new slots
  * from the ResourceManager when it cannot serve a slot request. If no ResourceManager is currently available,
  * or it gets a decline from the ResourceManager, or a request times out, it fails the slot request. The slot pool also
  * holds all the slots that were offered to it and accepted, and can thus provides registered free slots even if the
  * ResourceManager is down. The slots will only be released when they are useless, e.g. when the job is fully running
  * but we still have some free slots.
+ *
+ * {@code SlotPool}为来自{@code Scheduler}或{@code ExecutionGraph}槽请求服务。
+ * 当它不能满足一个槽请求时, 它将试图从{@code ResourceManager}获得新的slots。
+ * 如果当前没有可用的{@code ResourceManager}，或者被{@code ResourceManager}中拒绝，或者请求超时，那处理槽请求就会失败。
+ * 这个{@code SlotPool}持有所有提供给它并被接受的槽，并且即使资源管理器已经关闭, 也可以提供注册的空闲slot。
+ * 这些slots在它们没有用处的时候才会被释放掉，例如，当它job完全运行的时候，但是我们仍然有一些空闲的slot。
+ *
  * <p>
  * All the allocation or the slot offering will be identified by self generated AllocationID, we will use it to
  * eliminate ambiguities.
+ * 所有的分配或slot提供都将由自己生成的AllocationID标识，我们将使用它消除歧义。
  * 
  * TODO : Make pending requests location preference aware
+ * 		  使待处理请求的位置优先注意
  * TODO : Make pass location preferences to ResourceManager when sending a slot request
+ *        在发送槽请求时，将位置首选项传递给{@code ResourceManager}
  */
 public class SlotPool extends RpcEndpoint implements SlotPoolGateway {
 

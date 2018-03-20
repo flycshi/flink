@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Extended {@link MainThreadExecutable} interface which allows to run unfenced runnables
  * in the main thread.
+ * 继承自{@link MainThreadExecutable}接口, 允许在主线程中运行没有围墙令牌的runnables
  */
 public interface FencedMainThreadExecutable extends MainThreadExecutable {
 

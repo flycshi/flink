@@ -25,11 +25,13 @@ import java.io.Serializable;
  * fencing token.
  *
  * @param <F> type of the fencing token
+ *           围墙令牌的类型
  */
 public interface FencedRpcGateway<F extends Serializable> extends RpcGateway {
 
 	/**
 	 * Get the current fencing token.
+	 * 获取当前的令牌
 	 *
 	 * @return current fencing token
 	 */

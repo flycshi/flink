@@ -25,8 +25,13 @@ import org.apache.flink.runtime.clusterframework.types.ResourceID;
  * heartbeat response. Both the heartbeat response as well as the heartbeat request can carry a
  * payload. This payload is reported to the heartbeat target and contains additional information.
  * The payload can be empty which is indicated by a null value.
+ * 可以发送心跳的组件接口，并且可以向其请求心跳响应。
+ * 心跳响应和心跳请求都可以携带有效负载。
+ * 这个负载被报告到心跳目标并包含额外的信息。
+ * 负载可以是空的，由null表示。
  *
  * @param <I> Type of the payload which is sent to the heartbeat target
+ *           发送给心跳目标的负载的类型
  */
 public interface HeartbeatTarget<I> {
 

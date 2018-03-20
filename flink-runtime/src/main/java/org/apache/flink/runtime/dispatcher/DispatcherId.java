@@ -24,6 +24,7 @@ import java.util.UUID;
 
 /**
  * Fencing token of the {@link Dispatcher}.
+ * {@code Dispatcher}的令牌
  */
 public class DispatcherId extends AbstractID {
 

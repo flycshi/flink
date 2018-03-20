@@ -36,6 +36,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Gateway for restful endpoints.
+ * restful 端点的网关
  *
  * <p>Gateways which implement this method run a REST endpoint which is reachable
  * under the returned address.
@@ -44,6 +45,7 @@ public interface RestfulGateway extends RpcGateway {
 
 	/**
 	 * Requests the REST address of this {@link RpcEndpoint}.
+	 * 请求rest地址
 	 *
 	 * @param timeout for this operation
 	 * @return Future REST endpoint address

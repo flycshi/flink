@@ -36,7 +36,8 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * The gateway for calls on the {@link SlotPool}. 
+ * The gateway for calls on the {@link SlotPool}.
+ * 调用{@link SlotPool}的网关
  */
 public interface SlotPoolGateway extends RpcGateway {
 

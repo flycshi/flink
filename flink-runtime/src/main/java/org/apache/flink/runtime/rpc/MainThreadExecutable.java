@@ -27,15 +27,18 @@ import java.util.concurrent.TimeoutException;
 /**
  * Interface to execute {@link Runnable} and {@link Callable} in the main thread of the underlying
  * RPC endpoint.
+ * 在rpc端点的主线程中执行{@link Runnable} and {@link Callable}和接口
  *
  * <p>This interface is intended to be implemented by the self gateway in a {@link RpcEndpoint}
  * implementation which allows to dispatch local procedures to the main thread of the underlying
  * RPC endpoint.
+ * 这个接口的目的是通过一个{@link RpcEndpoint}实现的自网关实现，它允许将本地程序分派给底层RPC端点的主线程。
  */
 public interface MainThreadExecutable {
 
 	/**
 	 * Execute the runnable in the main thread of the underlying RPC endpoint.
+	 * 在底层RPC端点的主线程中执行runnable
 	 *
 	 * @param runnable Runnable to be executed
 	 */
@@ -45,6 +48,8 @@ public interface MainThreadExecutable {
 	 * Execute the callable in the main thread of the underlying RPC endpoint and return a future for
 	 * the callable result. If the future is not completed within the given timeout, the returned
 	 * future will throw a {@link TimeoutException}.
+	 * 在底层的RPC端点的主线程中执行callable, 并返回callable结果的一个future。
+	 * 如果future在给定超时时间内没有完成, 则返回的future将抛出一个超时异常。
 	 *
 	 * @param callable Callable to be executed
 	 * @param callTimeout Timeout for the future to complete
@@ -56,6 +61,7 @@ public interface MainThreadExecutable {
 	/**
 	 * Execute the runnable in the main thread of the underlying RPC endpoint, with
 	 * a delay of the given number of milliseconds.
+	 * 在底层RPC端点的主线程中, 在给定延迟时间后, 执行runnable
 	 *
 	 * @param runnable Runnable to be executed
 	 * @param delay    The delay, in milliseconds, after which the runnable will be executed

@@ -54,11 +54,13 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * {@link JobMaster} rpc gateway interface
+ * {@code JobMaster}的rpc网关接口
  */
 public interface JobMasterGateway extends CheckpointCoordinatorGateway, FencedRpcGateway<JobMasterId> {
 
 	/**
 	 * Cancels the currently executed job.
+	 * 取消当前执行的job
 	 *
 	 * @param timeout of this operation
 	 * @return Future acknowledge of the operation

@@ -120,17 +120,22 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * JobMaster implementation. The job master is responsible for the execution of a single
  * {@link JobGraph}.
+ * 负责一个独立的{@code JobGraph}的执行。
  * <p>
  * It offers the following methods as part of its rpc interface to interact with the JobMaster
  * remotely:
+ * 它提供以下方法作为其rpc接口的一部分，以便远程与JobMaster交互。
  * <ul>
- * <li>{@link #updateTaskExecutionState} updates the task execution state for
- * given task</li>
+ *     <li>{@link #updateTaskExecutionState} updates the task execution state for given task</li>
+ *     		{@link #updateTaskExecutionState}更行给定task的执行状态
  * </ul>
  */
 public class JobMaster extends FencedRpcEndpoint<JobMasterId> implements JobMasterGateway {
 
-	/** Default names for Flink's distributed components */
+	/**
+	 * Default names for Flink's distributed components
+	 * Flink的分布式组件的默认名称
+	 */
 	public static final String JOB_MANAGER_NAME = "jobmanager";
 	public static final String ARCHIVE_NAME = "archive";
 
@@ -140,36 +145,66 @@ public class JobMaster extends FencedRpcEndpoint<JobMasterId> implements JobMast
 
 	private final ResourceID resourceId;
 
-	/** Logical representation of the job */
+	/**
+	 * Logical representation of the job
+	 * job的逻辑表示
+	 */
 	private final JobGraph jobGraph;
 
-	/** Configuration of the JobManager */
+	/**
+	 * Configuration of the JobManager
+	 * {@code JobManager}的配置对象
+	 */
 	private final Configuration configuration;
 
 	private final Time rpcTimeout;
 
-	/** Service to contend for and retrieve the leadership of JM and RM */
+	/**
+	 * Service to contend for and retrieve the leadership of JM and RM
+	 * 为竞选和获取JM和RM的领导权的服务。
+	 */
 	private final HighAvailabilityServices highAvailabilityServices;
 
-	/** Blob server used across jobs */
+	/**
+	 * Blob server used across jobs
+	 * 跨jobs使用的BLOB server
+	 */
 	private final BlobServer blobServer;
 
-	/** Blob library cache manager used across jobs */
+	/**
+	 * Blob library cache manager used across jobs
+	 * 跨jobs使用的库缓存
+	 */
 	private final BlobLibraryCacheManager libraryCacheManager;
 
-	/** The metrics for the JobManager itself */
+	/**
+	 * The metrics for the JobManager itself
+	 * JobManager的metric group
+	 */
 	private final MetricGroup jobManagerMetricGroup;
 
-	/** The metrics for the job */
+	/**
+	 * The metrics for the job
+	 * job的metric group
+	 */
 	private final MetricGroup jobMetricGroup;
 
-	/** The heartbeat manager with task managers */
+	/**
+	 * The heartbeat manager with task managers
+	 * TaskManager的心跳管理器
+	 */
 	private final HeartbeatManager<Void, Void> taskManagerHeartbeatManager;
 
-	/** The heartbeat manager with resource manager */
+	/**
+	 * The heartbeat manager with resource manager
+	 * 资源挂利器的心跳管理器
+	 */
 	private final HeartbeatManager<Void, Void> resourceManagerHeartbeatManager;
 
-	/** The execution context which is used to execute futures */
+	/**
+	 * The execution context which is used to execute futures
+	 * 用来执行futures的执行上下文
+	 */
 	private final Executor executor;
 
 	private final OnCompletionActions jobCompletionActions;
@@ -178,7 +213,10 @@ public class JobMaster extends FencedRpcEndpoint<JobMasterId> implements JobMast
 
 	private final ClassLoader userCodeLoader;
 
-	/** The execution graph of this job */
+	/**
+	 * The execution graph of this job
+	 * 这个job的 {@code ExecutionGraph}
+	 */
 	private final ExecutionGraph executionGraph;
 
 	private final SlotPool slotPool;

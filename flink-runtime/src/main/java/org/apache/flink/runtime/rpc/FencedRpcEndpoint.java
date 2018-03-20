@@ -32,8 +32,13 @@ import java.util.concurrent.CompletableFuture;
  * being enriched with fencing tokens. Furthermore, the rpc endpoint has its own fencing token
  * assigned. The rpc is then only executed if the attached fencing token equals the endpoint's own
  * token.
+ * fenced {@link RpcEndpoint}的基类。
+ * 一个fenced rpc端点希望所有的rpc消息都添加了fencing令牌。
+ * 此外，rpc端点有自己的分配fencing令牌。
+ * 只有当附加的fencing令牌等于端点本身的令牌时，才会执行rpc。
  *
  * @param <F> type of the fencing token
+ *           围墙令牌的类型
  */
 public class FencedRpcEndpoint<F extends Serializable> extends RpcEndpoint {
 
@@ -44,6 +49,7 @@ public class FencedRpcEndpoint<F extends Serializable> extends RpcEndpoint {
 		super(rpcService, endpointId);
 
 		// no fencing token == no leadership
+		// 没有围墙令牌 == 没有leader
 		this.fencingToken = null;
 		this.fencedMainThreadExecutor = new MainThreadExecutor(
 			getRpcService().fenceRpcServer(
@@ -61,12 +67,14 @@ public class FencedRpcEndpoint<F extends Serializable> extends RpcEndpoint {
 
 	protected void setFencingToken(@Nullable F newFencingToken) {
 		// this method should only be called from within the main thread
+		// 这个方法应该只会在主线程汇总调用
 		validateRunsInMainThread();
 
 		this.fencingToken = newFencingToken;
 
 		// setting a new fencing token entails that we need a new MainThreadExecutor
 		// which is bound to the new fencing token
+		/** 设置一个新的围墙令牌, 导致我们需要一个新的{@code MainThreadExecutor}, 其需要绑定到新的围墙令牌上 */
 		MainThreadExecutable mainThreadExecutable = getRpcService().fenceRpcServer(
 			rpcServer,
 			newFencingToken);
@@ -78,6 +86,9 @@ public class FencedRpcEndpoint<F extends Serializable> extends RpcEndpoint {
 	 * Returns a main thread executor which is bound to the currently valid fencing token.
 	 * This means that runnables which are executed with this executor fail after the fencing
 	 * token has changed. This allows to scope operations by the fencing token.
+	 * 返回一个绑定到当前有效围墙令牌上的主线程执行器。
+	 * 这意味着在围墙令牌发生变化后，在该执行器中执行的runnables将失败。
+	 * 这允许使用围墙令牌来进行范围操作。
 	 *
 	 * @return MainThreadExecutor bound to the current fencing token
 	 */
@@ -89,6 +100,8 @@ public class FencedRpcEndpoint<F extends Serializable> extends RpcEndpoint {
 	/**
 	 * Run the given runnable in the main thread of the RpcEndpoint without checking the fencing
 	 * token. This allows to run operations outside of the fencing token scope.
+	 * 在{@code RpcEndpoint}的主线程中, 不做围墙令牌检查, 就执行给定的runnable。
+	 * 这个就允许运行在围墙令牌范围之外的操作。
 	 *
 	 * @param runnable to execute in the main thread of the rpc endpoint without checking the fencing token.
 	 */
@@ -103,6 +116,8 @@ public class FencedRpcEndpoint<F extends Serializable> extends RpcEndpoint {
 	/**
 	 * Run the given callable in the main thread of the RpcEndpoint without checking the fencing
 	 * token. This allows to run operations outside of the fencing token scope.
+	 * 在{@code RpcEndpoint}的主线程中, 不做围墙令牌检查, 就执行给定的callable。
+	 * 这个就允许运行在围墙令牌范围之外的操作。
 	 *
 	 * @param callable to run in the main thread of the rpc endpoint without checkint the fencing token.
 	 * @param timeout for the operation.

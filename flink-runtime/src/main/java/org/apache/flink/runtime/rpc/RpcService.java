@@ -32,6 +32,9 @@ import java.util.concurrent.TimeUnit;
  * Interface for rpc services. An rpc service is used to start and connect to a {@link RpcEndpoint}.
  * Connecting to a rpc server will return a {@link RpcGateway} which can be used to call remote
  * procedures.
+ * rpc services的接口。
+ * 一个rpc服务被用来启动和连接到一个{@link RpcEndpoint}。
+ * 连接到一个rpc server 会返回一个{@link RpcGateway}, 被用来进行rpc调用
  */
 public interface RpcService {
 
@@ -86,6 +89,7 @@ public interface RpcService {
 
 	/**
 	 * Start a rpc server which forwards the remote procedure calls to the provided rpc endpoint.
+	 * 启动一个rpc server, 它会转发rpc调用到提供的rpc端点上
 	 *
 	 * @param rpcEndpoint Rpc protocol to dispatch the rpcs to
 	 * @param <C> Type of the rpc endpoint
@@ -96,10 +100,14 @@ public interface RpcService {
 
 	/**
 	 * Fence the given RpcServer with the given fencing token.
+	 * 用给定的围墙令牌在给定的RpcServer加上围墙
 	 *
 	 * <p>Fencing the RpcServer means that we fix the fencing token to the provided value.
 	 * All RPCs will then be enriched with this fencing token. This expects that the receiving
 	 * RPC endpoint extends {@link FencedRpcEndpoint}.
+	 * 给{@code RpcServer}添加围墙, 意味我们将围墙令牌固定在提供的值上。
+	 * 所有的RPCs将被这个围墙令牌所强化。
+	 * 这期望接收RPC端点扩展{@link FencedRpcEndpoint}。
 	 *
 	 * @param rpcServer to fence with the given fencing token
 	 * @param fencingToken to fence the RpcServer with
