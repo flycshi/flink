@@ -135,14 +135,21 @@ public abstract class ScopeFormat {
 	/**
 	 * The scope format.
 	 * 范围格式。这是原生的格式
+	 * 比如 <host>.jobmanager ，如果为空，则是 <empty>
 	 */
 	private final String format;
 
-	/** The format, split into components. */
+	/**
+	 * The format, split into components.
+	 * format按照分割符分割后的数组，如 {"<host>", "jobmanager"}
+	 * 被<>包裹的元素，是变量元素
+	 */
 	private final String[] template;
 
+	/** 这是template数组中，变量元素的索引，如"<host>"是变量，在template中的索引是0，则 templatePos = {0} */
 	private final int[] templatePos;
 
+	/** 这个是template中变量元素对应的真实的值，在values数组中的位置，详见 构造函数 和 #bindVariables方法 */
 	private final int[] valuePos;
 
 	// ------------------------------------------------------------------------
@@ -154,9 +161,13 @@ public abstract class ScopeFormat {
 		final String[] rawComponents = format.split("\\" + SCOPE_SEPARATOR);
 
 		// compute the template array
-		/** 根据是否有父组前缀, 计算模板数组 */
+		/**
+		 * 根据是否有父组前缀, 计算模板数组
+		 * 根据rawComponents的第一个元素是为"*"，来判断是否要继承父组的范围
+		 */
 		final boolean parentAsPrefix = rawComponents.length > 0 && rawComponents[0].equals(SCOPE_INHERIT_PARENT);
 		if (parentAsPrefix) {
+			/** 需要继承父组的范围，而父组有是null，则抛出异常 */
 			if (parent == null) {
 				throw new IllegalArgumentException("Component scope format requires parent prefix (starts with '"
 					+ SCOPE_INHERIT_PARENT + "'), but this component has no parent (is root component).");
@@ -167,11 +178,13 @@ public abstract class ScopeFormat {
 			String[] parentTemplate = parent.template;
 			int parentLen = parentTemplate.length;
 
+			/** 将父组的范围和自身的范围，合并到一起 */
 			this.template = new String[parentLen + rawComponents.length - 1];
 			System.arraycopy(parentTemplate, 0, this.template, 0, parentLen);
 			System.arraycopy(rawComponents, 1, this.template, parentLen, rawComponents.length - 1);
 		}
 		else {
+			/** 不需要继承父组的范围，则直接赋值 */
 			this.format = format.isEmpty() ? "<empty>" : format;
 			this.template = rawComponents;
 		}

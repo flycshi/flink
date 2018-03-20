@@ -122,18 +122,23 @@ public class MetricRegistryConfiguration {
 			delim = '.';
 		}
 
-		/** metrics.reporters = foo, bar */
+		/** 获取MetricReporter相关的配置信息，MetricReporter的配置格式是 metrics.reporters = foo, bar */
 		final String definedReporters = configuration.getString(MetricOptions.REPORTERS_LIST);
 		List<Tuple2<String, Configuration>> reporterConfigurations;
 
 		if (definedReporters == null) {
 			reporterConfigurations = Collections.emptyList();
 		} else {
+			/** 按模式匹配分割，如上述的配置，则namedReporters={"foo", "bar"} */
 			String[] namedReporters = splitPattern.split(definedReporters);
 
 			reporterConfigurations = new ArrayList<>(namedReporters.length);
 
 			for (String namedReporter: namedReporters) {
+				/**
+				 * 这里是获取一个代理配置对象，就是在原来配置对象的基础上，在查询key时，需要加上这里配置的前缀，
+				 * 如 metrics.reporter.foo. ，这样就可以获取特定reporter的配置
+				 */
 				DelegatingConfiguration delegatingConfiguration = new DelegatingConfiguration(
 					configuration,
 					ConfigConstants.METRICS_REPORTER_PREFIX + namedReporter + '.');

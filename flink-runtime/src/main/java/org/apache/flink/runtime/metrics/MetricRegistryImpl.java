@@ -107,10 +107,13 @@ public class MetricRegistryImpl implements MetricRegistry {
 		} else {
 			// we have some reporters so
 			// 配置了一些reporters
+			/** 变量配置中配置的reporter的配置 */
 			for (Tuple2<String, Configuration> reporterConfiguration: reporterConfigurations) {
 				String namedReporter = reporterConfiguration.f0;
+				/** reporterConfig是Configuration的子类DelegatingConfiguration，会肯定定义的前缀来找key */
 				Configuration reporterConfig = reporterConfiguration.f1;
 
+				/** 获取MetricReporter的具体实现子类的全限定类型，配置的key如：metrics.reporter.foo.class */
 				final String className = reporterConfig.getString(ConfigConstants.METRICS_REPORTER_CLASS_SUFFIX, null);
 				if (className == null) {
 					LOG.error("No reporter class set for reporter " + namedReporter + ". Metrics might not be exposed/reported.");
@@ -118,6 +121,7 @@ public class MetricRegistryImpl implements MetricRegistry {
 				}
 
 				try {
+					/** 获取配置的定期执行的时间间隔，key的格式如：metrics.reporter.foo.interval */
 					String configuredPeriod = reporterConfig.getString(ConfigConstants.METRICS_REPORTER_INTERVAL_SUFFIX, null);
 					TimeUnit timeunit = TimeUnit.SECONDS;
 					long period = 10;
@@ -138,21 +142,27 @@ public class MetricRegistryImpl implements MetricRegistry {
 					Class<?> reporterClass = Class.forName(className);
 					MetricReporter reporterInstance = (MetricReporter) reporterClass.newInstance();
 
+					/** 构造MetricConfig的实例，并把reporterConfig中的配置key-value都添加到metricConfig中 */
 					MetricConfig metricConfig = new MetricConfig();
 					reporterConfig.addAllToProperties(metricConfig);
 					LOG.info("Configuring {} with {}.", reporterClass.getSimpleName(), metricConfig);
+					/** 这里就是reporter进行初始化操作的地方 */
 					reporterInstance.open(metricConfig);
 
+					/** 如果reporter实现了Scheduled接口，则通过executor进行定期调度执行，执行时间间隔就是上面获取的时间间隔 */
 					if (reporterInstance instanceof Scheduled) {
 						LOG.info("Periodically reporting metrics in intervals of {} {} for reporter {} of type {}.", period, timeunit.name(), namedReporter, className);
 
+						/** 将reporter封装成一个task，并调度定期更新执行 */
 						executor.scheduleWithFixedDelay(
 								new MetricRegistryImpl.ReporterTask((Scheduled) reporterInstance), period, period, timeunit);
 					} else {
 						LOG.info("Reporting metrics for reporter {} of type {}.", namedReporter, className);
 					}
+					/** 将reporter添加到集合中 */
 					reporters.add(reporterInstance);
 
+					/** 获取reporter定制化的分隔符，如果没有设置，则设置为全局分割符 */
 					String delimiterForReporter = reporterConfig.getString(ConfigConstants.METRICS_REPORTER_SCOPE_DELIMITER, String.valueOf(globalDelimiter));
 					if (delimiterForReporter.length() != 1) {
 						LOG.warn("Failed to parse delimiter '{}' for reporter '{}', using global delimiter '{}'.", delimiterForReporter, namedReporter, globalDelimiter);
@@ -322,10 +332,11 @@ public class MetricRegistryImpl implements MetricRegistry {
 						try {
 							if (reporter != null) {
 								/**
-								 * 这里会将group，以及这个reporter在{@code MetricRegistry}中的索引，
-								 * 一起封装到一个{@code FrontMetricGroup}这个代理类中
+								 * 这里会将group，以及这个reporter在reporters这个列表中的索引，一起封装到FrontMetricGroup这个代理类中
+								 * 这里封装索引的目的，是可以通过 #getDelimiter 方法，获取这个reporter配置的特制分隔符
 								 */
 								FrontMetricGroup front = new FrontMetricGroup<AbstractMetricGroup<?>>(i, group);
+								/** 然后调用reporter的接口方法，通知reporter */
 								reporter.notifyOfAddedMetric(metric, metricName, front);
 							}
 						} catch (Exception e) {
@@ -334,6 +345,7 @@ public class MetricRegistryImpl implements MetricRegistry {
 					}
 				}
 				try {
+					/** 如果queryService不为null，则也通知它 */
 					if (queryService != null) {
 						MetricQueryService.notifyOfAddedMetric(queryService, metric, metricName, group);
 					}

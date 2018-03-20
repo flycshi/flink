@@ -71,6 +71,9 @@ import java.util.concurrent.CompletableFuture;
  * for receiving job submissions, persisting them, spawning JobManagers to execute
  * the jobs and to recover them in case of a master failure. Furthermore, it knows
  * about the state of the Flink session cluster.
+ * Dispatcher组件的基类。
+ * Dispatcher组件负责接收工作提交，持久化它们，生成jobmanager来执行任务，并在主故障时恢复它们。
+ * 此外，它还了解Flink会话集群的状态。
  */
 public abstract class Dispatcher extends FencedRpcEndpoint<DispatcherId> implements DispatcherGateway, LeaderContender {
 

@@ -45,9 +45,11 @@ import static org.apache.flink.runtime.metrics.dump.MetricDumpSerialization.Metr
 
 /**
  * The MetricFetcher can be used to fetch metrics from the JobManager and all registered TaskManagers.
+ * {@code MetricFetcher}可以用来从{@code JobManager}和所有注册的{@code TaskManager}处获取metrics。
  *
  * <p>Metrics will only be fetched when {@link MetricFetcher#update()} is called, provided that a sufficient time since
  * the last call has passed.
+ * 距离上次调用有足够长的时间间隔, 当{@link MetricFetcher#update()}被调用时，才会获取度量指标
  */
 public class MetricFetcher<T extends RestfulGateway> {
 	private static final Logger LOG = LoggerFactory.getLogger(MetricFetcher.class);

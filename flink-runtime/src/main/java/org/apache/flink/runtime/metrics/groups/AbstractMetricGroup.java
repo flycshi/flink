@@ -120,6 +120,10 @@ public abstract class AbstractMetricGroup<A extends AbstractMetricGroup<?>> impl
 	 * Array containing the metrics scope represented by this group for each reporter, as a concatenated string, lazily computed.
 	 * For example: "host-7.taskmanager-2.window_word_count.my-mapper"
 	 * 包含由这个组代表的每个报告器的度量范围的数组，作为连接字符串，延迟计算。
+	 *
+	 * 保存的是每个reporter对应的scope, 都是基于scopeComponents数组产生的,
+	 * 但是对于不同的reporter, 可以通过不同的分隔符, 以及fliter, 从而拼接处不同的字符串
+	 * 从而实现对reporter的定制化
 	 */
 	private final String[] scopeStrings;
 
