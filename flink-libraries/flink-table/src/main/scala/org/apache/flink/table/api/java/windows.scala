@@ -25,6 +25,9 @@ import org.apache.flink.table.expressions.{Expression, ExpressionParser}
   * Helper class for creating a tumbling window. Tumbling windows are consecutive, non-overlapping
   * windows of a specified fixed length. For example, a tumbling window of 5 minutes size groups
   * elements in 5 minutes intervals.
+  * 创建一个滚动窗口的帮助类。
+  * 滚动窗口是连续的，不会相互覆盖的固定长度的。
+  * 比如，一个5分钟的滚动窗口，聚合5分钟间隔内的元素。
   */
 object Tumble {
 
@@ -33,7 +36,7 @@ object Tumble {
     * windows of a specified fixed length. For example, a tumbling window of 5 minutes size groups
     * elements in 5 minutes intervals.
     *
-    * @param size the size of the window as time or row-count interval.
+    * @param size the size of the window as time or row-count interval. 窗口的大小，事件或者数据量间隔
     * @return a partially defined tumbling window
     */
   def over(size: String): TumbleWithSize = new TumbleWithSize(size)

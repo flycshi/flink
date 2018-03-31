@@ -152,12 +152,15 @@ abstract class Window(val alias: Expression, val timeField: Expression) {
 
 /**
   * Tumbling window.
+  * 滚动窗口
   *
   * For streaming tables you can specify grouping by a event-time or processing-time attribute.
+  * 对于流数据表，你可以指定以 event-time 或者 processing-time 进行聚合
   *
   * For batch tables you can specify grouping on a timestamp or long attribute.
+  * 对于批数据表，你可以指定以一个时间戳或者长整型的属性进行聚合。
   *
-  * @param size the size of the window either as time or row-count interval.
+  * @param size the size of the window either as time or row-count interval.  窗口的大小，要么是一个时间间隔，要么是一个行数间隔
   */
 class TumbleWithSize(size: Expression) {
 
