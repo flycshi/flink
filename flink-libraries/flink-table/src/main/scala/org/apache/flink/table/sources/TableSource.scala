@@ -25,11 +25,13 @@ import org.apache.flink.table.api.TableSchema
 
 /**
   * Defines an external table with the schema that is provided by [[TableSource#getTableSchema]].
+  * 定义一个外部表，模式由[[TableSource#getTableSchema]]提供。
   *
   * The data of a [[TableSource]] is produced as a [[DataSet]] in case of a [[BatchTableSource]] or
   * as a [[DataStream]] in case of a [[StreamTableSource]].
   * The type of ths produced [[DataSet]] or [[DataStream]] is specified by the
   * [[TableSource#getReturnType]] method.
+  * [[TableSource]]
   *
   * By default, the fields of the [[TableSchema]] are implicitly mapped by name to the fields of the
   * return type [[TypeInformation]]. An explicit mapping can be defined by implementing the
