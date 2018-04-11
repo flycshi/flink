@@ -67,12 +67,16 @@ import java.util.UUID;
 /**
  * Sink that emits its input elements to {@link FileSystem} files within
  * buckets. This is integrated with the checkpointing mechanism to provide exactly once semantics.
- *
+ * Sink，将输入元素发送到文件系统的文件中。
+ * 这个Sink与checkpoint机制进行了集成，提供 exactly once 语义。
  *
  * <p>When creating the sink a {@code basePath} must be specified. The base directory contains
  * one directory for every bucket. The bucket directories themselves contain several part files,
  * one for each parallel subtask of the sink. These part files contain the actual output data.
- *
+ * 当创建这个sink时，必须提供一个basePath。
+ * 基础目录是包含了所有bucket的父路径。
+ * bucket目录，他们自身包含了多个文件，每个文件对应这个sink的一个并行子任务。
+ * 这些part文件中包含了真实的输出数据。
  *
  * <p>The sink uses a {@link Bucketer} to determine in which bucket directory each element should
  * be written to inside the base directory. The {@code Bucketer} can, for example, use time or
@@ -81,7 +85,11 @@ import java.util.UUID;
  * a custom {@code Bucketer} using {@link #setBucketer(Bucketer)}. For example, use the
  * {@link BasePathBucketer} if you don't want to have buckets but still want to write part-files
  * in a fault-tolerant way.
- *
+ * 这个sink使用一个Bucketer来决定一个元素应该被写入基础路径下的哪个bucket路径。
+ * Bucketer，比如可以使用时间或者元素的一个属性来决定bucket路径。
+ * 默认的Bucketer是一个{@code DateTimeBucketer}，其每小时会创建一个新的bucket。
+ * 你可以指定一个用户自定义的Bucketer，通过{@code #setBucketer(Bucketer)}设置。
+ * 比如，如果你不想要buckets，但是仍然想以一种容灾的方式写part-files，可以使用{@code BasePathBucketer}
  *
  * <p>The filenames of the part files contain the part prefix, the parallel subtask index of the sink
  * and a rolling counter. For example the file {@code "part-1-17"} contains the data from
@@ -90,18 +98,28 @@ import java.util.UUID;
  * When a part file becomes bigger than the user-specified batch size the current part file is closed,
  * the part counter is increased and a new part file is created. The batch size defaults to {@code 384MB},
  * this can be configured using {@link #setBatchSize(long)}.
+ * part文件的文件名汇中包含了part前缀，并行子任务的索引号，以及一个计数器。
+ * 比如，文件{@code "part-1-17"}包含来自sink的{@code subtask 1}的数据，并且是这个子任务创建的第{@code 17th} bucket。
+ * 默认的part前缀就是{@code "part"}，但是这个可以通过{@code #setPartPrefix(String)}配置。
+ * 当一个part文件增长到超过用户指定的批大小时，当前的文件会被关闭，part计数器会增加1，并且一个新的part文件被创建。
+ * 批大小默认是{@code 384MB}，这个可以使用{@code #setBatchSize(long)}进行配置。
  *
  *
  * <p>In some scenarios, the open buckets are required to change based on time. In these cases, the sink
  * needs to determine when a bucket has become inactive, in order to flush and close the part file.
  * To support this there are two configurable settings:
+ * 在一些场景下，打开的buckets会基于时间而变化。
+ * 在这些情况下，sink需要决定一个bucket何时变的不活跃，以便flush并关闭part file。
  * <ol>
  *     <li>the frequency to check for inactive buckets, configured by {@link #setInactiveBucketCheckInterval(long)},
  *     and</li>
+ *     检查不活跃buckets的频率，通过{@code #setInactiveBucketCheckInterval(long)}配置
  *     <li>the minimum amount of time a bucket has to not receive any data before it is considered inactive,
  *     configured by {@link #setInactiveBucketThreshold(long)}</li>
+ *     通过{@code #setInactiveBucketThreshold(long)}来配置，一个bucket在它被认为不活跃前，不再接收任何数据的最短时间
  * </ol>
  * Both of these parameters default to {@code 60, 000 ms}, or {@code 1 min}.
+ * 这两个参数的默认值是 {@code 60, 000 ms}, or {@code 1 min}.
  *
  *
  * <p>Part files can be in one of three states: {@code in-progress}, {@code pending} or {@code finished}.
@@ -109,7 +127,11 @@ import java.util.UUID;
  * semantics and fault-tolerance. The part file that is currently being written to is {@code in-progress}. Once
  * a part file is closed for writing it becomes {@code pending}. When a checkpoint is successful the currently
  * pending files will be moved to {@code finished}.
- *
+ * part文件的状态有三种，{@code in-progress}, {@code pending} or {@code finished}。
+ * 这个是由于sink与checkpoint机制集成，保障exactly-once语义，以及容灾。
+ * part文件，当前正在被写入的是{@code in-progress}。
+ * part文件一旦被关闭写入，就变成{@code pending}。
+ * 当一个checkpoint成功完成，档期pending状态的文件就会被设置为{@code finished}。
  *
  * <p>If case of a failure, and in order to guarantee exactly-once semantics, the sink should roll back to the state it
  * had when that last successful checkpoint occurred. To this end, when restoring, the restored files in {@code pending}
@@ -120,7 +142,13 @@ import java.util.UUID;
  * length up to which the file contains valid data. When reading the file, it must be ensured that it is only read up
  * to that point. The prefixes and suffixes for the different file states and valid-length files can be configured
  * using the adequate setter method, e.g. {@link #setPendingSuffix(String)}.
- *
+ * 在一个失败的情况下，为了保障exactly-once语义，sink需要回滚到它最后的一次成功checkpoint的时间。
+ * 当恢复时，{@code pending}状态的恢复文件被转化为{@code finished}状态也，而{@code in-progress}状态的文件被回滚掉，
+ * 这样，他们就不包含我们恢复的checkpoint之后到达的数据。
+ * 如果{@code FileSystem}支持{@code truncate()}方法，那么会被用来重设文件到它之前的状态，
+ * 如果不支持，一个特殊的文件，与part文件具有相同名称，再加上{@code ".valid-length"}后缀的文件会被创建，其包含了这个文件包含的有效数据的长度。
+ * 当读取这个文件时，它必须确保只读取到有效长度处。
+ * 不同文件状态下的前缀和后缀，以及有效长度文件，可以使用相应的setter方法进行设置，比如{@code #setPendingSuffix(String)}
  *
  * <p><b>NOTE:</b>
  * <ol>
@@ -128,6 +156,8 @@ import java.util.UUID;
  *         If checkpointing is not enabled the pending files will never be moved to the finished state. In that case,
  *         the pending suffix/prefix can be set to {@code ""} to make the sink work in a non-fault-tolerant way but
  *         still provide output without prefixes and suffixes.
+ *         如果checkpoint没有开启，pending文件将永远不会move成finished状态。
+ *         在这种情况下，pending的后缀/前缀可以设置为{@code ""}，这样sink就是在非容灾下工作，但仍然提供没有前缀和后缀的输出文件。
  *     </li>
  *     <li>
  *         The part files are written using an instance of {@link Writer}. By default, a
@@ -135,6 +165,9 @@ import java.util.UUID;
  *         every element, separated by newlines. You can configure the writer using the
  *         {@link #setWriter(Writer)}. For example, {@link SequenceFileWriter}
  *         can be used to write Hadoop {@code SequenceFiles}.
+ *         part文件使用{@code Writer}的一个实例进行写。
+ *         默认的，使用的是{@code StringWriter}，其会将每个元素的{@code toString()}写入文件，一个元素一行记录。
+ *         你可以通过{@code #setWriter(Writer)}设置writer。比如{@code SequenceFileWriter}可以用来写hadoop的{@code SequenceFiles}。
  *     </li>
  * </ol>
  *
@@ -235,6 +268,7 @@ public class BucketingSink<T>
 
 	/**
 	 * The base {@code Path} that stores all bucket directories.
+	 * 存储所有bucket目录的父路径。
 	 */
 	private final String basePath;
 
