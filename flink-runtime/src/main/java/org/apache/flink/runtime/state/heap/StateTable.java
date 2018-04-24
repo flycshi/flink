@@ -29,6 +29,8 @@ import java.util.stream.Stream;
 /**
  * Base class for state tables. Accesses to state are typically scoped by the currently active key, as provided
  * through the {@link InternalKeyContext}.
+ * 状态表的基类。
+ * 访问与当前活跃key相关的状态。
  *
  * @param <K> type of key
  * @param <N> type of namespace
@@ -38,11 +40,14 @@ public abstract class StateTable<K, N, S> {
 
 	/**
 	 * The key context view on the backend. This provides information, such as the currently active key.
+	 * backend上的key的上下文视图。
+	 * 这个会提供信息，比如当前活跃的key
 	 */
 	protected final InternalKeyContext<K> keyContext;
 
 	/**
 	 * Combined meta information such as name and serializers for this state
+	 * 组合元信息，比如状态的名称和序列化器
 	 */
 	protected RegisteredKeyedBackendStateMetaInfo<N, S> metaInfo;
 

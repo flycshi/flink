@@ -26,6 +26,7 @@ import org.apache.flink.runtime.state.internal.InternalValueState;
 /**
  * Heap-backed partitioned {@link org.apache.flink.api.common.state.ValueState} that is snapshotted
  * into files.
+ * 基于堆内存的分区{@code ValueState}
  *
  * @param <K> The type of the key.
  * @param <N> The type of the namespace.

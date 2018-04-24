@@ -31,6 +31,8 @@ import org.apache.flink.util.Preconditions;
 /**
  * Base class for partitioned {@link ListState} implementations that are backed by a regular
  * heap hash map. The concrete implementations define how the state is checkpointed.
+ * 基于堆内存hash map的分区{@code ListState}的基类。
+ * 具体的实现类需要定义状态快照的方式。
  *
  * @param <K> The type of the key.
  * @param <N> The type of the namespace.
@@ -41,13 +43,22 @@ import org.apache.flink.util.Preconditions;
 public abstract class AbstractHeapState<K, N, SV, S extends State, SD extends StateDescriptor<S, ?>>
 		implements InternalKvState<N> {
 
-	/** Map containing the actual key/value pairs. */
+	/**
+	 * Map containing the actual key/value pairs.
+	 * 包含真实的 kv 对的map
+	 */
 	protected final StateTable<K, N, SV> stateTable;
 
-	/** This holds the name of the state and can create an initial default value for the state. */
+	/**
+	 * This holds the name of the state and can create an initial default value for the state.
+	 * 这里维护了状态的名称，并可以为状态创建一个初始化的默认值
+	 */
 	protected final SD stateDesc;
 
-	/** The current namespace, which the access methods will refer to. */
+	/**
+	 * The current namespace, which the access methods will refer to.
+	 * 当前的命名空间，关联的访问方法
+	 */
 	protected N currentNamespace;
 
 	protected final TypeSerializer<K> keySerializer;
