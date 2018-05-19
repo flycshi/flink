@@ -71,6 +71,7 @@ public class SavepointStore {
 
 	/**
 	 * Creates a savepoint directory.
+	 * 创建一个 savepoint 目录
 	 *
 	 * @param baseDirectory Base target directory for the savepoint
 	 * @param jobId Optional JobID the savepoint belongs to

@@ -79,7 +79,9 @@ public class CheckpointCoordinator {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CheckpointCoordinator.class);
 
-	/** The number of recent checkpoints whose IDs are remembered */
+	/** The number of recent checkpoints whose IDs are remembered
+	 *  保留的最近checkpoint的id的数量
+	 */
 	private static final int NUM_GHOST_CHECKPOINT_IDS = 16;
 
 	// ------------------------------------------------------------------------
@@ -91,7 +93,11 @@ public class CheckpointCoordinator {
 	 * This is not done with the coordinator-wide lock, because as part of triggering,
 	 * blocking operations may happen (distributed atomic counters).
 	 * Using a dedicated lock, we avoid blocking the processing of 'acknowledge/decline'
-	 * messages during that phase. */
+	 * messages during that phase.
+	 * 特定的lock，用来确保trigger请求不会相互覆盖。
+	 * 使用 coordinator-wide锁不合适，因为作为触发器的一部分，可能发生阻塞操作(分布式的原子计数器)。
+	 * 使用一个专用的lock，可以避免阻塞住 'acknowledge/decline' 的操作
+	 * */
 	private final Object triggerLock = new Object();
 
 	/** The job whose checkpoint this coordinator coordinates */
@@ -100,16 +106,24 @@ public class CheckpointCoordinator {
 	/** Default checkpoint properties **/
 	private final CheckpointProperties checkpointProperties;
 
-	/** The executor used for asynchronous calls, like potentially blocking I/O */
+	/** The executor used for asynchronous calls, like potentially blocking I/O
+	 * 用于执行异步调用的执行器，比如阻塞I/O
+	 * */
 	private final Executor executor;
 	
-	/** Tasks who need to be sent a message when a checkpoint is started */
+	/** Tasks who need to be sent a message when a checkpoint is started
+	 * 当开始一次checkpoint的时候，需要被发送一个消息的那些任务
+	 * */
 	private final ExecutionVertex[] tasksToTrigger;
 
-	/** Tasks who need to acknowledge a checkpoint before it succeeds */
+	/** Tasks who need to acknowledge a checkpoint before it succeeds
+	 * 在它成功之前，需要ack的任务
+	 * */
 	private final ExecutionVertex[] tasksToWaitFor;
 
-	/** Tasks who need to be sent a message when a checkpoint is confirmed */
+	/** Tasks who need to be sent a message when a checkpoint is confirmed
+	 * 当一个checkpoint被确认时，需要向其发送一个消息的任务
+	 * */
 	private final ExecutionVertex[] tasksToCommitTo;
 
 	/** Map from checkpoint ID to the pending checkpoint */
@@ -132,17 +146,26 @@ public class CheckpointCoordinator {
 	private final CheckpointIDCounter checkpointIdCounter;
 
 	/** The base checkpoint interval. Actual trigger time may be affected by the
-	 * max concurrent checkpoints and minimum-pause values */
+	 * max concurrent checkpoints and minimum-pause values
+	 * checkpoint的间隔。真实的触发时间，受最大并发checkpoint数和最小间隔时间影响
+	 * */
 	private final long baseInterval;
 
-	/** The max time (in ms) that a checkpoint may take */
+	/** The max time (in ms) that a checkpoint may take
+	 * 产生一个checkpoint，允许的最大时间
+	 * */
 	private final long checkpointTimeout;
 
 	/** The min time(in ms) to delay after a checkpoint could be triggered. Allows to
-	 * enforce minimum processing time between checkpoint attempts */
+	 * enforce minimum processing time between checkpoint attempts
+	 * 在一个checkpoint触发后，新触发一个checkpoint需要的最小延迟时间。
+	 * 在checkpoint尝试之间最小的时间间隔
+	 * */
 	private final long minPauseBetweenCheckpointsNanos;
 
-	/** The maximum number of checkpoints that may be in progress at the same time */
+	/** The maximum number of checkpoints that may be in progress at the same time
+	 * 同一时间允许的最大的在运行中的checkpoint的数量
+	 * */
 	private final int maxConcurrentCheckpointAttempts;
 
 	/** The timer that handles the checkpoint timeouts and triggers periodic checkpoints */
@@ -360,6 +383,7 @@ public class CheckpointCoordinator {
 
 	/**
 	 * Triggers a savepoint with the given savepoint directory as a target.
+	 * 触发一次savepoint，以给定的savepoint路径作为目标地址
 	 *
 	 * @param timestamp The timestamp for the savepoint.
 	 * @param targetDirectory Target directory for the savepoint.

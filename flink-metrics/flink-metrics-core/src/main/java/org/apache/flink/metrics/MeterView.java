@@ -26,7 +26,7 @@ package org.apache.flink.metrics;
  * Instead, a history of counts is maintained that is updated in regular intervals by a background thread. From this
  * history a rate is derived on demand, which represents the average rate of events over the given time span.
  *
- * 这个类的主要优点是，该速率既不是由计算线程更新的，也不是每个事件都更新的。
+ * <p>这个类的主要优点是，该速率既不是由计算线程更新的，也不是每个事件都更新的。
  * 相反，通过后台线程定期更新，维护了一份记录的历史数据。
  * 从这段历史中，一个比率是根据需求得出的，它代表了给定时间跨度内事件的平均速率。
  *
@@ -35,7 +35,7 @@ package org.apache.flink.metrics;
  * A high value in turn increases memory-consumption, since a longer history has to be maintained, but will result in
  * smoother transitions between rates.
  *
- * 将时间跨度设置为较小的值可以减少内存消耗，并更准确地报告短期更改。
+ * <p>将时间跨度设置为较小的值可以减少内存消耗，并更准确地报告短期更改。
  * 最小值可能是{@link View#UPDATE_INTERVAL_SECONDS}。
  * 一个较大的值反过来会增加内存消耗，因为要保持较长的历史，但是会使得速率的变化更平滑。
  *

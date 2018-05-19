@@ -22,7 +22,7 @@ package org.apache.flink.metrics;
  * A Gauge is a {@link Metric} that calculates a specific value at a point in time.
  * {@code Gauge}是在一个时间点，计算一个特定值的{@code Metric}。
  *
- * 比如有一个队列，通过{@code Gauge}统计队列的长度
+ * <p>比如有一个队列，通过{@code Gauge}统计队列的长度
  */
 public interface Gauge<T> extends Metric {
 
