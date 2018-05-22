@@ -65,7 +65,7 @@ public class KeyGroupRange implements KeyGroupsList, Serializable {
 
 	/**
 	 * Checks whether or not a single key-group is contained in the range.
-	 * 坚持一个独立的 key-group 是否包含在范围内
+	 * 检查一个独立的 key-group 是否包含在范围内
 	 *
 	 * @param keyGroup Key-group to check for inclusion.
 	 * @return True, only if the key-group is in the range.

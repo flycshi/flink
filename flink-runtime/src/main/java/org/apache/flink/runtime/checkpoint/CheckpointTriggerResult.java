@@ -23,6 +23,8 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * The result of triggering a checkpoint. May either be a declined checkpoint
  * trigger attempt, or a pending checkpoint.
+ * 用来描述触发一个checkpoint后的结果。
+ * 可能是一次被拒绝的checkpoint尝试，或者一个pending的checkpoint
  */
 class CheckpointTriggerResult {
 

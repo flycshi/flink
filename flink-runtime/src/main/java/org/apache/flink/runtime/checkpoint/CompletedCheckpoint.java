@@ -44,6 +44,8 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * and that is considered successful. The CompletedCheckpoint class contains all the metadata of the
  * checkpoint, i.e., checkpoint ID, timestamps, and the handles to all states that are part of the
  * checkpoint.
+ * 一个{@code CompletedCheckpoint}描述了这样的一个checkpoint，其所有需要ack的任务都进行了ack操作(附带了它们的状态)，然后就表示成功了。
+ * {@code CompletedCheckpoint}包含了checkpoint的所有元数据，比如 checkpoint id，时间戳，以及所有状态的句柄。
  * 
  * <h2>Size the CompletedCheckpoint Instances</h2>
  * 
@@ -52,16 +54,24 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * choose to store some payload data directly with the metadata (for example to avoid many small files).
  * If those thresholds are increased to large values, the memory consumption of the CompletedCheckpoint
  * objects can be significant.
+ * 在大多数情况下，{@code CompletedCheckpoint}对象是非常小的，因为checkpoint中状态的句柄只是指针(比如文件路径)。
+ * 但是，有些状态后端实现，可能会选取将一些负载数据直接保存在元数据中(比如为了避免很多小文件)。
+ * 如果这些阈值增长到比较大的值，{@code CompletedCheckpoint}对象的内存消化会是非常大的。
  * 
  * <h2>Externalized Metadata</h2>
  * 
  * The metadata of the CompletedCheckpoint is optionally also persisted in an external storage
  * system. In that case, the checkpoint is called <i>externalized</i>.
+ * CompletedCheckpoint的元数据可以选择持久化到外部存储系统中。在这个情况下，checkpoint被称为<i>externalized</i>
  * 
  * <p>Externalized checkpoints have an external pointer, which points to the metadata. For example
  * when externalizing to a file system, that pointer is the file path to the checkpoint's folder
  * or the metadata file. For a state backend that stores metadata in database tables, the pointer
  * could be the table name and row key. The pointer is encoded as a String.
+ * 外部持久化的checkpoint有一个外部的指针，其指向元数据。
+ * 比如，当持久化到一个文件系统，指针是一个指向checkpoint的目录或者元数据文件的文件地址。
+ * 对于将元数据存储在数据库表中的state backend，指针可能是表名和row key。
+ * 指针编码为一个字符串。
  * 
  * <h2>Externalized Metadata and High-availability</h2>
  * 
@@ -70,6 +80,9 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * the latest completed checkpoints in what order) often rely on checkpoints being externalized. That
  * way, those services only store pointers to the externalized metadata, rather than the complete
  * metadata itself (for example ZooKeeper's ZNode payload should ideally be less than megabytes).
+ * 对于HA配置，checkpoint元数据必须被持久化并且要高可用。
+ * 存储checkpoint基本事实(也就是什么是最新的完成的检查点)通常依赖于被外部化的检查点。
+ * 这种情况下，这些服务仅存储外部存储的元数据的指针，而不是完整的元数据本身(比如zk的ZNode的负载需要小于1MB)
  */
 public class CompletedCheckpoint implements Serializable {
 
