@@ -24,6 +24,7 @@ import static org.apache.flink.util.Preconditions.checkArgument;
 
 /**
  * Statistics for a single subtask that is part of a checkpoint.
+ * 一个独立的子任务的统计信息
  *
  * <p>Collects data that is spread over different close places:
  * {@link CheckpointMetaData},
@@ -31,21 +32,27 @@ import static org.apache.flink.util.Preconditions.checkArgument;
  * {@link PendingCheckpoint}.
  *
  * <p>This is the smallest immutable unit of the stats.
+ * 这是最小的不可变的状态单元
  */
 public class SubtaskStateStats implements Serializable {
 
 	private static final long serialVersionUID = 8928594531621862214L;
 
-	/** Index of this sub task. */
+	/** Index of this sub task.
+	 * 这个子任务的索引
+	 * */
 	private final int subtaskIndex;
 
 	/**
 	 * Timestamp when the ack from this sub task was received at the
 	 * coordinator.
+	 * coordinator收到来自这个子任务的ack的时间戳
 	 */
 	private final long ackTimestamp;
 
-	/** Size of the checkpointed state at this subtask. */
+	/** Size of the checkpointed state at this subtask.
+	 * 这个子任务的checkpoint状态的大小
+	 * */
 	private final long stateSize;
 
 	/** Checkpoint duration at the operator (sync part) in milliseconds. */
@@ -157,6 +164,7 @@ public class SubtaskStateStats implements Serializable {
 	/**
 	 * Returns the number of bytes buffered during stream alignment (for
 	 * exactly-once only).
+	 * 返回在数据流校准的过程中缓存的字节数(比如exactly-once)
 	 *
 	 * <p>Can return <code>-1</code> if the runtime did not report this.
 	 *

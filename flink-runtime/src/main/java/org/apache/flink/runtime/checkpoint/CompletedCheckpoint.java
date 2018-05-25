@@ -125,18 +125,30 @@ public class CompletedCheckpoint implements Serializable {
 	/** Properties for this checkpoint. */
 	private final CheckpointProperties props;
 
-	/** States that were created by a hook on the master (in the checkpoint coordinator) */
+	/**
+	 * States that were created by a hook on the master (in the checkpoint coordinator).
+	 * 由master(在checkpoint协调器)上的hook创建的状态
+	 * */
 	private final Collection<MasterState> masterHookStates;
 
-	/** The state handle to the externalized meta data, if the metadata has been externalized */
+	/**
+	 * The state handle to the externalized meta data, if the metadata has been externalized.
+	 * 如果元数据被外部持久化了，就表示外部元数据的状态句柄
+	 * */
 	@Nullable
 	private final StreamStateHandle externalizedMetadata;
 
-	/** External pointer to the completed checkpoint (for example file path) if externalized; null otherwise. */
+	/**
+	 * External pointer to the completed checkpoint (for example file path) if externalized; null otherwise.
+	 * 如果外部持久化了，就表示外部指针(比如文件路径)，否则就是null
+	 * */
 	@Nullable
 	private final String externalPointer;
 
-	/** Optional stats tracker callback for discard. */
+	/**
+	 * Optional stats tracker callback for discard.
+	 * 针对discard操作的可选状态跟踪回调
+	 * */
 	@Nullable
 	private transient volatile CompletedCheckpointStats.DiscardCallback discardCallback;
 
@@ -244,6 +256,7 @@ public class CompletedCheckpoint implements Serializable {
 			Exception exception = null;
 
 			// drop the metadata, if we have some
+			// 如果有元数据，则删除
 			if (externalizedMetadata != null) {
 				try {
 					externalizedMetadata.discardState();

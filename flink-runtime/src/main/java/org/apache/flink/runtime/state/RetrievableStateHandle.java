@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 /**
  * Handle to state that can be read back again via {@link #retrieveState()}.
+ * 状态句柄，状态可以通过{@code retrieveState}获取
  */
 public interface RetrievableStateHandle<T extends Serializable> extends StateObject {
 

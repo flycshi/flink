@@ -21,6 +21,7 @@ package org.apache.flink.runtime.state;
 /**
  * Base of all snapshots that are taken by {@link StateBackend}s and some other
  * components in tasks.
+ * 通过{@code StateBackend}或者任务中其他组件产生的所有快照的基础
  *
  * <p>Each snapshot is composed of a collection of {@link StateObject}s some of 
  * which may be referenced by other checkpoints. The shared states will be 

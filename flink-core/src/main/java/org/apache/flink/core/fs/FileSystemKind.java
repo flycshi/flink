@@ -28,6 +28,7 @@ public enum FileSystemKind {
 
 	/**
 	 * An actual file system, with files and directories.
+	 * 一个真实的文件系统，有文件和路径
 	 */
 	FILE_SYSTEM,
 

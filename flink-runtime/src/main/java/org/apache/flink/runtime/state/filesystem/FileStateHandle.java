@@ -34,19 +34,29 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * {@link StreamStateHandle} for state that was written to a file stream. The written data is
  * identifier by the file path. The state can be read again by calling {@link #openInputStream()}.
+ * 将state写入一个文件系统的{@code StreamStateHandle}。
+ * 写入的数据由文件路径来标识。
+ * 状态可以通过调用{@code #openInputStream()}进行读取。
  */
 public class FileStateHandle implements StreamStateHandle {
 
 	private static final long serialVersionUID = 350284443258002355L;
 
-	/** The path to the file in the filesystem, fully describing the file system */
+	/**
+	 * The path to the file in the filesystem, fully describing the file system.
+	 * 文件系统中文件的路径，完整描述了文件系统
+	 * */
 	private final Path filePath;
 
-	/** The size of the state in the file */
+	/**
+	 * The size of the state in the file.
+	 * 在文件中的状态的大小
+	 * */
 	private final long stateSize;
 
 	/**
 	 * Creates a new file state for the given file path.
+	 * 为给定的文件路径创建一个新的文件状态
 	 *
 	 * @param filePath The path to the file that stores the state.
 	 */

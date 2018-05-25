@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 /**
  * Helper for keeping track of min/max/average summaries.
+ * 用来跟踪 min/max/average 汇总的助手
  */
 public class MinMaxAvgStats implements Serializable {
 

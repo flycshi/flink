@@ -29,12 +29,15 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * Statistics for a single task/operator that gathers all statistics of its
  * subtasks and provides summary statistics about all subtasks.
+ * 一个单独的task/operator的统计信息，收集了其子任务的所有统计，并提供了所有子任务的汇总统计信息
  */
 public class TaskStateStats implements Serializable {
 
 	private static final long serialVersionUID = 531803101206574444L;
 
-	/** ID of the task the stats belong to. */
+	/** ID of the task the stats belong to.
+	 * 状态归属的任务的id
+	 * */
 	private final JobVertexID jobVertexId;
 
 	/** Stats for each subtask */
@@ -43,10 +46,14 @@ public class TaskStateStats implements Serializable {
 	/** A summary of the subtask stats. */
 	private final TaskStateStatsSummary summaryStats = new TaskStateStatsSummary();
 
-	/** Number of acknowledged subtasks. */
+	/** Number of acknowledged subtasks.
+	 * 提交ack的子任务的数量
+	 * */
 	private int numAcknowledgedSubtasks;
 
-	/** The latest acknowledged subtask stats. */
+	/** The latest acknowledged subtask stats.
+	 * 最新ack的子任务的状态
+	 * */
 	@Nullable
 	private SubtaskStateStats latestAckedSubtaskStats;
 
@@ -58,6 +65,7 @@ public class TaskStateStats implements Serializable {
 
 	/**
 	 * Hands in the stats for a subtask.
+	 * 录入一个子任务的状态
 	 *
 	 * @param subtask Stats for the sub task to hand in.
 	 */
@@ -197,6 +205,7 @@ public class TaskStateStats implements Serializable {
 
 	/**
 	 * Summary of the subtask stats of a single task/operator.
+	 * 一个独立的task/operator的子任务状态的汇总
 	 */
 	public static class TaskStateStatsSummary implements Serializable {
 

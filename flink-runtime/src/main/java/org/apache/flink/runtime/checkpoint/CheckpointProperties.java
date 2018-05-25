@@ -72,6 +72,7 @@ public class CheckpointProperties implements Serializable {
 		this.discardSuspended = discardSuspended;
 
 		// Not persisted, but needs manual clean up
+		// 没有做外部持久化，但是却需要进行手动清理，配置冲突
 		if (!externalize && !(discardSubsumed && discardFinished && discardCancelled
 				&& discardFailed && discardSuspended)) {
 			throw new IllegalStateException("CheckpointProperties say to *not* persist the " +

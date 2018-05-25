@@ -30,21 +30,30 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Base class for checkpoint statistics.
+ * checkpoint统计的基类
  */
 public abstract class AbstractCheckpointStats implements Serializable {
 
 	private static final long serialVersionUID = 1041218202028265151L;
 
-	/** ID of this checkpoint. */
+	/**
+	 * ID of this checkpoint.
+	 * checkpoint的id
+	 * */
 	final long checkpointId;
 
-	/** Timestamp when the checkpoint was triggered at the coordinator. */
+	/**
+	 * Timestamp when the checkpoint was triggered at the coordinator.
+	 * checkpoint在协调器中被触发的时间戳
+	 * */
 	final long triggerTimestamp;
 
 	/** {@link TaskStateStats} accessible by their ID. */
 	final Map<JobVertexID, TaskStateStats> taskStats;
 
-	/** Total number of subtasks over all tasks. */
+	/** Total number of subtasks over all tasks.
+	 * 所有子任务的总数
+	 * */
 	final int numberOfSubtasks;
 
 	/** Properties of the checkpoint. */

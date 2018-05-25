@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 /**
  * Encapsulates all the meta data for a checkpoint.
+ * 封装了一个checkpoint的所有元数据
  */
 public class CheckpointMetaData implements Serializable {
 

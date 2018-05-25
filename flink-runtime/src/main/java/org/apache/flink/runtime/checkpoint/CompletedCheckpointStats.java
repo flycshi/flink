@@ -28,10 +28,13 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Statistics for a successfully completed checkpoint.
+ * 一个成功的checkpoint的统计
  *
  * <p>The reported statistics are immutable except for the discarded flag, which
  * is updated via the {@link DiscardCallback} and the {@link CompletedCheckpoint}
  * after an instance of this class has been created.
+ * 汇总的统计信息，除了discarded标识，其他是不可变的，discarded标识在这个类的一个新实例创建后，
+ * 通过{@code DiscardCallback}来更新。
  */
 public class CompletedCheckpointStats extends AbstractCheckpointStats {
 
@@ -150,11 +153,13 @@ public class CompletedCheckpointStats extends AbstractCheckpointStats {
 	 * Callback for the {@link CompletedCheckpoint} instance to notify about
 	 * disposal of the checkpoint (most commonly when the checkpoint has been
 	 * subsumed by a newer one).
+	 * {@code CompletedCheckpoint}实例用来调用通知清理checkpoint(常见的情况是checkpoint被一个新checkpoint给抵掉了)
 	 */
 	class DiscardCallback {
 
 		/**
 		 * Updates the discarded flag of the checkpoint stats.
+		 * 更新checkpoint的状态的discarded标识为true
 		 *
 		 * <p>After this notification, {@link #isDiscarded()} will return
 		 * <code>true</code>.
