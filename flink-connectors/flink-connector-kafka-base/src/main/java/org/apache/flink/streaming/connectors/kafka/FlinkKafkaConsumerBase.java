@@ -68,6 +68,8 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * Base class of all Flink Kafka Consumer data sources.
  * This implements the common behavior across all Kafka versions.
+ * 所有kafka消费数据源的基类
+ * 实现了所有kafka版本的共用行为
  *
  * <p>The Kafka version specific behavior is defined mainly in the specific subclasses of the
  * {@link AbstractFetcher}.
@@ -95,10 +97,12 @@ public abstract class FlinkKafkaConsumerBase<T> extends RichParallelSourceFuncti
 	/** Boolean configuration key to disable metrics tracking. **/
 	public static final String KEY_DISABLE_METRICS = "flink.disable-metrics";
 
-	/** Configuration key to define the consumer's partition discovery interval, in milliseconds. */
+	/** Configuration key to define the consumer's partition discovery interval, in milliseconds.
+	 * 定义了消费者分区发现的时间间隔，单位ms */
 	public static final String KEY_PARTITION_DISCOVERY_INTERVAL_MILLIS = "flink.partition-discovery.interval-millis";
 
-	/** State name of the consumer's partition offset states. */
+	/** State name of the consumer's partition offset states.
+	 * 消费者分区偏移量的状态的名称 */
 	private static final String OFFSETS_STATE_NAME = "topic-partition-offset-states";
 
 	// ------------------------------------------------------------------------
