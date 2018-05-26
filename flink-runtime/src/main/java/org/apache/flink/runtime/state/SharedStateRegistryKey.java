@@ -26,6 +26,9 @@ import org.apache.flink.util.StringBasedID;
  * registration in the {@link SharedStateRegistry}. Two files which should logically
  * be the same should have the same {@link SharedStateRegistryKey}. The meaning of logical
  * equivalence is up to the application.
+ * 这个类表示一个key，用来唯一标识(在逻辑层面)注册在{@code SharedStateRegistry}这个注册器中的状态句柄。
+ * 两个逻辑上应该一样的文件，应该有一样的{@code SharedStateRegistryKey}。
+ * 逻辑上相等的意思取决于应用。
  */
 public class SharedStateRegistryKey extends StringBasedID {
 

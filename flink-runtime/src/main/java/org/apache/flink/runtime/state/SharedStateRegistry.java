@@ -32,6 +32,7 @@ import java.util.concurrent.Executor;
 /**
  * This registry manages state that is shared across (incremental) checkpoints, and is responsible
  * for deleting shared state that is no longer used in any valid checkpoint.
+ * 这个注册器管理在(增量)checkpoint间共享的状态，并且负责删除在任何有效的checkpoint中都不再使用的共享状态
  *
  * A {@code SharedStateRegistry} will be deployed in the 
  * {@link org.apache.flink.runtime.checkpoint.CheckpointCoordinator} to
@@ -165,6 +166,7 @@ public class SharedStateRegistry implements AutoCloseable {
 
 	/**
 	 * Register given shared states in the registry.
+	 * 在注册器中注册给定的共享状态
 	 *
 	 * @param stateHandles The shared states to register.
 	 */
@@ -212,13 +214,16 @@ public class SharedStateRegistry implements AutoCloseable {
 
 	/**
 	 * An entry in the registry, tracking the handle and the corresponding reference count.
+	 * 注册器中的一个实例，根据句柄和相关的reference count
 	 */
 	private static class SharedStateEntry {
 
-		/** The shared state handle */
+		/** The shared state handle.
+		 * 共享的状态句柄 */
 		private final StreamStateHandle stateHandle;
 
-		/** The current reference count of the state handle */
+		/** The current reference count of the state handle.
+		 * 状态句柄当前的reference count */
 		private int referenceCount;
 
 		SharedStateEntry(StreamStateHandle value) {
@@ -253,13 +258,16 @@ public class SharedStateRegistry implements AutoCloseable {
 
 	/**
 	 * The result of an attempt to (un)/reference state
+	 * 一次 (un)/reference state 尝试的结果
 	 */
 	public static class Result {
 
-		/** The (un)registered state handle from the request */
+		/** The (un)registered state handle from the request.
+		 * 请求中，关联/去关联 的状态句柄 */
 		private final StreamStateHandle reference;
 
-		/** The reference count to the state handle after the request to (un)register */
+		/** The reference count to the state handle after the request to (un)register.
+		 * 对状态句柄执行过 关联/去关联 后的引用数 */
 		private final int referenceCount;
 
 		private Result(SharedStateEntry sharedStateEntry) {

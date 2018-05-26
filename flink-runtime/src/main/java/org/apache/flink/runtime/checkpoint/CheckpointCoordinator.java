@@ -214,7 +214,8 @@ public class CheckpointCoordinator {
 	/** A factory for SharedStateRegistry objects */
 	private final SharedStateRegistryFactory sharedStateRegistryFactory;
 
-	/** Registry that tracks state which is shared across (incremental) checkpoints */
+	/** Registry that tracks state which is shared across (incremental) checkpoints.
+	 * 对在(增量)checkpoint之间共享的状态进行跟踪的注册器 */
 	private SharedStateRegistry sharedStateRegistry;
 
 	// --------------------------------------------------------------------------------------------
@@ -648,7 +649,7 @@ public class CheckpointCoordinator {
 						// only do the work if the checkpoint is not discarded anyways
 						// note that checkpoint completion discards the pending checkpoint object
 						// 只有在checkpoint没有被discarded时才执行
-						//
+						// 注意，检查点完成会丢弃挂起的检查点对象。
 						if (!checkpoint.isDiscarded()) {
 							LOG.info("Checkpoint " + checkpointID + " expired before completing.");
 
@@ -664,9 +665,11 @@ public class CheckpointCoordinator {
 
 			try {
 				// re-acquire the coordinator-wide lock
+				// 重新获取coordinator全局lock，这里是由于之前前置校验后，释放了lock，这里重新获取lock后，又做了一次相关校验的工作
 				synchronized (lock) {
 					// since we released the lock in the meantime, we need to re-check
 					// that the conditions still hold.
+					// 因为我们同时释放了lock，需要重新检查条件是否还具备
 					if (shutdown) {
 						return new CheckpointTriggerResult(CheckpointDeclineReason.COORDINATOR_SHUTDOWN);
 					}
@@ -708,12 +711,14 @@ public class CheckpointCoordinator {
 
 					pendingCheckpoints.put(checkpointID, checkpoint);
 
+					// 这里就是将checkpoint超时检查的任务调度起来的地方
 					ScheduledFuture<?> cancellerHandle = timer.schedule(
 							canceller,
 							checkpointTimeout, TimeUnit.MILLISECONDS);
 
 					if (!checkpoint.setCancellerHandle(cancellerHandle)) {
 						// checkpoint is already disposed!
+						// 如果checkpoint已经被disposed，则直接取消这个超时检查任务
 						cancellerHandle.cancel(false);
 					}
 
@@ -734,15 +739,18 @@ public class CheckpointCoordinator {
 				}
 
 				// send the messages to the tasks that trigger their checkpoint
+				// 这里就是向各个source发送checkpoint的地方
 				for (Execution execution: executions) {
 					execution.triggerCheckpoint(checkpointID, timestamp, checkpointOptions);
 				}
 
+				// 这次发送成功，就会将该值置零，冲洗开始累积统计
 				numUnsuccessfulCheckpointsTriggers.set(0);
 				return new CheckpointTriggerResult(checkpoint);
 			}
 			catch (Throwable t) {
 				// guard the map against concurrent modifications
+				// 避免并发修改
 				synchronized (lock) {
 					pendingCheckpoints.remove(checkpointID);
 				}
@@ -908,8 +916,10 @@ public class CheckpointCoordinator {
 
 	/**
 	 * Try to complete the given pending checkpoint.
+	 * 尝试完成给定的pending checkpoint
 	 *
 	 * Important: This method should only be called in the checkpoint lock scope.
+	 * 重要：这个方法应该只在checkpoint的lock下进行调用
 	 *
 	 * @param pendingCheckpoint to complete
 	 * @throws CheckpointException if the completion failed
@@ -919,12 +929,14 @@ public class CheckpointCoordinator {
 		final CompletedCheckpoint completedCheckpoint;
 
 		// As a first step to complete the checkpoint, we register its state with the registry
+		// 作为完成checkpoint的第一步，先在注册器中注册状态
 		Map<OperatorID, OperatorState> operatorStates = pendingCheckpoint.getOperatorStates();
 		sharedStateRegistry.registerAll(operatorStates.values());
 
 		try {
 			try {
 				// externalize the checkpoint if required
+				// 如果需要，外部持久化checkpoint
 				if (pendingCheckpoint.getProps().externalizeCheckpoint()) {
 					completedCheckpoint = pendingCheckpoint.finalizeCheckpointExternalized();
 				} else {
@@ -932,6 +944,7 @@ public class CheckpointCoordinator {
 				}
 			} catch (Exception e1) {
 				// abort the current pending checkpoint if we fails to finalize the pending checkpoint.
+				// 如果完成pending checkpoint失败，则终止当前pending checkpoint
 				if (!pendingCheckpoint.isDiscarded()) {
 					pendingCheckpoint.abortError(e1);
 				}
@@ -994,6 +1007,7 @@ public class CheckpointCoordinator {
 		}
 
 		// send the "notify complete" call to all vertices
+		// 向所有的节点发送"notify complete"调用
 		final long timestamp = completedCheckpoint.getTimestamp();
 
 		for (ExecutionVertex ev : tasksToCommitTo) {
@@ -1049,6 +1063,7 @@ public class CheckpointCoordinator {
 
 	/**
 	 * Triggers the queued request, if there is one.
+	 * 如果有等待执行的请求，则触发
 	 *
 	 * <p>NOTE: The caller of this method must hold the lock when invoking the method!
 	 */
@@ -1058,6 +1073,7 @@ public class CheckpointCoordinator {
 
 			// trigger the checkpoint from the trigger timer, to finish the work of this thread before
 			// starting with the next checkpoint
+			// 从timer中触发checkpoint，在开始下一个checkpoint前完成这个现场的工作
 			if (periodicScheduling) {
 				if (currentPeriodicTrigger != null) {
 					currentPeriodicTrigger.cancel(false);

@@ -45,6 +45,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * Utilities for storing and loading savepoint meta data files.
+ * 用来存储和加载savepoint元数据文件的工具。
  *
  * <p>Stored savepoints have the following format:
  * <pre>
@@ -58,7 +59,8 @@ public class SavepointStore {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SavepointStore.class);
 
-	/** Magic number for sanity checks against stored savepoints. */
+	/** Magic number for sanity checks against stored savepoints.
+	 *  双重校验存储的savepoint的魔法数字 */
 	public static final int MAGIC_NUMBER = 0x4960672d;
 
 	private static final String SAVEPOINT_METADATA_FILE = "_metadata";
@@ -66,6 +68,7 @@ public class SavepointStore {
 	/**
 	 * Metadata file for an externalized checkpoint, random suffix added
 	 * during store, because the parent directory is not unique.
+	 * 一个外部持久化的checkpoint的元数据文件，在存储的时候，会加上随机后缀，因为父目录不是独立的
 	 */
 	static final String EXTERNALIZED_CHECKPOINT_METADATA_FILE = "checkpoint_metadata-";
 
@@ -168,6 +171,7 @@ public class SavepointStore {
 
 	/**
 	 * Stores the savepoint metadata file to a state handle.
+	 * 存储savepoint元数据文件
 	 *
 	 * @param directory Target directory to store savepoint in
 	 * @param savepoint Savepoint to be stored
@@ -218,6 +222,7 @@ public class SavepointStore {
 
 	/**
 	 * Loads the savepoint at the specified path.
+	 * 加载指定路径的savepoint
 	 *
 	 * @param savepointFileOrDirectory Path to the parent savepoint directory or the meta data file.
 	 * @param classLoader The class loader used to resolve serialized classes from legacy savepoint formats.
@@ -232,6 +237,8 @@ public class SavepointStore {
 	/**
 	 * Loads the savepoint at the specified path. This methods returns the savepoint, as well as the
 	 * handle to the metadata.
+	 * 加载指定路径的savepoint。
+	 * 这个方法返回savepoint，以及元数据的句柄
 	 *
 	 * @param savepointFileOrDirectory Path to the parent savepoint directory or the meta data file.
 	 * @param classLoader The class loader used to resolve serialized classes from legacy savepoint formats.
@@ -255,6 +262,7 @@ public class SavepointStore {
 		FileStatus status = fs.getFileStatus(path);
 
 		// If this is a directory, we need to find the meta data file
+		// 如果是一个目录，我们需要找出元数据文件，目前就是针对savepoint
 		if (status.isDir()) {
 			Path candidatePath = new Path(path, SAVEPOINT_METADATA_FILE);
 			if (fs.exists(candidatePath)) {
@@ -268,6 +276,7 @@ public class SavepointStore {
 		}
 
 		// load the savepoint
+		// 加载savepoint
 		final Savepoint savepoint;
 		try (DataInputStream dis = new DataInputViewStreamWrapper(fs.open(path))) {
 			int magicNumber = dis.readInt();

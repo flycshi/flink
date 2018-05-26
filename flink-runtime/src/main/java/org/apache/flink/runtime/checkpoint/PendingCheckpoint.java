@@ -225,6 +225,8 @@ public class PendingCheckpoint {
 	/**
 	 * Sets the handle for the canceller to this pending checkpoint. This method fails
 	 * with an exception if a handle has already been set.
+	 * 给这个pending checkpoint设置取消句柄。
+	 * 如果一个句柄已经被设置了，则该方法操作失败，并抛出异常
 	 * 
 	 * @return true, if the handle was set, false, if the checkpoint is already disposed;
 	 */
@@ -263,8 +265,10 @@ public class PendingCheckpoint {
 			checkState(isFullyAcknowledged(), "Pending checkpoint has not been fully acknowledged yet.");
 
 			// make sure we fulfill the promise with an exception if something fails
+			// 确保在某些地方失败时，在promise中设置了异常
 			try {
 				// externalize the metadata
+				// 元数据
 				final Savepoint savepoint = new SavepointV2(checkpointId, operatorStates.values(), masterState);
 
 				// TEMP FIX - The savepoint store is strictly typed to file systems currently
@@ -273,14 +277,16 @@ public class PendingCheckpoint {
 
 				// We have this branch here, because savepoints and externalized checkpoints
 				// currently behave differently.
+				// 这里有分支，是因为当前savepoint和外部处就会的checkpoint的行为是不同的
 				// Savepoints:
-				//   - Metadata file in unique directory
-				//   - External pointer can be the directory
+				//   - Metadata file in unique directory	在独立目录下的元数据文件
+				//   - External pointer can be the directory	外部指针可以是目录
 				// Externalized checkpoints:
-				//   - Multiple metadata files per directory possible (need to be unique)
-				//   - External pointer needs to be the file itself
+				//   - Multiple metadata files per directory possible (need to be unique)	在每个目录下可能有多个元数据文件(这些元数据文件需要独立)
+				//   - External pointer needs to be the file itself	外部指针需要是文件本身
 				//
 				// This should be unified as part of the JobManager metadata stream factories.
+				// 这应该作为JobManager元数据流工厂的一部分统一。
 				if (props.isSavepoint()) {
 					final FileStateHandle metadataHandle = SavepointStore.storeSavepointToHandle(targetDirectory, savepoint);
 					final String externalPointer = metadataHandle.getFilePath().getParent().toString();

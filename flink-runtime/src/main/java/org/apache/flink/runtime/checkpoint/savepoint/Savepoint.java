@@ -29,13 +29,16 @@ import java.util.Collection;
 /**
  * Savepoints are manually-triggered snapshots from which a program can be
  * resumed on submission.
+ * savapoint是手动触发的快照，程序在提交时可以从快照恢复。
  *
  * <p>In order to allow changes to the savepoint format between Flink versions,
  * we allow different savepoint implementations (see subclasses of this
  * interface).
+ * 为了允许在flink版本间修改savepoint的格式，我们允许不同的savepoint实现(看这个接口的子类)
  *
  * <p>Savepoints are serialized via a {@link SavepointSerializer} and stored
  * via a {@link SavepointStore}.
+ * savepoint通过{@code SavepointSerializer}，通过{@code SavepointStore}来存储。
  */
 public interface Savepoint extends Versioned {
 
