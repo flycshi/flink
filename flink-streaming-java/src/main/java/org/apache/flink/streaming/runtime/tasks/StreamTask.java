@@ -617,11 +617,14 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
 		synchronized (lock) {
 			if (isRunning) {
 				// we can do a checkpoint
+				// 可以进行一次checkpoint
 
 				// Since both state checkpointing and downstream barrier emission occurs in this
 				// lock scope, they are an atomic operation regardless of the order in which they occur.
 				// Given this, we immediately emit the checkpoint barriers, so the downstream operators
 				// can start their checkpoint work as soon as possible
+				// 因为状态checkpoint和向下游发送屏障，都发生在这个lock范围内，所以不论他们发生的顺序怎么样，整体都是一个原子操作。
+				// 考虑到这一点，我们这里是立即向下游发送checkpoint屏障，这样下游操作符可以尽快的开始他们的checkpoint工作。
 				operatorChain.broadcastCheckpointBarrier(
 						checkpointMetaData.getCheckpointId(),
 						checkpointMetaData.getTimestamp(),

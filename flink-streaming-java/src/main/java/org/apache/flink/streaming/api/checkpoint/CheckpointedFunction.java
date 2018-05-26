@@ -66,9 +66,11 @@ import org.apache.flink.runtime.state.FunctionSnapshotContext;
  * The code example below illustrates how to use this interface for a function that keeps counts
  * of events per key and per parallel partition (parallel instance of the transformation function
  * during distributed execution).
+ * 下面的代码样例说明了在一个保存每个并行分区、每个key对应的event个数的function中，是如何使用这个接口的
  * The example also changes of parallelism, which affect the count-per-parallel-partition by
  * adding up the counters of partitions that get merged on scale-down. Note that this is a
  * toy example, but should illustrate the basic skeleton for a stateful function.
+ * 这个例子也改变了并行度，
  *
  * <p><pre>{@code
  * public class MyFunction<T> implements MapFunction<T, T>, CheckpointedFunction {

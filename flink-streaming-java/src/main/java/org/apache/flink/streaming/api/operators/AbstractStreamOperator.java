@@ -386,6 +386,7 @@ public abstract class AbstractStreamOperator<OUT>
 
 	/**
 	 * Stream operators with state, which want to participate in a snapshot need to override this hook method.
+	 * 具有状态的Stream operator，想要参与到savepoint，需要重写该方法
 	 *
 	 * @param context context that provides information and means required for taking a snapshot
 	 */
