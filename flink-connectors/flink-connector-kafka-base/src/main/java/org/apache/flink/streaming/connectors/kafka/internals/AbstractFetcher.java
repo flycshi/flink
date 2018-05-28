@@ -74,13 +74,17 @@ public abstract class AbstractFetcher<T, KPH> {
 	 * Kafka version-specific implementations of {@link AbstractFetcher#runFetchLoop()}
 	 * should continuously poll this queue for unassigned partitions, and start consuming
 	 * them accordingly.
+	 * 当前还没有被如何kafka client消费的分区duilie。
+	 * kafka不同版本的实现{@code AbstractFetcher#runFetchLoop()}这个方法，需要消费该队列，并开始消费他们
 	 *
 	 * <p>All partitions added to this queue are guaranteed to have been added
 	 * to {@link #subscribedPartitionStates} already.
+	 * 所有添加到这个queue的partitions，都需要保证已经添加到{@code subscribedPartitionStates}
 	 */
 	protected final ClosableBlockingQueue<KafkaTopicPartitionState<KPH>> unassignedPartitionsQueue;
 
-	/** The mode describing whether the fetcher also generates timestamps and watermarks. */
+	/** The mode describing whether the fetcher also generates timestamps and watermarks.
+	 *  模式标识了fetcher是否产生timestamps和watermarks */
 	protected final int timestampWatermarkMode;
 
 	/** Flag whether to register metrics for the fetcher. */

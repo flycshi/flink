@@ -24,6 +24,7 @@ public class OffsetCommitModes {
 
 	/**
 	 * Determine the offset commit mode using several configuration values.
+	 * 通过几个配置项，综合决定offset commit模式
 	 *
 	 * @param enableAutoCommit whether or not auto committing is enabled in the provided Kafka properties.
 	 * @param enableCommitOnCheckpoint whether or not committing on checkpoints is enabled.
@@ -38,9 +39,11 @@ public class OffsetCommitModes {
 
 		if (enableCheckpointing) {
 			// if checkpointing is enabled, the mode depends only on whether committing on checkpoints is enabled
+			// 如果checkpoint开启了，模式只依赖，在产生checkpoint时提交offset是否开启
 			return (enableCommitOnCheckpoint) ? OffsetCommitMode.ON_CHECKPOINTS : OffsetCommitMode.DISABLED;
 		} else {
 			// else, the mode depends only on whether auto committing is enabled in the provided Kafka properties
+			// 如果checkpoint没有开启，模式只依赖，kafka的生产者属性中是否开启了自动提交
 			return (enableAutoCommit) ? OffsetCommitMode.KAFKA_PERIODIC : OffsetCommitMode.DISABLED;
 		}
 	}

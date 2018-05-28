@@ -31,15 +31,22 @@ import java.util.regex.Pattern;
  * The Flink Kafka Consumer is a streaming data source that pulls a parallel data stream from
  * Apache Kafka 0.11.x. The consumer can run in multiple parallel instances, each of which will pull
  * data from one or more Kafka partitions.
+ * flink kafka consumer 是一个流数据源，其从 apache kafka 0.11.x 拉取一个并行的数据流。
+ * 消费者可以运行多个并行实例，每个实例会从一个或者多个kafka的分区中拉取数据
  *
  * <p>The Flink Kafka Consumer participates in checkpointing and guarantees that no data is lost
  * during a failure, and that the computation processes elements "exactly once".
  * (Note: These guarantees naturally assume that Kafka itself does not loose any data.)</p>
+ * flink kafka consumer与checkpoint配合，可以保证在failure时不丢失数据，并且实现exactly once处理数据。
+ * (注意：这个保证是假设kafka自身不会丢数据)
  *
  * <p>Please note that Flink snapshots the offsets internally as part of its distributed checkpoints. The offsets
  * committed to Kafka / ZooKeeper are only to bring the outside view of progress in sync with Flink's view
  * of the progress. That way, monitoring and other jobs can get a view of how far the Flink Kafka consumer
  * has consumed a topic.</p>
+ * 请注意flink内部会将offset快照作为其分布式checkpoint的一部分。
+ * 提交到kafka/zookeeper的offset只是给外部提供一个查看的视图。
+ * 通过这样的方式，监控和其他任务可以知道flink kafka consumer当前消费到什么位置了。
  *
  * <p>Please refer to Kafka's documentation for the available configuration properties:
  * http://kafka.apache.org/documentation.html#newconsumerconfigs</p>

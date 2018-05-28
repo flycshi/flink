@@ -51,9 +51,11 @@ public abstract class AbstractDeserializationSchema<T> implements Deserializatio
 	/**
 	 * Method to decide whether the element signals the end of the stream. If
 	 * true is returned the element won't be emitted.
+	 * 用来决定element是否是流的结尾，如果是true，这个element就不会被发射到下游了。
 	 *
 	 * <p>This default implementation returns always false, meaning the stream is interpreted
 	 * to be unbounded.
+	 * 默认的实现总是返回false，意味着流是无界的
 	 *
 	 * @param nextElement The element to test for the end-of-stream signal.
 	 * @return True, if the element signals end of stream, false otherwise.

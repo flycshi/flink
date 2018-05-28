@@ -63,6 +63,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 	/**
 	 * The default namespace for state in cases where no state name is provided
+	 * 在没有提供状态名称的情况下，默认的状态命名空间
 	 */
 	public static final String DEFAULT_OPERATOR_STATE_NAME = "_default_";
 

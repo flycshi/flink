@@ -34,6 +34,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * A partition discoverer that can be used to discover topics and partitions metadata
  * from Kafka brokers via the Kafka 0.9 high-level consumer API.
+ * 一个分区发现器，可以通过kafka 0.9高级api，从kafka broker发现topic和partition元数据
  */
 public class Kafka09PartitionDiscoverer extends AbstractPartitionDiscoverer {
 

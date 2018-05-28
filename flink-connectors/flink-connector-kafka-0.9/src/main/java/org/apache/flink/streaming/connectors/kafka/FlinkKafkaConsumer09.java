@@ -75,7 +75,8 @@ public class FlinkKafkaConsumer09<T> extends FlinkKafkaConsumerBase<T> {
 	public static final String KEY_POLL_TIMEOUT = "flink.poll-timeout";
 
 	/** From Kafka's Javadoc: The time, in milliseconds, spent waiting in poll if data is not
-	 * available. If 0, returns immediately with any records that are available now. */
+	 * available. If 0, returns immediately with any records that are available now.
+	 * 时间，单位毫秒，用来在数据没有的情况下等待的时间。如果是0，立即返回已经有的record */
 	public static final long DEFAULT_POLL_TIMEOUT = 100L;
 
 	// ------------------------------------------------------------------------

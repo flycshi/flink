@@ -40,6 +40,8 @@ import static java.util.Objects.requireNonNull;
  * Base class for state descriptors. A {@code StateDescriptor} is used for creating partitioned
  * {@link State} in stateful operations. This contains the name and can create an actual state
  * object given a {@link StateBinder} using {@link #bind(StateBinder)}.
+ * 状态描述符的基类。
+ * A {@code StateDescriptor}用来在状态操作符中创建分区{@code State}。这个包含name，并且可以创建一个真实的状态对象
  *
  * <p>Subclasses must correctly implement {@link #equals(Object)} and {@link #hashCode()}.
  *
@@ -52,6 +54,8 @@ public abstract class StateDescriptor<S extends State, T> implements Serializabl
 	/**
 	 * An enumeration of the types of supported states. Used to identify the state type
 	 * when writing and restoring checkpoints and savepoints.
+	 * 支持的状态的类型的枚举。
+	 * 当写或者恢复checkpoint和savepoint时，用来表示状态类型
 	 */
 	// IMPORTANT: Do not change the order of the elements in this enum, ordinal is used in serialization
 	public enum Type {
@@ -72,7 +76,8 @@ public abstract class StateDescriptor<S extends State, T> implements Serializabl
 
 	// ------------------------------------------------------------------------
 
-	/** Name that uniquely identifies state created from this StateDescriptor. */
+	/** Name that uniquely identifies state created from this StateDescriptor.
+	 *  用来唯一标识从这个StateDescriptor创建的状态 */
 	protected final String name;
 
 	/** The serializer for the type. May be eagerly initialized in the constructor,
@@ -187,10 +192,14 @@ public abstract class StateDescriptor<S extends State, T> implements Serializabl
 
 	/**
 	 * Sets the name for queries of state created from this descriptor.
+	 * 设置用于查询从这个descriptor创建的状态的查询name
 	 *
 	 * <p>If a name is set, the created state will be published for queries
 	 * during runtime. The name needs to be unique per job. If there is another
 	 * state instance published under the same name, the job will fail during runtime.
+	 * 如果一个name被设置了，创建的状态将被发布，用来在运行时查询。
+	 * name需要对每个job是唯一的。
+	 * 如果这里有另一个状态实例，在相同name下发布，那么job在运行时会fail
 	 *
 	 * @param queryableStateName State name for queries (unique name per job)
 	 * @throws IllegalStateException If queryable state name already set

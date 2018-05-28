@@ -115,8 +115,11 @@ public abstract class AbstractPartitionDiscoverer {
 	/**
 	 * Execute a partition discovery attempt for this subtask.
 	 * This method lets the partition discoverer update what partitions it has discovered so far.
+	 * 为这个子任务执行一次分区发现尝试。
+	 * 这个方法让分区发现器更新目前为止它发现的分区
 	 *
 	 * @return List of discovered new partitions that this subtask should subscribe to.
+	 * 		   这个子任务应该订阅的分区列表
 	 */
 	public List<KafkaTopicPartition> discoverPartitions() throws WakeupException, ClosedException {
 		if (!closed && !wakeup) {

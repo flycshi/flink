@@ -22,6 +22,7 @@ package org.apache.flink.runtime.state;
  * This interface must be implemented by functions/operations that want to receive
  * a commit notification once a checkpoint has been completely acknowledged by all
  * participants.
+ * 当一个checkpoint被所有的参与者都ack后，想要接收到一个commit通知，就必须实现这个接口
  */
 public interface CheckpointListener {
 
@@ -30,6 +31,7 @@ public interface CheckpointListener {
 	 * 
 	 * Note that any exception during this method will not cause the checkpoint to
 	 * fail any more.
+	 * 注意：这个方法中发生的任何异常都不会导致checkpoint失败
 	 * 
 	 * @param checkpointId The ID of the checkpoint that has been completed.
 	 * @throws Exception

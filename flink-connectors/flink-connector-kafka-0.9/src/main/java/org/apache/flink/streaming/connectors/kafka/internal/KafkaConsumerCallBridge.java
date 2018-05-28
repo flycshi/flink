@@ -25,9 +25,11 @@ import java.util.List;
 
 /**
  * The ConsumerCallBridge simply calls methods on the {@link KafkaConsumer}.
+ * 简单的调用{@code KafkaConsumer}上的方法
  *
  * <p>This indirection is necessary, because Kafka broke binary compatibility between 0.9 and 0.10,
  * for example changing {@code assign(List)} to {@code assign(Collection)}.
+ * 为了不同版本的兼容，这个方法还是有必要的
  *
  * <p>Because of that, we need to have two versions whose compiled code goes against different method signatures.
  * Even though the source of subclasses may look identical, the byte code will be different, because they

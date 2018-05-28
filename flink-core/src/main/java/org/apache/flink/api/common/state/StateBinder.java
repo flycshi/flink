@@ -23,6 +23,7 @@ import org.apache.flink.annotation.Internal;
 /**
  * The {@code StateBinder} is used by {@link StateDescriptor} instances to create actual
  * {@link State} objects.
+ * 用来创建真正的State对象
  */
 @Internal
 public interface StateBinder {

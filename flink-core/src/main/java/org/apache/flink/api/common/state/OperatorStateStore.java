@@ -32,6 +32,9 @@ public interface OperatorStateStore {
 	/**
 	 * Creates (or restores) a list state. Each state is registered under a unique name.
 	 * The provided serializer is used to de/serialize the state in case of checkpointing (snapshot/restore).
+	 * 创建或者恢复一个list state。
+	 * 每个state被注册在一个唯一的name下。
+	 * 提供的序列化器用来 反/序列化 状态
 	 *
 	 * <p>Note the semantic differences between an operator list state and a keyed list state
 	 * (see {@link KeyedStateStore#getListState(ListStateDescriptor)}). Under the context of operator state,
@@ -55,6 +58,8 @@ public interface OperatorStateStore {
 	/**
 	 * Creates (or restores) a list state. Each state is registered under a unique name.
 	 * The provided serializer is used to de/serialize the state in case of checkpointing (snapshot/restore).
+	 * 创建或者恢复一个list state。每个状态被注册在一个独立的名称下。
+	 * 提供的序列化器被用来de/serialize checkpoint中的状态
 	 *
 	 * <p>Note the semantic differences between an operator list state and a keyed list state
 	 * (see {@link KeyedStateStore#getListState(ListStateDescriptor)}). Under the context of operator state,
@@ -108,9 +113,12 @@ public interface OperatorStateStore {
 	/**
 	 * Creates a state of the given name that uses Java serialization to persist the state. The items in the list
 	 * are repartitionable by the system in case of changed operator parallelism.
+	 * 创建一个给定name的state，使用java序列化持久化状态。
+	 * 在这个list中的items，在改变了操作符的并行度的情况下，会进行重新分区。
 	 * 
 	 * <p>This is a simple convenience method. For more flexibility on how state serialization
 	 * should happen, use the {@link #getListState(ListStateDescriptor)} method.
+	 * 这是一个简单遍历的方法。
 	 *
 	 * @param stateName The name of state to create
 	 * @return A list state using Java serialization to serialize state objects.
@@ -118,6 +126,8 @@ public interface OperatorStateStore {
 	 *
 	 * @deprecated since 1.3.0. Using Java serialization for persisting state is not encouraged.
 	 *             Please use {@link #getListState(ListStateDescriptor)} instead.
+	 *             从1.3.0，使用java序列化来持久状态是不建议的。
+	 *             请使用{@code #getListState(ListStateDescriptor)}
 	 */
 	@Deprecated
 	<T extends Serializable> ListState<T> getSerializableListState(String stateName) throws Exception;

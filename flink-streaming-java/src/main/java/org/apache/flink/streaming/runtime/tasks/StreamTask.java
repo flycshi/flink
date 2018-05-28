@@ -272,6 +272,7 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
 				// both the following operations are protected by the lock
 				// so that we avoid race conditions in the case that initializeState()
 				// registers a timer, that fires before the open() is called.
+				// 下面的操作都被lock保障，这样就可以避免罕见的case，initializeState()注册了一个timer，在open()被调用前触发
 
 				initializeState();
 				openAllOperators();

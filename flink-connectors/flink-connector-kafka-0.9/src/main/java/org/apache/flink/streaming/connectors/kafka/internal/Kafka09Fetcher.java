@@ -128,6 +128,8 @@ public class Kafka09Fetcher<T> extends AbstractFetcher<T, TopicPartition> {
 			while (running) {
 				// this blocks until we get the next records
 				// it automatically re-throws exceptions encountered in the consumer thread
+				// 这里会阻塞，直到获取下一个record
+				// 会自动抛出在消费线程中遇到的异常
 				final ConsumerRecords<byte[], byte[]> records = handover.pollNext();
 
 				// get the records for each topic partition

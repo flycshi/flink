@@ -88,6 +88,7 @@ public class Kafka010Fetcher<T> extends Kafka09Fetcher<T> {
 	/**
 	 * This method needs to be overridden because Kafka broke binary compatibility between 0.9 and 0.10,
 	 * changing binary signatures.
+	 * 这个方法需要重写，因为在0.9和0.10之间，kakfa broke 二进制兼容的问题
 	 */
 	@Override
 	protected KafkaConsumerCallBridge010 createCallBridge() {

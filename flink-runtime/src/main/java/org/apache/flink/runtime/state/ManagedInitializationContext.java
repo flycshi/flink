@@ -38,6 +38,8 @@ public interface ManagedInitializationContext {
 	/**
 	 * Returns true, if state was restored from the snapshot of a previous execution. This returns always false for
 	 * stateless tasks.
+	 * 如果状态从前一个执行的快照中加载了，则返回true
+	 * 对于无状态的任务，该方法总是返回false
 	 */
 	boolean isRestored();
 

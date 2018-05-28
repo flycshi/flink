@@ -247,6 +247,7 @@ public interface SourceFunction<T> extends Function, Serializable {
 		 * is only relevant when running on {@link TimeCharacteristic#IngestionTime} and
 		 * {@link TimeCharacteristic#EventTime}, allowing downstream tasks to advance their
 		 * watermarks without the need to wait for watermarks from this source while it is idle.
+		 * 标记source暂时idle。这个告诉系统，这个source将暂停一会发送record和watermarks。
 		 *
 		 * <p>Source functions should make a best effort to call this method as soon as they
 		 * acknowledge themselves to be idle. The system will consider the source to resume activity

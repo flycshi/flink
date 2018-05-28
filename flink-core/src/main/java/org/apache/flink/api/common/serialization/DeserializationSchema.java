@@ -27,9 +27,11 @@ import java.io.Serializable;
  * The deserialization schema describes how to turn the byte messages delivered by certain
  * data sources (for example Apache Kafka) into data types (Java/Scala objects) that are
  * processed by Flink.
+ * 反序列化模式描述了如何将从某个数据源(比如kafka)投递过来的字节消息转化为flink要处理的数据类型(Java/Scala objects)。
  *
  * <p>Note: In most cases, one should start from {@link AbstractDeserializationSchema}, which
  * takes care of producing the return type information automatically.
+ * 注意，多数情况下，应该继承{@code AbstractDeserializationSchema}，其自动实现了{@code getProducedType}方法
  *
  * @param <T> The type created by the deserialization schema.
  */

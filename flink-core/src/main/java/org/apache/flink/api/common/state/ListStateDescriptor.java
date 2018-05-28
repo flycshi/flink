@@ -29,10 +29,13 @@ import java.util.List;
 /**
  * A {@link StateDescriptor} for {@link ListState}. This can be used to create state where the type
  * is a list that can be appended and iterated over.
+ * 这个可以用来创建状态，其类型是一个list，可以被追加并且可以迭代遍历。
  * 
  * <p>Using {@code ListState} is typically more efficient than manually maintaining a list in a
  * {@link ValueState}, because the backing implementation can support efficient appends, rathern then
  * replacing the full list on write.
+ * 使用{@code ListState}，一般会比在{@code ValueState}中手动管理一个list更有效，因为后端实现可以支持更高效的append，
+ * 而不是通过重写替代整个list
  * 
  * <p>To create keyed list state (on a KeyedStream), use 
  * {@link org.apache.flink.api.common.functions.RuntimeContext#getListState(ListStateDescriptor)}.

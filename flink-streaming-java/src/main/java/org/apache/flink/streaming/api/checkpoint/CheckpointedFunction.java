@@ -163,6 +163,8 @@ public interface CheckpointedFunction {
 	/**
 	 * This method is called when the parallel function instance is created during distributed
 	 * execution. Functions typically set up their state storing data structures in this method.
+	 * 在分布式执行中，当并行的函数实例被创建的时候，会调用该方法。
+	 * 函数通常在该方法中设置他们的状态存储数据结构。
 	 *
 	 * @param context the context for initializing the operator
 	 * @throws Exception
