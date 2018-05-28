@@ -18,28 +18,33 @@
 
 package org.apache.flink.table.catalog
 
-import java.util.{HashMap => JHashMap, Map => JMap}
-import java.lang.{Long => JLong}
-
-import org.apache.flink.table.api.TableSchema
+import org.apache.flink.table.descriptors._
 import org.apache.flink.table.plan.stats.TableStats
 
 /**
   * Defines a table in an [[ExternalCatalog]].
   *
-  * @param tableType            Table type, e.g csv, hbase, kafka
-  * @param schema               Schema of the table (column names and types)
-  * @param properties           Properties of the table
-  * @param stats                Statistics of the table
-  * @param comment              Comment of the table
-  * @param createTime           Create timestamp of the table
-  * @param lastAccessTime       Timestamp of last access of the table
+  * @param connectorDesc describes the system to connect to
+  * @param formatDesc describes the data format of a connector
+  * @param schemaDesc describes the schema of the result table
+  * @param statisticsDesc describes the estimated statistics of the result table
+  * @param metadataDesc describes additional metadata of a table
   */
-case class ExternalCatalogTable(
-    tableType: String,
-    schema: TableSchema,
-    properties: JMap[String, String] = new JHashMap(),
-    stats: TableStats = null,
-    comment: String = null,
-    createTime: JLong = System.currentTimeMillis,
-    lastAccessTime: JLong = -1L)
+class ExternalCatalogTable(
+    connectorDesc: ConnectorDescriptor,
+    formatDesc: Option[FormatDescriptor],
+    schemaDesc: Option[Schema],
+    statisticsDesc: Option[Statistics],
+    metadataDesc: Option[Metadata])
+  extends TableSourceDescriptor {
+
+  this.connectorDescriptor = Some(connectorDesc)
+  this.formatDescriptor = formatDesc
+  this.schemaDescriptor = schemaDesc
+  this.statisticsDescriptor = statisticsDesc
+  this.metaDescriptor = metadataDesc
+
+  // expose statistics for external table source util
+  override def getTableStats: Option[TableStats] = super.getTableStats
+
+}

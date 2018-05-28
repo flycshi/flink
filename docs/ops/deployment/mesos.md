@@ -55,7 +55,7 @@ the state before the failure.
 
 The artifact server is responsible for providing resources to the worker
 nodes. The resources can be anything from the Flink binaries to shared secrets
-or configuration files. For instance, in non-containered environments, the
+or configuration files. For instance, in non-containerized environments, the
 artifact server will provide the Flink binaries. What files will be served
 depends on the configuration overlay used.
 
@@ -101,7 +101,7 @@ You can also run Mesos without DC/OS.
 
 ### Installing Mesos
 
-Please follow the [instructions on how to setup Mesos on the official website](http://mesos.apache.org/documentation/latest/getting-started/).
+Please follow the [instructions on how to setup Mesos on the official website](http://mesos.apache.org/getting-started/).
 
 After installation you have to configure the set of master and agent nodes by creating the files `MESOS_HOME/etc/mesos/masters` and `MESOS_HOME/etc/mesos/slaves`.
 These files contain in each row a single hostname on which the respective component will be started (assuming SSH access to these nodes).
@@ -187,7 +187,7 @@ For example:
         -Dmesos.master=master.foobar.org:5050 \
         -Djobmanager.heap.mb=1024 \
         -Djobmanager.rpc.port=6123 \
-        -Djobmanager.web.port=8081 \
+        -Drest.port=8081 \
         -Dmesos.initial-tasks=10 \
         -Dmesos.resourcemanager.tasks.mem=4096 \
         -Dtaskmanager.heap.mb=3500 \
@@ -211,7 +211,7 @@ Here is an example configuration for Marathon:
 
     {
         "id": "flink",
-        "cmd": "$FLINK_HOME/bin/mesos-appmaster.sh -Djobmanager.heap.mb=1024 -Djobmanager.rpc.port=6123 -Djobmanager.web.port=8081 -Dmesos.initial-tasks=1 -Dmesos.resourcemanager.tasks.mem=1024 -Dtaskmanager.heap.mb=1024 -Dtaskmanager.numberOfTaskSlots=2 -Dparallelism.default=2 -Dmesos.resourcemanager.tasks.cpus=1",
+        "cmd": "$FLINK_HOME/bin/mesos-appmaster.sh -Djobmanager.heap.mb=1024 -Djobmanager.rpc.port=6123 -Drest.port=8081 -Dmesos.initial-tasks=1 -Dmesos.resourcemanager.tasks.mem=1024 -Dtaskmanager.heap.mb=1024 -Dtaskmanager.numberOfTaskSlots=2 -Dparallelism.default=2 -Dmesos.resourcemanager.tasks.cpus=1",
         "cpus": 1.0,
         "mem": 1024
     }
@@ -258,11 +258,15 @@ May be set to -1 to disable this feature.
 
 `mesos.resourcemanager.tasks.cpus`: CPUs to assign to the Mesos workers (**DEFAULT**: 0.0)
 
+`mesos.resourcemanager.tasks.gpus`: GPUs to assign to the Mesos workers (**DEFAULT**: 0.0)
+
 `mesos.resourcemanager.tasks.container.type`: Type of the containerization used: "mesos" or "docker" (DEFAULT: mesos);
 
 `mesos.resourcemanager.tasks.container.image.name`: Image name to use for the container (**NO DEFAULT**)
 
 `mesos.resourcemanager.tasks.container.volumes`: A comma separated list of `[host_path:]`container_path`[:RO|RW]`. This allows for mounting additional volumes into your container. (**NO DEFAULT**)
+
+`mesos.resourcemanager.tasks.container.docker.parameters`: Custom parameters to be passed into docker run command when using the docker containerizer. Comma separated list of `key=value` pairs. `value` may contain '=' (**NO DEFAULT**)
 
 `mesos.resourcemanager.tasks.hostname`: Optional value to define the TaskManager's hostname. The pattern `_TASK_` is replaced by the actual id of the Mesos task. This can be used to configure the TaskManager to use Mesos DNS (e.g. `_TASK_.flink-service.mesos`) for name lookups. (**NO DEFAULT**)
 

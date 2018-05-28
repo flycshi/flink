@@ -19,9 +19,9 @@
 package org.apache.flink.table.validate
 
 import org.apache.calcite.sql.`type`.{OperandTypes, ReturnTypes, SqlTypeTransforms}
-import org.apache.calcite.sql.fun.{SqlGroupFunction, SqlStdOperatorTable}
+import org.apache.calcite.sql.fun.SqlStdOperatorTable
 import org.apache.calcite.sql.util.{ChainedSqlOperatorTable, ListSqlOperatorTable, ReflectiveSqlOperatorTable}
-import org.apache.calcite.sql.{SqlFunction, SqlKind, SqlOperator, SqlOperatorTable}
+import org.apache.calcite.sql._
 import org.apache.flink.table.api._
 import org.apache.flink.table.expressions._
 import org.apache.flink.table.functions.sql.ScalarSqlFunctions
@@ -47,6 +47,10 @@ class FunctionCatalog {
   def registerSqlFunction(sqlFunction: SqlFunction): Unit = {
     sqlFunctions --= sqlFunctions.filter(_.getName == sqlFunction.getName)
     sqlFunctions += sqlFunction
+  }
+
+  def getUserDefinedFunctions: Seq[String] = {
+    sqlFunctions.map(_.getName)
   }
 
   def getSqlOperatorTable: SqlOperatorTable =
@@ -164,6 +168,8 @@ object FunctionCatalog {
     "isNotTrue" -> classOf[IsNotTrue],
     "isNotFalse" -> classOf[IsNotFalse],
     "if" -> classOf[If],
+    "between" -> classOf[Between],
+    "notBetween" -> classOf[NotBetween],
 
     // aggregate functions
     "avg" -> classOf[Avg],
@@ -176,6 +182,7 @@ object FunctionCatalog {
     "stddevSamp" -> classOf[StddevSamp],
     "varPop" -> classOf[VarPop],
     "varSamp" -> classOf[VarSamp],
+    "collect" -> classOf[Collect],
 
     // string functions
     "charLength" -> classOf[CharLength],
@@ -193,6 +200,8 @@ object FunctionCatalog {
     "overlay" -> classOf[Overlay],
     "concat" -> classOf[Concat],
     "concat_ws" -> classOf[ConcatWs],
+    "lpad" -> classOf[Lpad],
+    "rpad" -> classOf[Rpad],
 
     // math functions
     "plus" -> classOf[Plus],
@@ -205,6 +214,7 @@ object FunctionCatalog {
     "floor" -> classOf[Floor],
     "log10" -> classOf[Log10],
     "ln" -> classOf[Ln],
+    "log" -> classOf[Log],
     "power" -> classOf[Power],
     "mod" -> classOf[Mod],
     "sqrt" -> classOf[Sqrt],
@@ -265,7 +275,11 @@ object FunctionCatalog {
     // crypto hash
     "md5" -> classOf[Md5],
     "sha1" -> classOf[Sha1],
-    "sha256" -> classOf[Sha256]
+    "sha224" -> classOf[Sha224],
+    "sha256" -> classOf[Sha256],
+    "sha384" -> classOf[Sha384],
+    "sha512" -> classOf[Sha512],
+    "sha2" -> classOf[Sha2]
   )
 
   /**
@@ -366,7 +380,7 @@ class BasicOperatorTable extends ReflectiveSqlOperatorTable {
     SqlStdOperatorTable.SIMILAR_TO,
     SqlStdOperatorTable.CASE,
     SqlStdOperatorTable.REINTERPRET,
-    SqlStdOperatorTable.EXTRACT_DATE,
+    SqlStdOperatorTable.EXTRACT,
     SqlStdOperatorTable.IN,
     // FUNCTIONS
     SqlStdOperatorTable.SUBSTRING,
@@ -420,9 +434,15 @@ class BasicOperatorTable extends ReflectiveSqlOperatorTable {
     ScalarSqlFunctions.BIN,
     SqlStdOperatorTable.TIMESTAMP_ADD,
     ScalarSqlFunctions.LOG,
+    ScalarSqlFunctions.LPAD,
+    ScalarSqlFunctions.RPAD,
     ScalarSqlFunctions.MD5,
     ScalarSqlFunctions.SHA1,
+    ScalarSqlFunctions.SHA224,
     ScalarSqlFunctions.SHA256,
+    ScalarSqlFunctions.SHA384,
+    ScalarSqlFunctions.SHA512,
+    ScalarSqlFunctions.SHA2,
     // EXTENSIONS
     BasicOperatorTable.TUMBLE,
     BasicOperatorTable.HOP,
@@ -450,77 +470,83 @@ object BasicOperatorTable {
     * We need custom group auxiliary functions in order to support nested windows.
     */
 
-  val TUMBLE: SqlGroupFunction = new SqlGroupFunction(
+  val TUMBLE: SqlGroupedWindowFunction = new SqlGroupedWindowFunction(
     SqlKind.TUMBLE,
     null,
     OperandTypes.or(OperandTypes.DATETIME_INTERVAL, OperandTypes.DATETIME_INTERVAL_TIME)) {
-    override def getAuxiliaryFunctions: _root_.java.util.List[SqlGroupFunction] =
+    override def getAuxiliaryFunctions: _root_.java.util.List[SqlGroupedWindowFunction] =
       Seq(
         TUMBLE_START,
         TUMBLE_END,
         TUMBLE_ROWTIME,
         TUMBLE_PROCTIME)
   }
-  val TUMBLE_START: SqlGroupFunction = TUMBLE.auxiliary(SqlKind.TUMBLE_START)
-  val TUMBLE_END: SqlGroupFunction = TUMBLE.auxiliary(SqlKind.TUMBLE_END)
-  val TUMBLE_ROWTIME: SqlGroupFunction =
-    new SqlGroupFunction(
+  val TUMBLE_START: SqlGroupedWindowFunction = TUMBLE.auxiliary(SqlKind.TUMBLE_START)
+  val TUMBLE_END: SqlGroupedWindowFunction = TUMBLE.auxiliary(SqlKind.TUMBLE_END)
+  val TUMBLE_ROWTIME: SqlGroupedWindowFunction =
+    new SqlGroupedWindowFunction(
       "TUMBLE_ROWTIME",
       SqlKind.OTHER_FUNCTION,
       TUMBLE,
       // ensure that returned rowtime is always NOT_NULLABLE
       ReturnTypes.cascade(ReturnTypes.ARG0, SqlTypeTransforms.TO_NOT_NULLABLE),
-      TUMBLE.getOperandTypeChecker)
-  val TUMBLE_PROCTIME: SqlGroupFunction =
+      null,
+      TUMBLE.getOperandTypeChecker,
+      SqlFunctionCategory.SYSTEM)
+  val TUMBLE_PROCTIME: SqlGroupedWindowFunction =
     TUMBLE.auxiliary("TUMBLE_PROCTIME", SqlKind.OTHER_FUNCTION)
 
-  val HOP: SqlGroupFunction = new SqlGroupFunction(
+  val HOP: SqlGroupedWindowFunction = new SqlGroupedWindowFunction(
     SqlKind.HOP,
     null,
     OperandTypes.or(
       OperandTypes.DATETIME_INTERVAL_INTERVAL,
       OperandTypes.DATETIME_INTERVAL_INTERVAL_TIME)) {
-    override def getAuxiliaryFunctions: _root_.java.util.List[SqlGroupFunction] =
+    override def getAuxiliaryFunctions: _root_.java.util.List[SqlGroupedWindowFunction] =
       Seq(
         HOP_START,
         HOP_END,
         HOP_ROWTIME,
         HOP_PROCTIME)
   }
-  val HOP_START: SqlGroupFunction = HOP.auxiliary(SqlKind.HOP_START)
-  val HOP_END: SqlGroupFunction = HOP.auxiliary(SqlKind.HOP_END)
-  val HOP_ROWTIME: SqlGroupFunction =
-    new SqlGroupFunction(
+  val HOP_START: SqlGroupedWindowFunction = HOP.auxiliary(SqlKind.HOP_START)
+  val HOP_END: SqlGroupedWindowFunction = HOP.auxiliary(SqlKind.HOP_END)
+  val HOP_ROWTIME: SqlGroupedWindowFunction =
+    new SqlGroupedWindowFunction(
       "HOP_ROWTIME",
       SqlKind.OTHER_FUNCTION,
       HOP,
       // ensure that returned rowtime is always NOT_NULLABLE
       ReturnTypes.cascade(ReturnTypes.ARG0, SqlTypeTransforms.TO_NOT_NULLABLE),
-      HOP.getOperandTypeChecker)
-  val HOP_PROCTIME: SqlGroupFunction = HOP.auxiliary("HOP_PROCTIME", SqlKind.OTHER_FUNCTION)
+      null,
+      HOP.getOperandTypeChecker,
+      SqlFunctionCategory.SYSTEM)
+  val HOP_PROCTIME: SqlGroupedWindowFunction = HOP.auxiliary("HOP_PROCTIME", SqlKind.OTHER_FUNCTION)
 
-  val SESSION: SqlGroupFunction = new SqlGroupFunction(
+  val SESSION: SqlGroupedWindowFunction = new SqlGroupedWindowFunction(
     SqlKind.SESSION,
     null,
     OperandTypes.or(OperandTypes.DATETIME_INTERVAL, OperandTypes.DATETIME_INTERVAL_TIME)) {
-    override def getAuxiliaryFunctions: _root_.java.util.List[SqlGroupFunction] =
+    override def getAuxiliaryFunctions: _root_.java.util.List[SqlGroupedWindowFunction] =
       Seq(
         SESSION_START,
         SESSION_END,
         SESSION_ROWTIME,
         SESSION_PROCTIME)
   }
-  val SESSION_START: SqlGroupFunction = SESSION.auxiliary(SqlKind.SESSION_START)
-  val SESSION_END: SqlGroupFunction = SESSION.auxiliary(SqlKind.SESSION_END)
-  val SESSION_ROWTIME: SqlGroupFunction =
-    new SqlGroupFunction(
+  val SESSION_START: SqlGroupedWindowFunction = SESSION.auxiliary(SqlKind.SESSION_START)
+  val SESSION_END: SqlGroupedWindowFunction = SESSION.auxiliary(SqlKind.SESSION_END)
+  val SESSION_ROWTIME: SqlGroupedWindowFunction =
+    new SqlGroupedWindowFunction(
       "SESSION_ROWTIME",
       SqlKind.OTHER_FUNCTION,
       SESSION,
       // ensure that returned rowtime is always NOT_NULLABLE
       ReturnTypes.cascade(ReturnTypes.ARG0, SqlTypeTransforms.TO_NOT_NULLABLE),
-      SESSION.getOperandTypeChecker)
-  val SESSION_PROCTIME: SqlGroupFunction =
+      null,
+      SESSION.getOperandTypeChecker,
+      SqlFunctionCategory.SYSTEM)
+  val SESSION_PROCTIME: SqlGroupedWindowFunction =
     SESSION.auxiliary("SESSION_PROCTIME", SqlKind.OTHER_FUNCTION)
 
 }

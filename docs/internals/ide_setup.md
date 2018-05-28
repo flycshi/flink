@@ -47,7 +47,7 @@ git clone https://github.com/apache/flink.git
 ## IntelliJ IDEA
 
 A brief guide on how to set up IntelliJ IDEA IDE for development of the Flink core.
-As Eclipse is known to have issues with mixed Scala and Java projects, more and more contributers are migrating to IntelliJ IDEA.
+As Eclipse is known to have issues with mixed Scala and Java projects, more and more contributors are migrating to IntelliJ IDEA.
 
 The following documentation describes the steps to setup IntelliJ IDEA 2016.2.5
 ([https://www.jetbrains.com/idea/download/](https://www.jetbrains.com/idea/download/))
@@ -81,7 +81,7 @@ to enable support for Scala projects and files:
    files for the IDE to work with but without installing libraries.
 8. Build the Project (Build -> Make Project)
 
-### Checkstyle
+### Checkstyle For Java
 IntelliJ supports checkstyle within the IDE using the Checkstyle-IDEA plugin.
 
 1. Install the "Checkstyle-IDEA" plugin from the IntelliJ plugin repository.
@@ -111,6 +111,10 @@ clicking the "Check Module" button. The scan should report no errors.
 <span class="label label-info">Note</span> Some modules are not fully covered by checkstyle,
 which include `flink-core`, `flink-optimizer`, and `flink-runtime`.
 Nevertheless please make sure that code you add/modify in these modules still conforms to the checkstyle rules.
+
+### Checkstyle For Scala
+
+Enable scalastyle in Intellij by selecting Settings -> Editor -> Inspections, then searching for "Scala style inspections". Also Place `"tools/maven/scalastyle_config.xml"` in the `"<root>/.idea"` or `"<root>/project"` directory.
 
 ## Eclipse
 

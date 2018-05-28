@@ -21,8 +21,10 @@ package org.apache.flink.api.scala
 import java.io._
 
 import org.apache.flink.client.cli.{CliFrontend, CliFrontendParser}
+import org.apache.flink.client.deployment.ClusterDescriptor
 import org.apache.flink.client.program.ClusterClient
 import org.apache.flink.configuration.{Configuration, GlobalConfiguration, JobManagerOptions}
+import org.apache.flink.runtime.akka.AkkaUtils
 import org.apache.flink.runtime.minicluster.StandaloneMiniCluster
 
 import scala.collection.mutable.ArrayBuffer
@@ -138,10 +140,10 @@ object FlinkShell {
   def fetchConnectionInfo(
     configuration: Configuration,
     config: Config
-  ): (String, Int, Option[Either[StandaloneMiniCluster, ClusterClient]]) = {
+  ): (String, Int, Option[Either[StandaloneMiniCluster, ClusterClient[_]]]) = {
     config.executionMode match {
       case ExecutionMode.LOCAL => // Local mode
-        val config = GlobalConfiguration.loadConfiguration()
+        val config = configuration
         config.setInteger(JobManagerOptions.PORT, 0)
 
         val miniCluster = new StandaloneMiniCluster(config)
@@ -193,7 +195,7 @@ object FlinkShell {
       val conf = cluster match {
         case Some(Left(miniCluster)) => miniCluster.getConfiguration
         case Some(Right(yarnCluster)) => yarnCluster.getFlinkConfiguration
-        case None => GlobalConfiguration.loadConfiguration()
+        case None => configuration
       }
 
       println(s"\nConnecting to Flink cluster (host: $host, port: $port).\n")
@@ -253,28 +255,27 @@ object FlinkShell {
     yarnConfig.queue.foreach((queue) => args ++= Seq("-yqu", queue.toString))
     yarnConfig.slots.foreach((slots) => args ++= Seq("-ys", slots.toString))
 
-    val options = CliFrontendParser.parseRunCommand(args.toArray)
+    val commandLine = CliFrontendParser.parse(
+      CliFrontendParser.getRunCommandOptions,
+      args.toArray,
+      true)
+
     val frontend = new CliFrontend(
       configuration,
-      CliFrontend.loadCustomCommandLines(),
-      configurationDirectory)
-    val config = frontend.getConfiguration
-    val customCLI = frontend.getActiveCustomCommandLine(options.getCommandLine)
+      CliFrontend.loadCustomCommandLines(configuration, configurationDirectory))
+    val customCLI = frontend.getActiveCustomCommandLine(commandLine)
 
-    val clusterDescriptor = customCLI.createClusterDescriptor(
-      config,
-      frontend.getConfigurationDirectory,
-      options.getCommandLine)
+    val clusterDescriptor = customCLI.createClusterDescriptor(commandLine)
 
-    val clusterSpecification = customCLI.getClusterSpecification(
-      config,
-      options.getCommandLine)
+    val clusterSpecification = customCLI.getClusterSpecification(commandLine)
 
-    val cluster = clusterDescriptor.deploySessionCluster(
-      clusterSpecification)
+    val cluster = clusterDescriptor.deploySessionCluster(clusterSpecification)
 
-    val address = cluster.getJobManagerAddress.getAddress.getHostAddress
-    val port = cluster.getJobManagerAddress.getPort
+    val inetSocketAddress = AkkaUtils.getInetSocketAddressFromAkkaURL(
+      cluster.getClusterConnectionInfo.getAddress)
+
+    val address = inetSocketAddress.getAddress.getHostAddress
+    val port = inetSocketAddress.getPort
 
     (address, port, Some(Right(cluster)))
   }
@@ -288,22 +289,21 @@ object FlinkShell {
       "-m", "yarn-cluster"
     )
 
-    val options = CliFrontendParser.parseRunCommand(args.toArray)
+    val commandLine = CliFrontendParser.parse(
+      CliFrontendParser.getRunCommandOptions,
+      args.toArray,
+      true)
+
     val frontend = new CliFrontend(
       configuration,
-      CliFrontend.loadCustomCommandLines(),
-      configurationDirectory)
-    val config = frontend.getConfiguration
-    val customCLI = frontend.getActiveCustomCommandLine(options.getCommandLine)
+      CliFrontend.loadCustomCommandLines(configuration, configurationDirectory))
+    val customCLI = frontend.getActiveCustomCommandLine(commandLine)
 
-    val clusterDescriptor = customCLI.createClusterDescriptor(
-      configuration,
-      configurationDirectory,
-      options.getCommandLine)
+    val clusterDescriptor = customCLI
+      .createClusterDescriptor(commandLine)
+      .asInstanceOf[ClusterDescriptor[Any]]
 
-    val clusterId = customCLI.getClusterId(
-      configuration,
-      options.getCommandLine)
+    val clusterId = customCLI.getClusterId(commandLine)
 
     val cluster = clusterDescriptor.retrieve(clusterId)
 
@@ -311,7 +311,8 @@ object FlinkShell {
       throw new RuntimeException("Yarn Cluster could not be retrieved.")
     }
 
-    val jobManager = cluster.getJobManagerAddress
+    val jobManager = AkkaUtils.getInetSocketAddressFromAkkaURL(
+      cluster.getClusterConnectionInfo.getAddress)
 
     (jobManager.getHostString, jobManager.getPort, None)
   }

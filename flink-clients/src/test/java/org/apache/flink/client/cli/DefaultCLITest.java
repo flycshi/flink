@@ -19,23 +19,24 @@
 package org.apache.flink.client.cli;
 
 import org.apache.flink.client.deployment.ClusterDescriptor;
+import org.apache.flink.client.deployment.StandaloneClusterId;
 import org.apache.flink.client.program.ClusterClient;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.JobManagerOptions;
-import org.apache.flink.util.TestLogger;
+import org.apache.flink.runtime.util.LeaderConnectionInfo;
 
 import org.apache.commons.cli.CommandLine;
-import org.junit.Assert;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.net.InetSocketAddress;
+import static org.junit.Assert.assertThat;
 
 /**
- * Tests for the {@link DefaultCLI}.
+ * Tests for the {@link LegacyCLI}.
  */
-public class DefaultCLITest extends TestLogger {
+public class DefaultCLITest extends CliFrontendTestBase {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -46,32 +47,31 @@ public class DefaultCLITest extends TestLogger {
 	 */
 	@Test
 	public void testConfigurationPassing() throws Exception {
-		final DefaultCLI defaultCLI = new DefaultCLI();
-
-		final String configurationDirectory = temporaryFolder.newFolder().getAbsolutePath();
-		final String[] args = {};
-
-		CommandLine commandLine = defaultCLI.parseCommandLineOptions(args, false);
+		final Configuration configuration = getConfiguration();
 
 		final String localhost = "localhost";
 		final int port = 1234;
-		final Configuration configuration = new Configuration();
 
 		configuration.setString(JobManagerOptions.ADDRESS, localhost);
 		configuration.setInteger(JobManagerOptions.PORT, port);
 
-		final InetSocketAddress expectedAddress = new InetSocketAddress(localhost, port);
+		@SuppressWarnings("unchecked")
+		final AbstractCustomCommandLine<StandaloneClusterId> defaultCLI =
+			(AbstractCustomCommandLine<StandaloneClusterId>) getCli(configuration);
 
-		final ClusterDescriptor<?> clusterDescriptor = defaultCLI.createClusterDescriptor(
-			configuration,
-			configurationDirectory,
-			commandLine);
+		final String[] args = {};
 
-		final ClusterClient clusterClient = clusterDescriptor.retrieve(defaultCLI.getClusterId(
-			configuration,
-			commandLine));
+		CommandLine commandLine = defaultCLI.parseCommandLineOptions(args, false);
 
-		Assert.assertEquals(expectedAddress, clusterClient.getJobManagerAddress());
+		final ClusterDescriptor<StandaloneClusterId> clusterDescriptor =
+			defaultCLI.createClusterDescriptor(commandLine);
+
+		final ClusterClient<?> clusterClient = clusterDescriptor.retrieve(defaultCLI.getClusterId(commandLine));
+
+		final LeaderConnectionInfo clusterConnectionInfo = clusterClient.getClusterConnectionInfo();
+
+		assertThat(clusterConnectionInfo.getHostname(), Matchers.equalTo(localhost));
+		assertThat(clusterConnectionInfo.getPort(), Matchers.equalTo(port));
 	}
 
 	/**
@@ -79,34 +79,32 @@ public class DefaultCLITest extends TestLogger {
 	 */
 	@Test
 	public void testManualConfigurationOverride() throws Exception {
-		final DefaultCLI defaultCLI = new DefaultCLI();
-
-		final String manualHostname = "123.123.123.123";
-		final int manualPort = 4321;
-		final String configurationDirectory = temporaryFolder.newFolder().getAbsolutePath();
-		final String[] args = {"-m", manualHostname + ':' + manualPort};
-
-		CommandLine commandLine = defaultCLI.parseCommandLineOptions(args, false);
-
 		final String localhost = "localhost";
 		final int port = 1234;
-		final Configuration configuration = new Configuration();
+		final Configuration configuration = getConfiguration();
 
 		configuration.setString(JobManagerOptions.ADDRESS, localhost);
 		configuration.setInteger(JobManagerOptions.PORT, port);
 
-		final ClusterDescriptor<?> clusterDescriptor = defaultCLI.createClusterDescriptor(
-			configuration,
-			configurationDirectory,
-			commandLine);
+		@SuppressWarnings("unchecked")
+		final AbstractCustomCommandLine<StandaloneClusterId> defaultCLI =
+			(AbstractCustomCommandLine<StandaloneClusterId>) getCli(configuration);
 
-		final ClusterClient clusterClient = clusterDescriptor.retrieve(defaultCLI.getClusterId(
-			configuration,
-			commandLine));
+		final String manualHostname = "123.123.123.123";
+		final int manualPort = 4321;
+		final String[] args = {"-m", manualHostname + ':' + manualPort};
 
-		final InetSocketAddress expectedAddress = new InetSocketAddress(manualHostname, manualPort);
+		CommandLine commandLine = defaultCLI.parseCommandLineOptions(args, false);
 
-		Assert.assertEquals(expectedAddress, clusterClient.getJobManagerAddress());
+		final ClusterDescriptor<StandaloneClusterId> clusterDescriptor =
+			defaultCLI.createClusterDescriptor(commandLine);
+
+		final ClusterClient<?> clusterClient = clusterDescriptor.retrieve(defaultCLI.getClusterId(commandLine));
+
+		final LeaderConnectionInfo clusterConnectionInfo = clusterClient.getClusterConnectionInfo();
+
+		assertThat(clusterConnectionInfo.getHostname(), Matchers.equalTo(manualHostname));
+		assertThat(clusterConnectionInfo.getPort(), Matchers.equalTo(manualPort));
 	}
 
 }

@@ -37,13 +37,13 @@ public interface ResultSubpartitionView {
 	 * than the consumer or a spilled queue needs to read in more data.
 	 *
 	 * <p><strong>Important</strong>: The consumer has to make sure that each
-	 * buffer instance will eventually be recycled with {@link Buffer#recycle()}
+	 * buffer instance will eventually be recycled with {@link Buffer#recycleBuffer()}
 	 * after it has been consumed.
 	 */
 	@Nullable
 	BufferAndBacklog getNextBuffer() throws IOException, InterruptedException;
 
-	void notifyBuffersAvailable(long buffers) throws IOException;
+	void notifyDataAvailable();
 
 	void releaseAllResources() throws IOException;
 
@@ -52,4 +52,11 @@ public interface ResultSubpartitionView {
 	boolean isReleased();
 
 	Throwable getFailureCause();
+
+	/**
+	 * Returns whether the next buffer is an event or not.
+	 */
+	boolean nextBufferIsEvent();
+
+	boolean isAvailable();
 }

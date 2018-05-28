@@ -33,7 +33,6 @@ import org.apache.flink.runtime.highavailability.HighAvailabilityServices;
 import org.apache.flink.runtime.jobgraph.JobGraph;
 import org.apache.flink.util.FlinkException;
 import org.apache.flink.util.Preconditions;
-import org.apache.flink.yarn.cli.FlinkYarnSessionCli;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -42,17 +41,14 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ApplicationReport;
-import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import scala.Option;
 import scala.concurrent.Await;
@@ -62,11 +58,9 @@ import scala.concurrent.duration.FiniteDuration;
 /**
  * Java representation of a running Flink cluster within YARN.
  */
-public class YarnClusterClient extends ClusterClient {
+public class YarnClusterClient extends ClusterClient<ApplicationId> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(YarnClusterClient.class);
-
-	private Thread clientShutdownHook = new ClientShutdownHook();
 
 	//---------- Class internal fields -------------------
 
@@ -75,11 +69,8 @@ public class YarnClusterClient extends ClusterClient {
 	private final int slotsPerTaskManager;
 	private final LazApplicationClientLoader applicationClient;
 	private final FiniteDuration akkaDuration;
-	private final ApplicationReport appReport;
 	private final ApplicationId appId;
 	private final String trackingURL;
-
-	private boolean isConnected = true;
 
 	/** Indicator whether this cluster has just been created. */
 	private final boolean newlyCreatedCluster;
@@ -110,7 +101,6 @@ public class YarnClusterClient extends ClusterClient {
 		this.clusterDescriptor = clusterDescriptor;
 		this.numberTaskManagers = numberTaskManagers;
 		this.slotsPerTaskManager = slotsPerTaskManager;
-		this.appReport = appReport;
 		this.appId = appReport.getApplicationId();
 		this.trackingURL = appReport.getTrackingUrl();
 		this.newlyCreatedCluster = newlyCreatedCluster;
@@ -119,32 +109,6 @@ public class YarnClusterClient extends ClusterClient {
 			flinkConfig,
 			actorSystemLoader,
 			highAvailabilityServices);
-
-		Runtime.getRuntime().addShutdownHook(clientShutdownHook);
-	}
-
-	/**
-	 * Disconnect from the Yarn cluster.
-	 */
-	public void disconnect() {
-
-		if (hasBeenShutDown.getAndSet(true)) {
-			return;
-		}
-
-		if (!isConnected) {
-			throw new IllegalStateException("Can not disconnect from an unconnected cluster.");
-		}
-
-		LOG.info("Disconnecting YarnClusterClient from ApplicationMaster");
-
-		try {
-			Runtime.getRuntime().removeShutdownHook(clientShutdownHook);
-		} catch (IllegalStateException e) {
-			// we are already in the shutdown hook
-		}
-
-		isConnected = false;
 	}
 
 	// -------------------------- Interaction with the cluster ------------------------
@@ -174,7 +138,7 @@ public class YarnClusterClient extends ClusterClient {
 	public int getMaxSlots() {
 		// TODO: this should be retrieved from the running Flink cluster
 		int maxSlots = numberTaskManagers * slotsPerTaskManager;
-		return maxSlots > 0 ? maxSlots : -1;
+		return maxSlots > 0 ? maxSlots : MAX_SLOTS_UNKNOWN;
 	}
 
 	@Override
@@ -183,7 +147,7 @@ public class YarnClusterClient extends ClusterClient {
 	}
 
 	@Override
-	protected JobSubmissionResult submitJob(JobGraph jobGraph, ClassLoader classLoader) throws ProgramInvocationException {
+	public JobSubmissionResult submitJob(JobGraph jobGraph, ClassLoader classLoader) throws ProgramInvocationException {
 		if (isDetached()) {
 			if (newlyCreatedCluster) {
 				stopAfterJob(jobGraph.getJobID());
@@ -204,23 +168,11 @@ public class YarnClusterClient extends ClusterClient {
 		}
 	}
 
-	@Override
-	public String getClusterIdentifier() {
-		return "Yarn cluster with application id " + appReport.getApplicationId();
-	}
-
 	/**
 	 * This method is only available if the cluster hasn't been started in detached mode.
 	 */
 	@Override
 	public GetClusterStatusResponse getClusterStatus() {
-		if (!isConnected) {
-			throw new IllegalStateException("The cluster is not connected to the cluster.");
-		}
-		if (hasBeenShutdown()) {
-			throw new IllegalStateException("The cluster has already been shutdown.");
-		}
-
 		try {
 			final Future<Object> clusterStatusOption =
 				getJobManagerGateway().ask(
@@ -235,15 +187,7 @@ public class YarnClusterClient extends ClusterClient {
 	@Override
 	public List<String> getNewMessages() {
 
-		if (hasBeenShutdown()) {
-			throw new RuntimeException("The YarnClusterClient has already been stopped");
-		}
-
-		if (!isConnected) {
-			throw new IllegalStateException("The cluster has been connected to the ApplicationMaster.");
-		}
-
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		// get messages from ApplicationClient (locally)
 		while (true) {
 			Object result;
@@ -282,103 +226,9 @@ public class YarnClusterClient extends ClusterClient {
 		return ret;
 	}
 
-	// -------------------------- Shutdown handling ------------------------
-
-	private AtomicBoolean hasBeenShutDown = new AtomicBoolean(false);
-
-	/**
-	 * Shuts down or disconnects from the YARN cluster.
-	 */
 	@Override
-	public void finalizeCluster() {
-		if (isDetached() || !newlyCreatedCluster) {
-			disconnect();
-		} else {
-			shutdownCluster();
-		}
-	}
-
-	/**
-	 * Shuts down the Yarn application.
-	 */
-	public void shutdownCluster() {
-
-		if (hasBeenShutDown.getAndSet(true)) {
-			return;
-		}
-
-		if (!isConnected) {
-			throw new IllegalStateException("The cluster has been not been connected to the ApplicationMaster.");
-		}
-
-		try {
-			Runtime.getRuntime().removeShutdownHook(clientShutdownHook);
-		} catch (IllegalStateException e) {
-			// we are already in the shutdown hook
-		}
-
-		LOG.info("Sending shutdown request to the Application Master");
-		try {
-			Future<Object> response =
-				Patterns.ask(applicationClient.get(),
-					new YarnMessages.LocalStopYarnSession(ApplicationStatus.CANCELED,
-						"Flink YARN Client requested shutdown"),
-					new Timeout(akkaDuration));
-			Await.ready(response, akkaDuration);
-		} catch (Exception e) {
-			LOG.warn("Error while stopping YARN cluster.", e);
-		}
-
-		try {
-			File propertiesFile = FlinkYarnSessionCli.getYarnPropertiesLocation(flinkConfig);
-			if (propertiesFile.isFile()) {
-				if (propertiesFile.delete()) {
-					LOG.info("Deleted Yarn properties file at {}", propertiesFile.getAbsoluteFile().toString());
-				} else {
-					LOG.warn("Couldn't delete Yarn properties file at {}", propertiesFile.getAbsoluteFile().toString());
-				}
-			}
-		} catch (Exception e) {
-			LOG.warn("Exception while deleting the JobManager address file", e);
-		}
-
-		try {
-			ApplicationReport appReport = clusterDescriptor.getYarnClient().getApplicationReport(appId);
-
-			LOG.info("Application " + appId + " finished with state " + appReport
-				.getYarnApplicationState() + " and final state " + appReport
-				.getFinalApplicationStatus() + " at " + appReport.getFinishTime());
-
-			if (appReport.getYarnApplicationState() == YarnApplicationState.FAILED || appReport.getYarnApplicationState()
-				== YarnApplicationState.KILLED) {
-				LOG.warn("Application failed. Diagnostics " + appReport.getDiagnostics());
-				LOG.warn("If log aggregation is activated in the Hadoop cluster, we recommend to retrieve "
-					+ "the full application log using this command:"
-					+ System.lineSeparator()
-					+ "\tyarn logs -applicationId " + appReport.getApplicationId()
-					+ System.lineSeparator()
-					+ "(It sometimes takes a few seconds until the logs are aggregated)");
-			}
-		} catch (Exception e) {
-			LOG.warn("Couldn't get final report", e);
-		}
-	}
-
-	public boolean hasBeenShutdown() {
-		return hasBeenShutDown.get();
-	}
-
-	private class ClientShutdownHook extends Thread {
-		@Override
-		public void run() {
-			LOG.info("Shutting down YarnClusterClient from the client shutdown hook");
-
-			try {
-				shutdown();
-			} catch (Throwable t) {
-				LOG.warn("Could not properly shut down the yarn cluster client.", t);
-			}
-		}
+	public ApplicationId getClusterId() {
+		return appId;
 	}
 
 	@Override
@@ -393,7 +243,7 @@ public class YarnClusterClient extends ClusterClient {
 	public void waitForClusterToBeReady() {
 		logAndSysout("Waiting until all TaskManagers have connected");
 
-		for (GetClusterStatusResponse currentStatus, lastStatus = null;; lastStatus = currentStatus) {
+		for (GetClusterStatusResponse currentStatus, lastStatus = null; true; lastStatus = currentStatus) {
 			currentStatus = getClusterStatus();
 			if (currentStatus != null && !currentStatus.equals(lastStatus)) {
 				logAndSysout("TaskManager status (" + currentStatus.numRegisteredTaskManagers() + "/"
@@ -411,6 +261,20 @@ public class YarnClusterClient extends ClusterClient {
 			} catch (InterruptedException e) {
 				throw new RuntimeException("Interrupted while waiting for TaskManagers", e);
 			}
+		}
+	}
+
+	@Override
+	public void shutDownCluster() {
+		LOG.info("Sending shutdown request to the Application Master");
+		try {
+			final Future<Object> response = Patterns.ask(applicationClient.get(),
+				new YarnMessages.LocalStopYarnSession(ApplicationStatus.SUCCEEDED,
+					"Flink YARN Client requested shutdown"),
+				new Timeout(akkaDuration));
+			Await.ready(response, akkaDuration);
+		} catch (final Exception e) {
+			LOG.warn("Error while stopping YARN cluster.", e);
 		}
 	}
 

@@ -17,6 +17,7 @@
 
 package org.apache.flink.streaming.connectors.elasticsearch;
 
+import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.streaming.connectors.elasticsearch.util.NoOpFailureHandler;
 
 import org.elasticsearch.action.ActionRequest;
@@ -43,7 +44,7 @@ import java.util.Map;
  * to come online.
  *
  * <p>The {@link Map} passed to the constructor is used to create the {@link Node} or {@link TransportClient}. The config
- * keys can be found in the <a href="https://www.elastic.io">Elasticsearch documentation</a>. An important setting is
+ * keys can be found in the <a href="https://www.elastic.co">Elasticsearch documentation</a>. An important setting is
  * {@code cluster.name}, which should be set to the name of the cluster that the sink should emit to.
  *
  * <p>Internally, the sink will use a {@link BulkProcessor} to send {@link ActionRequest ActionRequests}.
@@ -62,6 +63,7 @@ import java.util.Map;
  *
  * @param <T> Type of the elements handled by this sink
  */
+@PublicEvolving
 public class ElasticsearchSink<T> extends ElasticsearchSinkBase<T> {
 
 	private static final long serialVersionUID = 1L;

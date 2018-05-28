@@ -94,7 +94,7 @@ for each key that the operation sees). The value can be set using `update(T)` an
 `T value()`.
 
 * `ListState<T>`: This keeps a list of elements. You can append elements and retrieve an `Iterable`
-over all currently stored elements. Elements are added using `add(T)`, the Iterable can
+over all currently stored elements. Elements are added using `add(T)` or `addAll(List<T>)`, the Iterable can
 be retrieved using `Iterable<T> get()`. You can also override the existing list with `update(List<T>)`
 
 * `ReducingState<T>`: This keeps a single value that represents the aggregation of all values
@@ -331,8 +331,7 @@ the basic even-split redistribution list state:
 {% highlight java %}
 public class BufferingSink
         implements SinkFunction<Tuple2<String, Integer>>,
-                   CheckpointedFunction,
-                   CheckpointedRestoring<ArrayList<Tuple2<String, Integer>>> {
+                   CheckpointedFunction {
 
     private final int threshold;
 
@@ -369,7 +368,7 @@ public class BufferingSink
         ListStateDescriptor<Tuple2<String, Integer>> descriptor =
             new ListStateDescriptor<>(
                 "buffered-elements",
-                TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {}));
+                TypeInformation.of(new TypeHint<Tuple2<String, Integer>>() {}));
 
         checkpointedState = context.getOperatorStateStore().getListState(descriptor);
 
@@ -379,12 +378,6 @@ public class BufferingSink
             }
         }
     }
-
-    @Override
-    public void restoreState(ArrayList<Tuple2<String, Integer>> state) throws Exception {
-        // this is from the CheckpointedRestoring interface.
-        this.bufferedElements.addAll(state);
-    }
 }
 {% endhighlight %}
 </div>
@@ -393,8 +386,7 @@ public class BufferingSink
 {% highlight scala %}
 class BufferingSink(threshold: Int = 0)
   extends SinkFunction[(String, Int)]
-    with CheckpointedFunction
-    with CheckpointedRestoring[List[(String, Int)]] {
+    with CheckpointedFunction {
 
   @transient
   private var checkpointedState: ListState[(String, Int)] = _
@@ -433,9 +425,6 @@ class BufferingSink(threshold: Int = 0)
     }
   }
 
-  override def restoreState(state: List[(String, Int)]): Unit = {
-    bufferedElements ++= state
-  }
 }
 {% endhighlight %}
 </div>
