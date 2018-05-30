@@ -25,6 +25,8 @@ import org.apache.flink.runtime.state.KeyGroupRange;
 /**
  * This interface is the current context of a keyed state. It provides information about the currently selected key in
  * the context, the corresponding key-group, and other key and key-grouping related information.
+ * 这个接口是一个key状态的当前上下文。
+ * 它提供了关于当前key的信息
  * <p>
  * The typical use case for this interface is providing a view on the current-key selection aspects of
  * {@link org.apache.flink.runtime.state.KeyedStateBackend}.

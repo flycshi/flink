@@ -42,6 +42,7 @@ public interface CheckpointStreamFactory {
 	/**
 	 * Closes the stream factory, releasing all internal resources, but does not delete any
 	 * persistent checkpoint data.
+	 * 关闭流工厂，释放所有的内部资源，但不会删除任何持久化的checkpoint数据
 	 *
 	 * @throws Exception Exceptions can be forwarded and will be logged by the system
 	 */
@@ -49,6 +50,7 @@ public interface CheckpointStreamFactory {
 
 	/**
 	 * A dedicated output stream that produces a {@link StreamStateHandle} when closed.
+	 * 当关闭时提供一个{@code StreamStateHandle}的专用输出流
 	 *
 	 * <p>Note: This is an abstract class and not an interface because {@link OutputStream}
 	 * is an abstract class.
@@ -58,6 +60,7 @@ public interface CheckpointStreamFactory {
 		/**
 		 * Closes the stream and gets a state handle that can create an input stream
 		 * producing the data written to this stream.
+		 * 关闭流并获取一个状态句柄，这个句柄可以创建一个输入流，并向其中写入数据
 		 *
 		 * @return A state handle that can create an input stream producing the data written to this stream.
 		 * @throws IOException Thrown, if the stream cannot be closed.

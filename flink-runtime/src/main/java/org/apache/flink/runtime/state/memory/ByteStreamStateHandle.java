@@ -26,6 +26,7 @@ import java.io.IOException;
 
 /**
  * A state handle that contains stream state in a byte array.
+ * 将流状态放在一个字节数组的状态句柄
  */
 public class ByteStreamStateHandle implements StreamStateHandle {
 
@@ -39,6 +40,7 @@ public class ByteStreamStateHandle implements StreamStateHandle {
 	/**
 	 * A unique name of by which this state handle is identified and compared. Like a filename, all
 	 * {@link ByteStreamStateHandle} with the exact same name must also have the exact same content in data.
+	 * 这个状态句柄被标识和比较的唯一名称。比如一个文件名称，所有具有相同名称的{@code ByteStreamStateHandle}必须具有完全相同的数据内容
 	 */
 	protected final String handleName;
 

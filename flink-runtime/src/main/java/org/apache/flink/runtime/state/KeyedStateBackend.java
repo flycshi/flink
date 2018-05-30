@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 /**
  * A keyed state backend provides methods for managing keyed state.
+ * 提供管理key状态的方法的一个key状态后台
  *
  * @param <K> The key by which state is keyed.
  */

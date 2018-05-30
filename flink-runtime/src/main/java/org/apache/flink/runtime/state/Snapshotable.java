@@ -25,6 +25,7 @@ import java.util.concurrent.RunnableFuture;
 
 /**
  * Interface for operators that can perform snapshots of their state.
+ * 可以将状态进行快照的操作符的接口
  *
  * @param <S> Generic type of the state object that is created as handle to snapshots.
  */
@@ -51,6 +52,8 @@ public interface Snapshotable<S extends StateObject> {
 	/**
 	 * Restores state that was previously snapshotted from the provided parameters. Typically the parameters are state
 	 * handles from which the old state is read.
+	 * 恢复之前的快照数据。
+	 * 一般入参就是需要读取旧状态的句柄
 	 *
 	 * @param state the old state to restore.
 	 */

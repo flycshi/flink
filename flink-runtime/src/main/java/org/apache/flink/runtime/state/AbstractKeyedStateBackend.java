@@ -70,7 +70,8 @@ public abstract class AbstractKeyedStateBackend<K>
 	/** The currently active key. */
 	protected K currentKey;
 
-	/** The key group of the currently active key */
+	/** The key group of the currently active key
+	 * 当前活跃key的key group */
 	private int currentKeyGroup;
 
 	/** So that we can give out state when the user uses the same key. */

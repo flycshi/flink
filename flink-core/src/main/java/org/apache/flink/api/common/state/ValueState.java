@@ -25,9 +25,11 @@ import java.io.IOException;
 /**
  * {@link State} interface for partitioned single-value state. The value can be retrieved or
  * updated.
+ * 分区单值状态的接口。value可以被提取或者更新
  *
  * <p>The state is accessed and modified by user functions, and checkpointed consistently
  * by the system as part of the distributed snapshots.
+ * 状态通过用户函数进获取或者修改，并且作为分布式快照的一部分被checkpoint
  * 
  * <p>The state is only accessible by functions applied on a {@code KeyedStream}. The key is
  * automatically supplied by the system, so the function always sees the value mapped to the
@@ -45,6 +47,9 @@ public interface ValueState<T> extends State {
 	 * operator instance. If state partitioning is applied, the value returned
 	 * depends on the current operator input, as the operator maintains an
 	 * independent state for each partition.
+	 * 返回状态的当前值。
+	 * 当状态没有被分区，那给定一个操作符实例，返回的value是一样的。
+	 * 如果状态被分区，返回的value则依赖当前操作符，因为对每个分区，操作符都有独立的状态
 	 *
 	 * <p>If you didn't specify a default value when creating the {@link ValueStateDescriptor}
 	 * this will return {@code null} when to value was previously set using {@link #update(Object)}.
@@ -61,6 +66,9 @@ public interface ValueState<T> extends State {
 	 * partition) the returned state will represent the updated value. When a
 	 * partitioned state is updated with null, the state for the current key 
 	 * will be removed and the default value is returned on the next access.
+	 * 通过value()获取的操作符状态可以通过update()更新成给定的值。
+	 * 下一次调用value()(相同的状态分区)，返回的状态将是更新后的值。
+	 * 当一个分区状态被更新为null，当前key的状态将被移除，在下次获取时，返回默认值
 	 * 
 	 * @param value The new value for the state.
 	 *            
