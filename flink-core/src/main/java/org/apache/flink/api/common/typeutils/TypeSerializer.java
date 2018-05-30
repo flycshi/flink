@@ -45,6 +45,7 @@ public abstract class TypeSerializer<T> implements Serializable {
 
 	// --------------------------------------------------------------------------------------------
 	// General information about the type and the serializer
+	// 关于type和serializer的一般信息
 	// --------------------------------------------------------------------------------------------
 
 	/**
@@ -70,10 +71,12 @@ public abstract class TypeSerializer<T> implements Serializable {
 
 	// --------------------------------------------------------------------------------------------
 	// Instantiation & Cloning
+	// 实例化 & 克隆
 	// --------------------------------------------------------------------------------------------
 	
 	/**
 	 * Creates a new instance of the data type.
+	 * 创建这个数据类型的一个新实例
 	 * 
 	 * @return A new instance of the data type.
 	 */

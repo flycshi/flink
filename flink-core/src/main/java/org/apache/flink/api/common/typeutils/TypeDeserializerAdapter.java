@@ -40,7 +40,8 @@ public final class TypeDeserializerAdapter<T> extends TypeSerializer<T> implemen
 
 	private static final long serialVersionUID = 1L;
 
-	/** The actual wrapped deserializer or serializer instance */
+	/** The actual wrapped deserializer or serializer instance.
+	 * 被包装的反序列化器和序列化器 */
 	private final TypeDeserializer<T> deserializer;
 	private final TypeSerializer<T> serializer;
 
@@ -100,6 +101,7 @@ public final class TypeDeserializerAdapter<T> extends TypeSerializer<T> implemen
 	// Irrelevant methods not intended for use
 	// --------------------------------------------------------------------------------------------
 
+	@Override
 	public boolean isImmutableType() {
 		throw new UnsupportedOperationException(
 			"This is a TypeDeserializerAdapter used only for deserialization; this method should not be used.");

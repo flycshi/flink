@@ -26,10 +26,14 @@ import java.io.IOException;
  * This interface describes the methods that are required for a data type to be read by the Flink runtime.
  * Specifically, this interface contains the deserialization methods. In contrast, the {@link TypeSerializer}
  * interface contains the complete set of methods for both serialization and deserialization.
+ * 这个接口描述了那些数据类型需要被flink读取，所需要的方法。
+ * 特别的，这个接口包含了反序列化方法。
+ * 相比较来说，{@code TypeSerializer}包含了序列化和反序列化方法
  *
  * <p>The methods in this class are assumed to be stateless, such that it is effectively thread safe. Stateful
  * implementations of the methods may lead to unpredictable side effects and will compromise both stability and
  * correctness of the program.
+ * 在这个类中的方法假设是无状态的，这样就可以保证线程安全。
  *
  * @param <T> The data type that the deserializer deserializes.
  */
