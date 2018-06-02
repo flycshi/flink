@@ -63,10 +63,15 @@ public abstract class AbstractPartitionDiscoverer {
 	 * Map of topics to they're largest discovered partition id seen by this subtask.
 	 * This state may be updated whenever {@link AbstractPartitionDiscoverer#discoverPartitions()} or
 	 * {@link AbstractPartitionDiscoverer#setAndCheckDiscoveredPartition(KafkaTopicPartition)} is called.
+	 * 主题映射到子任务中发现的最大分区id。
+	 * 每当调用{@link AbstractPartitionDiscoverer# discoverpartitioning()或
+	 * {@link AbstractPartitionDiscoverer#setAndCheckDiscoveredPartition(kafkatkatopicpartition)}时，都可以更新这个状态。
 	 *
 	 * <p>This is used to remove old partitions from the fetched partition lists. It is sufficient
 	 * to keep track of only the largest partition id because Kafka partition numbers are only
 	 * allowed to be increased and has incremental ids.
+	 * 这用于从获取的分区列表中删除旧分区。
+	 * 只跟踪最大的分区id就足够了，因为Kafka分区号只允许增加并且具有增量id。
 	 */
 	private Set<KafkaTopicPartition> discoveredPartitions;
 
@@ -185,9 +190,13 @@ public abstract class AbstractPartitionDiscoverer {
 	 * seen for the topic it belongs to. Therefore, for a set of
 	 * discovered partitions, the order that this method is invoked with
 	 * each partition is important.
+	 * 设置已发现的分区。
+	 * 如果分区的分区id比它所属的主题之前看到的所有分区id都大，那么就认为分区是新的。
+	 * 因此，对于一组已发现的分区，每个分区调用该方法的顺序非常重要。
 	 *
 	 * <p>If the partition is indeed newly discovered, this method also returns
 	 * whether the new partition should be subscribed by this subtask.
+	 * 如果该分区确实是新发现的，那么该方法还将返回新分区是否应该由该子任务订阅。
 	 *
 	 * @param partition the partition to set and check
 	 *

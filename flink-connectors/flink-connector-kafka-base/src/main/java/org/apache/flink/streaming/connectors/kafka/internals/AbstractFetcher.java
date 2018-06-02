@@ -182,6 +182,7 @@ public abstract class AbstractFetcher<T, KPH> {
 
 	/**
 	 * Adds a list of newly discovered partitions to the fetcher for consuming.
+	 * 添加一个新发现的分区集合到fetcher中，用于消费
 	 *
 	 * <p>This method creates the partition state holder for each new partition, using
 	 * {@link KafkaTopicPartitionStateSentinel#EARLIEST_OFFSET} as the starting offset.
