@@ -123,6 +123,7 @@ public class Kafka09Fetcher<T> extends AbstractFetcher<T, TopicPartition> {
 			final Handover handover = this.handover;
 
 			// kick off the actual Kafka consumer
+			// 启动真正的kafka消费
 			consumerThread.start();
 
 			while (running) {

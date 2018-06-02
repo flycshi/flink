@@ -153,6 +153,7 @@ public class KafkaConsumerThread extends Thread {
 		}
 
 		// this is the means to talk to FlinkKafkaConsumer's main thread
+		// 这是与FlinkKafkaConsumer主线程交流的方法
 		final Handover handover = this.handover;
 
 		// This method initializes the KafkaConsumer and guarantees it is torn down properly.
@@ -242,6 +243,7 @@ public class KafkaConsumerThread extends Thread {
 				}
 
 				// get the next batch of records, unless we did not manage to hand the old batch over
+				// 直到已经把上一批的数据处理掉，再去获取一批新的数据
 				if (records == null) {
 					try {
 						records = consumer.poll(pollTimeout);
