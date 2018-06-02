@@ -24,6 +24,8 @@ import org.apache.flink.annotation.PublicEvolving;
  * Extension of {@link AppendingState} that allows merging of state. That is, two instances
  * of {@link MergingState} can be combined into a single instance that contains all the
  * information of the two merged states.
+ * 扩展{@link AppendingState}，允许合并状态。
+ * 也就是说，可以将{@link MergingState}的两个实例合并到一个实例中，该实例包含两个合并状态的所有信息。
  * 
  * @param <IN> Type of the value that can be added to the state.
  * @param <OUT> Type of the value that can be retrieved from the state.

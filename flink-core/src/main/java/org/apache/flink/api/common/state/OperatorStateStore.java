@@ -25,6 +25,7 @@ import java.util.Set;
 
 /**
  * This interface contains methods for registering operator state with a managed store.
+ * 此接口包含用于向托管存储注册操作符状态的方法
  */
 @PublicEvolving
 public interface OperatorStateStore {

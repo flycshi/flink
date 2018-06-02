@@ -24,11 +24,16 @@ import org.apache.flink.annotation.PublicEvolving;
  * {@link State} interface for partitioned list state in Operations.
  * The state is accessed and modified by user functions, and checkpointed consistently
  * by the system as part of the distributed snapshots.
+ * {@code State}接口，用于操作符中的分区列表状态。
+ * 状态由用户函数访问和修改，系统作为分布式快照的一部分始终对其进行检查。
  * 
  * <p>The state is only accessible by functions applied on a {@code KeyedStream}. The key is
  * automatically supplied by the system, so the function always sees the value mapped to the
  * key of the current element. That way, the system can handle stream and state partitioning
  * consistently together.
+ * 状态只能通过在{@code KeyedStream}上应用的函数访问。
+ * 该键是由系统自动提供的，因此函数总是看到映射到当前元素的键的值。
+ * 这样，系统就可以一致地同时处理流和状态分区。
  * 
  * @param <T> Type of values that this list state keeps.
  */

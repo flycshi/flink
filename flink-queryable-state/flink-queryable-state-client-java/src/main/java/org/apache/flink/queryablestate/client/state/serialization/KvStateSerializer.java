@@ -112,6 +112,7 @@ public final class KvStateSerializer {
 
 	/**
 	 * Serializes the value with the given serializer.
+	 * 用给定的序列化器来序列化value
 	 *
 	 * @param value      Value of type T to serialize
 	 * @param serializer Serializer for T

@@ -27,6 +27,8 @@ import java.util.Objects;
 /**
  * Compound meta information for a registered state in an operator state backend.
  * This contains the state name, assignment mode, and state partition serializer.
+ * 复合元数据，用于操作符后端的已注册状态。
+ * 其中包含状态名、分配模式和状态分区序列化器
  *
  * @param <S> Type of the state.
  */
@@ -34,6 +36,7 @@ public class RegisteredOperatorBackendStateMetaInfo<S> {
 
 	/**
 	 * The name of the state, as registered by the user
+	 * 状态名称，由用户注册
 	 */
 	private final String name;
 

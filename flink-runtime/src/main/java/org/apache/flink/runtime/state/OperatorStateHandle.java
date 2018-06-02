@@ -39,7 +39,7 @@ public class OperatorStateHandle implements StreamStateHandle {
 	 * 模式决定了在恢复时, 一个OperatorStateHandle是如何分配给任务的
 	 */
 	public enum Mode {
-		// 状态句柄中的操作符状态分区被分割，并分配给每个各个任务
+		// 状态句柄中的操作符状态分区被分割，并分配给各个任务
 		SPLIT_DISTRIBUTE, // The operator state partitions in the state handle are split and distributed to one task each.
 		// 操作符的状态分区被广播给所有的任务
 		BROADCAST // The operator state partitions are broadcasted to all task.
@@ -49,7 +49,7 @@ public class OperatorStateHandle implements StreamStateHandle {
 
 	/**
 	 * unique state name -> offsets for available partitions in the handle stream
-	 * 唯一状态名 -> offsets，句柄流中有效的分区
+	 * 唯一状态名 -> offsets，句柄流中有效的分区的offset
 	 */
 	private final Map<String, StateMetaInfo> stateNameToPartitionOffsets;
 	private final StreamStateHandle delegateStateHandle;

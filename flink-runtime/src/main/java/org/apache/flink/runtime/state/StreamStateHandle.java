@@ -32,6 +32,7 @@ public interface StreamStateHandle extends StateObject {
 	/**
 	 * Returns an {@link FSDataInputStream} that can be used to read back the data that
 	 * was previously written to the stream.
+	 * 返回一个{@code FSDataInputStream}实例，其可以用来读取之前写入到流中的数据
 	 */
 	FSDataInputStream openInputStream() throws IOException;
 }

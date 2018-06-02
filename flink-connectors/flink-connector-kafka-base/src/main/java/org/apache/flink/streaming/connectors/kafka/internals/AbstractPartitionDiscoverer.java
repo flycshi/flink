@@ -156,6 +156,7 @@ public abstract class AbstractPartitionDiscoverer {
 					KafkaTopicPartition nextPartition;
 					while (iter.hasNext()) {
 						nextPartition = iter.next();
+						// 这里就是所分区校验，看分区是否归于这个task
 						if (!setAndCheckDiscoveredPartition(nextPartition)) {
 							iter.remove();
 						}

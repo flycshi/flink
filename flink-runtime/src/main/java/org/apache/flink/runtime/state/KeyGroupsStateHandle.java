@@ -28,12 +28,17 @@ import java.io.IOException;
  * A handle to the partitioned stream operator state after it has been checkpointed. This state
  * consists of a range of key group snapshots. A key group is subset of the available
  * key space. The key groups are identified by their key group indices.
+ * 已经被checkpoint的分区流操作符状态的句柄。
+ * 这个状态中包含了一组key group。
+ * 一个key group是有效key空间的子集。
+ * key group 由它们的key group 索引来标识。
  */
 public class KeyGroupsStateHandle implements StreamStateHandle, KeyedStateHandle {
 
 	private static final long serialVersionUID = -8070326169926626355L;
 
-	/** Range of key-groups with their respective offsets in the stream state */
+	/** Range of key-groups with their respective offsets in the stream state.
+	 *  key-group范围，以及其各自在流状态中的偏移量 */
 	private final KeyGroupRangeOffsets groupRangeOffsets;
 
 	/** Inner stream handle to the actual states of the key-groups in the range */

@@ -37,18 +37,20 @@ import java.io.IOException;
  *
  * @param <K> The type of the key.
  * @param <N> The type of the namespace.
- * @param <V> The type of value that the state state stores.
+ * @param <V> The type of value that the state stores.
  */
 public class RocksDBValueState<K, N, V>
 	extends AbstractRocksDBState<K, N, ValueState<V>, ValueStateDescriptor<V>, V>
 	implements InternalValueState<N, V> {
 
-	/** Serializer for the values. */
+	/** Serializer for the values.
+	 *  value的序列化器 */
 	private final TypeSerializer<V> valueSerializer;
 
 	/**
 	 * We disable writes to the write-ahead-log here. We can't have these in the base class
 	 * because JNI segfaults for some reason if they are.
+	 * 我们在这里禁用写入WAL。我们不能在基类中使用这些，因为JNI segfault是有原因的。
 	 */
 	private final WriteOptions writeOptions;
 

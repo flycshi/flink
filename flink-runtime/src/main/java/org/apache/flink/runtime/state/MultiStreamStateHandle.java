@@ -31,6 +31,8 @@ import java.util.TreeMap;
  * Wrapper class that takes multiple {@link StreamStateHandle} and makes them look like a single one. This is done by
  * providing a contiguous view on all the streams of the inner handles through a wrapper stream and by summing up all
  * all the meta data.
+ * 持有多个{@code StreamStateHandle}实例，让它们看起来像一个。
+ * 这样做是为了提供一个连续的视图
  */
 public class MultiStreamStateHandle implements StreamStateHandle {
 

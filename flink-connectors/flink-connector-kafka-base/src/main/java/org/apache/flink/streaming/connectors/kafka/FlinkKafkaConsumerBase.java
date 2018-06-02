@@ -746,6 +746,7 @@ public abstract class FlinkKafkaConsumerBase<T> extends RichParallelSourceFuncti
 			restoredState = new TreeMap<>(new KafkaTopicPartition.Comparator());
 
 			// migrate from 1.2 state, if there is any
+			// 从1.2状态迁移，如果有的话
 			for (Tuple2<KafkaTopicPartition, Long> kafkaOffset : oldRoundRobinListState.get()) {
 				restoredFromOldState = true;
 				unionOffsetStates.add(kafkaOffset);
@@ -758,6 +759,7 @@ public abstract class FlinkKafkaConsumerBase<T> extends RichParallelSourceFuncti
 			}
 
 			// populate actual holder for restored state
+			// 为恢复状态填充实际的holder
 			for (Tuple2<KafkaTopicPartition, Long> kafkaOffset : unionOffsetStates.get()) {
 				restoredState.put(kafkaOffset.f0, kafkaOffset.f1);
 			}

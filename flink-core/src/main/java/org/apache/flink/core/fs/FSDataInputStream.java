@@ -37,6 +37,9 @@ public abstract class FSDataInputStream extends InputStream {
 	/**
 	 * Seek to the given offset from the start of the file. The next read() will be from that location.
 	 * Can't seek past the end of the file.
+	 * 将offset设置到给定的offset处。
+	 * 下次read()就会从这个offset开始读取。
+	 * 不能设置超过文件的末尾。
 	 *
 	 * @param desired
 	 *        the desired offset
@@ -46,6 +49,7 @@ public abstract class FSDataInputStream extends InputStream {
 
 	/**
 	 * Gets the current position in the input stream.
+	 * 获取输入流的当前位置。
 	 *
 	 * @return current position in the input stream
 	 * @throws IOException Thrown if an I/O error occurred in the underlying stream

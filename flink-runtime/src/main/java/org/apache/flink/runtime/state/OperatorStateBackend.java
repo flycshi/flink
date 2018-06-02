@@ -25,12 +25,14 @@ import java.io.Closeable;
 /**
  * Interface that combines both, the user facing {@link OperatorStateStore} interface and the system interface
  * {@link Snapshotable}
+ * 接口结合了这两个接口，用户面对{@code OperatorStateStore}接口和系统接口{@code Snapshotable}
  *
  */
 public interface OperatorStateBackend extends OperatorStateStore, Snapshotable<OperatorStateHandle>, Closeable {
 
 	/**
 	 * Disposes the backend and releases all resources.
+	 * 处置后端，并释放资源
 	 */
 	void dispose();
 

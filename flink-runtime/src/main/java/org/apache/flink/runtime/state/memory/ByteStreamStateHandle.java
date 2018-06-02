@@ -46,6 +46,7 @@ public class ByteStreamStateHandle implements StreamStateHandle {
 
 	/**
 	 * Creates a new ByteStreamStateHandle containing the given data.
+	 * 创建一个包含给定数据的句柄
 	 */
 	public ByteStreamStateHandle(String handleName, byte[] data) {
 		this.handleName = Preconditions.checkNotNull(handleName);
@@ -103,6 +104,7 @@ public class ByteStreamStateHandle implements StreamStateHandle {
 
 	/**
 	 * An input stream view on a byte array.
+	 * 在一个字节数组上的输入流视图
 	 */
 	private final class ByteStateHandleInputStream extends FSDataInputStream {
 

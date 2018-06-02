@@ -55,6 +55,7 @@ import java.util.concurrent.RunnableFuture;
 
 /**
  * Default implementation of OperatorStateStore that provides the ability to make snapshots.
+ * 默认的OperatorStateStore实现，它提供了快照的功能。
  */
 @Internal
 public class DefaultOperatorStateBackend implements OperatorStateBackend {
@@ -69,6 +70,8 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 	/**
 	 * Map for all registered operator states. Maps state name -> state
+	 * 存储所有注册的操作符状态的map。
+	 * 状态名称 -> 状态
 	 */
 	private final Map<String, PartitionableListState<?>> registeredStates;
 
@@ -79,39 +82,50 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 	/**
 	 * Default serializer. Only used for the default operator state.
+	 * 默认序列化器。
+	 * 只用于默认的操作符状态
 	 */
 	private final JavaSerializer<Serializable> javaSerializer;
 
 	/**
 	 * The user code classloader.
+	 * 用户类加载器
 	 */
 	private final ClassLoader userClassloader;
 
 	/**
 	 * The execution configuration.
+	 * 执行配置
 	 */
 	private final ExecutionConfig executionConfig;
 
 	/**
 	 * Flag to de/activate asynchronous snapshots.
+	 * 异步快照关闭/开启的标识
 	 */
 	private final boolean asynchronousSnapshots;
 
 	/**
 	 * Map of state names to their corresponding restored state meta info.
+	 * 状态名映射到相应的恢复状态元信息。
 	 *
 	 * <p>TODO this map can be removed when eager-state registration is in place.
 	 * TODO we currently need this cached to check state migration strategies when new serializers are registered.
+	 * 当紧急状态注册就绪时，可以删除该映射。
+	 * 当注册新的序列化器时，我们需要缓存这个缓存来检查状态迁移策略。
 	 */
 	private final Map<String, RegisteredOperatorBackendStateMetaInfo.Snapshot<?>> restoredStateMetaInfos;
 
 	/**
 	 * Cache of already accessed states.
+	 * 已访问状态的缓存。
 	 *
 	 * <p>In contrast to {@link #registeredStates} and {@link #restoredStateMetaInfos} which may be repopulated
 	 * with restored state, this map is always empty at the beginning.
+	 * 与可以用恢复状态重新填充的{@code #registeredStates}和{@link #restoredStateMetaInfos}不同，此映射在开始时总是空的。
 	 *
 	 * <p>TODO this map should be moved to a base class once we have proper hierarchy for the operator state backends.
+	 * 一旦对操作符状态后端有了适当的层次结构，就应该将该映射移动到基类。
 	 *
 	 * @see <a href="https://issues.apache.org/jira/browse/FLINK-6849">FLINK-6849</a>
 	 */
@@ -183,6 +197,8 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 	/**
 	 * @deprecated Using Java serialization for persisting state is not encouraged.
 	 *             Please use {@link #getListState(ListStateDescriptor)} instead.
+	 *             使用java序列化来持久化状态是不鼓励的。
+	 *             请使用{@code #getListState(ListStateDescriptor)}替代
 	 */
 	@SuppressWarnings("unchecked")
 	@Deprecated
@@ -411,18 +427,21 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 	/**
 	 * Implementation of operator list state.
+	 * 操作符列表状态的实现。
 	 *
-	 * @param <S> the type of an operator state partition.
+	 * @param <S> the type of an operator state partition.  操作符状态分区的类型
 	 */
 	static final class PartitionableListState<S> implements ListState<S> {
 
 		/**
 		 * Meta information of the state, including state name, assignment mode, and serializer
+		 * 状态的元数据信息，包括状态名称，分配模式，序列化器
 		 */
 		private RegisteredOperatorBackendStateMetaInfo<S> stateMetaInfo;
 
 		/**
 		 * The internal list the holds the elements of the state
+		 * 内部列表，用来包含状态的元素
 		 */
 		private final ArrayList<S> internalList;
 
@@ -507,6 +526,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 		Preconditions.checkNotNull(stateDescriptor);
 		String name = Preconditions.checkNotNull(stateDescriptor.getName());
 
+		// 从已经访问过的状态缓存中获取，并对name和mode做校验
 		@SuppressWarnings("unchecked")
 		PartitionableListState<S> previous = (PartitionableListState<S>) accessedStatesByName.get(name);
 		if (previous != null) {
@@ -517,6 +537,8 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 		// end up here if its the first time access after execution for the
 		// provided state name; check compatibility of restored state, if any
 		// TODO with eager registration in place, these checks should be moved to restore()
+		// 如果对提供的状态名称，是执行后第一次访问，则在这里结束;
+		// 检查恢复状态的兼容性，如果有任何与急切注册相关的操作，这些检查应该被移动到恢复()
 
 		stateDescriptor.initializeSerializerUnlessSet(getExecutionConfig());
 		TypeSerializer<S> partitionStateSerializer = Preconditions.checkNotNull(stateDescriptor.getElementSerializer());
@@ -526,6 +548,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 		if (null == partitionableListState) {
 			// no restored state for the state name; simply create new state holder
+			// 对状态名称，没有恢复的状态，创建一个新的状态句柄
 
 			partitionableListState = new PartitionableListState<>(
 				new RegisteredOperatorBackendStateMetaInfo<>(
@@ -536,6 +559,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 			registeredStates.put(name, partitionableListState);
 		} else {
 			// has restored state; check compatibility of new state access
+			// 有恢复的状态，检查兼容性
 
 			checkStateNameAndMode(partitionableListState.getStateMetaInfo(), name, mode);
 
@@ -544,6 +568,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 				(RegisteredOperatorBackendStateMetaInfo.Snapshot<S>) restoredStateMetaInfos.get(name);
 
 			// check compatibility to determine if state migration is required
+			// 检查兼容性，以确定是否需要状态迁移
 			CompatibilityResult<S> stateCompatibility = CompatibilityUtil.resolveCompatibilityResult(
 					restoredMetaInfo.getPartitionStateSerializer(),
 					UnloadableDummyTypeSerializer.class,
@@ -552,6 +577,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 			if (!stateCompatibility.isRequiresMigration()) {
 				// new serializer is compatible; use it to replace the old serializer
+				// 新序列化器是兼容的，使用它替换旧的序列化器
 				partitionableListState.setStateMetaInfo(
 					new RegisteredOperatorBackendStateMetaInfo<>(name, partitionStateSerializer, mode));
 			} else {

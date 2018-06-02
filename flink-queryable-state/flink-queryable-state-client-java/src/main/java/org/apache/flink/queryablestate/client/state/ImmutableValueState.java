@@ -28,6 +28,7 @@ import java.io.IOException;
 
 /**
  * A read-only {@link ValueState} that does not allow for modifications.
+ * 只读的ValueState，不允许修改
  *
  * <p>This is the result returned when querying Flink's keyed state using the
  * {@link org.apache.flink.queryablestate.client.QueryableStateClient Queryable State Client} and
