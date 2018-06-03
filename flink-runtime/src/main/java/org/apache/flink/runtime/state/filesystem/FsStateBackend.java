@@ -51,20 +51,25 @@ public class FsStateBackend extends AbstractStateBackend {
 	private static final long serialVersionUID = -8191916350224044011L;
 
 	/** By default, state smaller than 1024 bytes will not be written to files, but
-	 * will be stored directly with the metadata */
+	 * will be stored directly with the metadata
+	 * 默认的，状态小于1024字节，将不会被写入文件，而是直接与元数据一起存储*/
 	public static final int DEFAULT_FILE_STATE_THRESHOLD = 1024;
 
-	/** Maximum size of state that is stored with the metadata, rather than in files */
+	/** Maximum size of state that is stored with the metadata, rather than in files
+	 *  与元数据一起存储的最大状态大小 */
 	private static final int MAX_FILE_STATE_THRESHOLD = 1024 * 1024;
 	
 	/** The path to the directory for the checkpoint data, including the file system
-	 * description via scheme and optional authority */
+	 * description via scheme and optional authority
+	 * checkpoint数据的存储目录 */
 	private final Path basePath;
 
-	/** State below this size will be stored as part of the metadata, rather than in files */
+	/** State below this size will be stored as part of the metadata, rather than in files
+	 *  状态大小在该值以下将被作为元素的一部分存储，而不是存储到文件中 */
 	private final int fileStateThreshold;
 
-	/** Switch to chose between synchronous and asynchronous snapshots */
+	/** Switch to chose between synchronous and asynchronous snapshots
+	 *  同步与异步快照的开关 */
 	private final boolean asynchronousSnapshots;
 
 	/**
@@ -270,6 +275,7 @@ public class FsStateBackend extends AbstractStateBackend {
 
 	// ------------------------------------------------------------------------
 	//  initialization and cleanup
+	//  初始化和清理
 	// ------------------------------------------------------------------------
 
 	@Override

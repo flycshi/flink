@@ -595,6 +595,7 @@ public class ExecutionGraph implements AccessExecutionGraph, Archiveable<Archive
 		checkpointStatsTracker = checkNotNull(statsTracker, "CheckpointStatsTracker");
 
 		// create the coordinator that triggers and commits checkpoints and holds the state
+		// 创建协调器，其会触发和提交checkpoint，并持有状态
 		checkpointCoordinator = new CheckpointCoordinator(
 			jobInformation.getJobId(),
 			interval,

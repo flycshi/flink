@@ -158,12 +158,14 @@ public interface StateBackend extends java.io.Serializable {
 
 	/**
 	 * Creates a new {@link OperatorStateBackend} that can be used for storing operator state.
-	 * 
+	 * 创建一个可以用来存储操作符状态的{@code OperatorStateBackend}实例
+	 *
 	 * <p>Operator state is state that is associated with parallel operator (or function) instances,
 	 * rather than with keys.
+	 * 操作符状态是与并行操作符(或函数)实例相关联的状态，而不是与键相关联的状态
 	 * 
 	 * @param env The runtime environment of the executing task.
-	 * @param operatorIdentifier The identifier of the operator whose state should be stored.
+	 * @param operatorIdentifier The identifier of the operator whose state should be stored.	需要保存状态的操作符的标识
 	 * 
 	 * @return The OperatorStateBackend for operator identified by the job and operator identifier.
 	 * 

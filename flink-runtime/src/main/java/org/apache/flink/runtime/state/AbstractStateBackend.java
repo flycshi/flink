@@ -40,7 +40,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * An abstract base implementation of the {@link StateBackend} interface.
- * 
+ * {@code StateBackend}接口的抽象基础实现
  * <p>
  */
 @PublicEvolving
@@ -102,6 +102,7 @@ public abstract class AbstractStateBackend implements StateBackend, java.io.Seri
 	/**
 	 * Loads the state backend from the configuration, from the parameter 'state.backend', as defined
 	 * in {@link CoreOptions#STATE_BACKEND}.
+	 * 从配置中加载状态后端服务，对应参数 state.backend
 	 * 
 	 * <p>The state backends can be specified either via their shortcut name, or via the class name
 	 * of a {@link StateBackendFactory}. If a StateBackendFactory class name is specified, the factory
@@ -140,7 +141,8 @@ public abstract class AbstractStateBackend implements StateBackend, java.io.Seri
 			return null;
 		}
 
-		// by default the factory class is the backend name 
+		// by default the factory class is the backend name
+		// 默认的，工厂类是后端名称
 		String factoryClassName = backendName;
 
 		switch (backendName.toLowerCase()) {

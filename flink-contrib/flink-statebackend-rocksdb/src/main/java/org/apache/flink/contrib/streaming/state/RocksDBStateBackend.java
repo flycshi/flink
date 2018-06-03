@@ -54,11 +54,15 @@ import static java.util.Objects.requireNonNull;
 /**
  * A State Backend that stores its state in {@code RocksDB}. This state backend can
  * store very large state that exceeds memory and spills to disk.
+ * 将状态存储在{@code RocksDB}中的状态后端服务。
+ * 此状态后端可以存储超过内存非常大的状态，溢出到磁盘
  *
  * <p>All key/value state (including windows) is stored in the key/value index of RocksDB.
  * For persistence against loss of machines, checkpoints take a snapshot of the
  * RocksDB database, and persist that snapshot in a file system (by default) or
  * another configurable state backend.
+ * 所有键/值状态(包括windows)都存储在RocksDB的键/值索引中。
+ * 为了防止机器丢失，检查点获取RocksDB数据库的快照，并将该快照保存在文件系统(默认情况下)或另一个可配置的后端。
  *
  * <p>The behavior of the RocksDB instances can be parametrized by setting RocksDB Options
  * using the methods {@link #setPredefinedOptions(PredefinedOptions)} and
@@ -79,7 +83,8 @@ public class RocksDBStateBackend extends AbstractStateBackend {
 	//  Static configuration values
 	// ------------------------------------------------------------------------
 
-	/** The state backend that we use for creating checkpoint streams. */
+	/** The state backend that we use for creating checkpoint streams.
+	 *  我们用来创建检查点流的状态后端。 */
 	private final AbstractStateBackend checkpointStreamBackend;
 
 	/** Operator identifier that is used to uniqueify the RocksDB storage path. */

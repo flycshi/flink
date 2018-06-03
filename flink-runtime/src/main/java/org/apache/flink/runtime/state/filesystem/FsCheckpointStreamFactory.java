@@ -37,10 +37,13 @@ import java.util.UUID;
 /**
  * {@link org.apache.flink.runtime.state.CheckpointStreamFactory} that produces streams that
  * write to a {@link FileSystem}.
+ * 提供向文件系统中写入数据的流
  *
  * <p>The factory has one core directory into which it puts all checkpoint data. Inside that
  * directory, it creates a directory per job, inside which each checkpoint gets a directory, with
  * files for each state, for example:
+ * 工厂有一个核心目录，所有的checkpoint数据都写在其下面。
+ * 在目录下，为每个job创建一个目录，在这个子目录下，每个checkpoint有一个目录，每个状态对应一个文件
  *
  * {@code hdfs://namenode:port/flink-checkpoints/<job-id>/chk-17/6ba7b810-9dad-11d1-80b4-00c04fd430c8 }
  */

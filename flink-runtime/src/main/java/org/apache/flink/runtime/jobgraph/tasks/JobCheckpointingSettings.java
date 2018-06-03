@@ -35,6 +35,7 @@ import static java.util.Objects.requireNonNull;
  * The JobCheckpointingSettings are attached to a JobGraph and describe the settings
  * for the asynchronous checkpoints of the JobGraph, such as interval, and which vertices
  * need to participate.
+ * JobCheckpointingSettings附在JobGraph上，并描述JobGraph的异步检查点的设置，例如interval，以及哪些节点需要参与。
  */
 public class JobCheckpointingSettings implements Serializable {
 
