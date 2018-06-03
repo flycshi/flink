@@ -38,8 +38,10 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * A serializer for {@link List Lists}. The serializer relies on an element serializer
  * for teh serialization of the list's elements.
+ * list的序列化器。
+ * 序列化器依赖元素的序列化器
  * 
- * <p>The serialization format for the list is as follows: four bytes for the length of the lost,
+ * <p>The serialization format for the list is as follows: four bytes for the length of the list,
  * followed by the serialized representation of each element.
  * 
  * @param <T> The type of element in the list.

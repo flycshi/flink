@@ -25,17 +25,21 @@ import java.util.concurrent.RunnableFuture;
 
 /**
  * Interface for operators that can perform snapshots of their state.
- * 可以将状态进行快照的操作符的接口
+ * 操作符可以对其状态执行快照的接口
  *
  * @param <S> Generic type of the state object that is created as handle to snapshots.
+ *            快照的句柄，状态对象的一般类型
  */
 public interface Snapshotable<S extends StateObject> {
 
 	/**
 	 * Operation that writes a snapshot into a stream that is provided by the given {@link CheckpointStreamFactory} and
-	 * returns a @{@link RunnableFuture} that gives a state handle to the snapshot. It is up to the implementation if
+	 * returns a {@link RunnableFuture} that gives a state handle to the snapshot. It is up to the implementation if
 	 * the operation is performed synchronous or asynchronous. In the later case, the returned Runnable must be executed
 	 * first before obtaining the handle.
+	 * 将快照写入到由给定的{@code CheckpointStreamFactory}提供的流中，并返回一个{@code RunnableFuture}对象，其包含到快照的状态句柄。
+	 * 由实现者来决定是同步还是异步操作。
+	 * 在后一种情况下(也就是异步的情况下)，返回的Runnable必须首先执行，然后才能获得该句柄。
 	 *
 	 * @param checkpointId  The ID of the checkpoint.
 	 * @param timestamp     The timestamp of the checkpoint.

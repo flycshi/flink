@@ -98,6 +98,7 @@ public abstract class StateDescriptor<S extends State, T> implements Serializabl
 
 	/**
 	 * Create a new {@code StateDescriptor} with the given name and the given type serializer.
+	 * 用给定的名称和给定的类型序列化器创建一个新的{@code StateDescriptor}
 	 *
 	 * @param name The name of the {@code StateDescriptor}.
 	 * @param serializer The type serializer for the values in the state.

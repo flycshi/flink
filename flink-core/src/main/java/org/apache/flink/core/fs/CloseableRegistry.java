@@ -29,14 +29,18 @@ import java.util.Map;
 
 /**
  * This class allows to register instances of {@link Closeable}, which are all closed if this registry is closed.
+ * 这个类允许注册{@code Closeable}的实例，当这个注册器关闭的时候，注册的{@code Closeable}的实例也都会被关闭。
  *
  * <p>Registering to an already closed registry will throw an exception and close the provided {@link Closeable}
+ * 向一个已经关闭的注册器注册，将抛出异常，并关闭提供的{@code Closeable}实例
  *
  * <p>All methods in this class are thread-safe.
+ * 这个类中的方法都是线程安全的。
  */
 @Internal
 public class CloseableRegistry extends AbstractCloseableRegistry<Closeable, Object> {
 
+	// 虚假的
 	private static final Object DUMMY = new Object();
 
 	public CloseableRegistry() {

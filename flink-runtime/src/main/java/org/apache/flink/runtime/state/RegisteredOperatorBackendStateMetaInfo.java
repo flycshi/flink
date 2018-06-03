@@ -42,11 +42,14 @@ public class RegisteredOperatorBackendStateMetaInfo<S> {
 
 	/**
 	 * The mode how elements in this state are assigned to tasks during restore
+	 * 此状态中的元素如何在恢复期间分配给任务的模式
+	 *
 	 */
 	private final OperatorStateHandle.Mode assignmentMode;
 
 	/**
 	 * The type serializer for the elements in the state list
+	 * 状态列表中元素的类型序列化器
 	 */
 	private final TypeSerializer<S> partitionStateSerializer;
 

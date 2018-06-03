@@ -743,6 +743,7 @@ public abstract class FlinkKafkaConsumerBase<T> extends RichParallelSourceFuncti
 				TypeInformation.of(new TypeHint<Tuple2<KafkaTopicPartition, Long>>() {})));
 
 		if (context.isRestored() && !restoredFromOldState) {
+			// 先按topic排序，再按分区排序
 			restoredState = new TreeMap<>(new KafkaTopicPartition.Comparator());
 
 			// migrate from 1.2 state, if there is any

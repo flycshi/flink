@@ -38,8 +38,8 @@ import java.util.Map;
  * 
  * <p>All methods in this class are thread-safe.
  *
- * @param <C> Type of the closeable this registers
- * @param <T> Type for potential meta data associated with the registering closeables
+ * @param <C> Type of the closeable this registers 注册的Closeable的类型
+ * @param <T> Type for potential meta data associated with the registering closeables 元数据类型
  */
 @Internal
 public abstract class AbstractCloseableRegistry<C extends Closeable, T> implements Closeable {
@@ -47,7 +47,8 @@ public abstract class AbstractCloseableRegistry<C extends Closeable, T> implemen
 	/** Lock that guards state of this registry. **/
 	private final Object lock;
 
-	/** Map from tracked Closeables to some associated meta data. */
+	/** Map from tracked Closeables to some associated meta data.
+	 *  跟踪Closeable 与 元数据 的映射 */
 	@GuardedBy("lock")
 	private final Map<Closeable, T> closeableToRef;
 

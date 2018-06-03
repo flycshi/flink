@@ -77,6 +77,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 	/**
 	 * CloseableRegistry to participate in the tasks lifecycle.
+	 * 参与任务生命周期
 	 */
 	private final CloseableRegistry closeStreamOnCancelRegistry;
 
@@ -118,11 +119,11 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 	/**
 	 * Cache of already accessed states.
-	 * 已访问状态的缓存。
+	 * 已经被访问过的状态的缓存。
 	 *
 	 * <p>In contrast to {@link #registeredStates} and {@link #restoredStateMetaInfos} which may be repopulated
 	 * with restored state, this map is always empty at the beginning.
-	 * 与可以用恢复状态重新填充的{@code #registeredStates}和{@link #restoredStateMetaInfos}不同，此映射在开始时总是空的。
+	 * 与可以用恢复状态重新填充的{@code #registeredStates}和{@code #restoredStateMetaInfos}不同，此映射在开始时总是空的。
 	 *
 	 * <p>TODO this map should be moved to a base class once we have proper hierarchy for the operator state backends.
 	 * 一旦对操作符状态后端有了适当的层次结构，就应该将该映射移动到基类。
@@ -168,6 +169,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 	// -------------------------------------------------------------------------------------------
 	//  State access methods
+	//  状态访问的方法
 	// -------------------------------------------------------------------------------------------
 
 	@Override

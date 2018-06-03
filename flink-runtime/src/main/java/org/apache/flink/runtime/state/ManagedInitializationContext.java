@@ -24,13 +24,16 @@ import org.apache.flink.api.common.state.OperatorStateStore;
 /**
  * This interface provides a context in which operators can initialize by registering to managed state (i.e. state that
  * is managed by state backends).
+ * 这个接口提供了一个上下文，操作符可以通过注册到托管状态(即由状态后端管理的状态)来初始化。
  *
  * <p>
  * Operator state is available to all operators, while keyed state is only available for operators after keyBy.
+ * 操作符状态对所有操作符都可用，而键控状态仅对keyBy之后的操作符可用
  *
  * <p>
  * For the purpose of initialization, the context signals if the state is empty (new operator) or was restored from
  * a previous execution of this operator.
+ * 为了进行初始化，如果状态为空(新操作符)或从该操作符以前的执行中恢复，上下文将发出信号。
  *
  */
 public interface ManagedInitializationContext {
