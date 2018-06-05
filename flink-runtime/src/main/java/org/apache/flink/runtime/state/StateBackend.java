@@ -31,7 +31,7 @@ import java.io.IOException;
  * A <b>State Backend</b> defines how the state of a streaming application is stored and
  * checkpointed. Different State Backends store their state in different fashions, and use
  * different data structures to hold the state of a running application.
- * 一个 StateBackend 定义了一个流应用的状态是如何存储和检查的。
+ * 一个 StateBackend 定义了一个流应用的状态是如何存储和checkpoint的。
  * 不同的 StateBackend 以不同的形式来存储他们的状态, 使用不同的数据结构来保存运行中应用的状态。
  *
  * <p>For example, the {@link org.apache.flink.runtime.state.memory.MemoryStateBackend memory state backend}
@@ -53,14 +53,18 @@ import java.io.IOException;
  * RocksDBStateBackend 存储工作状态在 RocksDB 中, 默认把 checkpoint 存在文件系统中,类似 FsStateBackend
  * 
  * <h2>Raw Bytes Storage and Backends</h2>
+ * 原始字节存储和后端
  * 
  * The {@code StateBackend} creates services for <i>raw bytes storage</i> and for <i>keyed state</i>
  * and <i>operator state</i>.
+ * StateBackend 为 <i>raw bytes storage</i> and for <i>keyed state</i> and <i>operator state</i> 创建服务
  * 
  * <p>The <i>raw bytes storage</i> (through the {@link CheckpointStreamFactory}) is the fundamental
  * service that simply stores bytes in a fault tolerant fashion. This service is used by the JobManager
  * to store checkpoint and recovery metadata and is typically also used by the keyed- and operator state
  * backends to store checkpointed state.
+ * 通过{@code CheckpointStreamFactory}创建的原始字节存储是基础服务，简单的以容错的形式存储字节。
+ * 这个服务被JobManager用来存储checkpoint，并恢复元数据，一般也被keyed和operator的状态后端用来存储checkpoint状态。
  *
  * <p>The {@link AbstractKeyedStateBackend} and {@link OperatorStateBackend} created by this state
  * backend define how to hold the working state for keys and operators. They also define how to checkpoint
@@ -68,34 +72,47 @@ import java.io.IOException;
  * However, it is also possible that for example a keyed state backend simply implements the bridge to
  * a key/value store, and that it does not need to store anything in the raw byte storage upon a
  * checkpoint.
+ * StateBackend创建的{@code AbstractKeyedStateBackend} and {@code OperatorStateBackend}定义了如何维护keys和operator的工作状态。
+ * 他们也定义了如何来checkpoint状态，一般通过{@code CheckpointStreamFactory}来存储原始字节。
+ * 当然，一个keyed状态后端简单的实现到key/value存储的桥梁，这样就不需要以字节的形式存储任何东西了
  * 
  * <h2>Serializability</h2>
+ * 序列化
  * 
  * State Backends need to be {@link java.io.Serializable serializable}, because they distributed
- * across parallel processes (for distributed execution) together with the streaming application code. 
+ * across parallel processes (for distributed execution) together with the streaming application code.
+ * StateBackends需要能被序列化，因为他们会与流应用的代码一起，在并行处理(分布式执行)之间分发。
  * 
  * <p>Because of that, {@code StateBackend} implementations (typically subclasses
  * of {@link AbstractStateBackend}) are meant to be like <i>factories</i> that create the proper
  * states stores that provide access to the persistent storage and hold the keyed- and operator
  * state data structures. That way, the State Backend can be very lightweight (contain only
  * configurations) which makes it easier to be serializable.
+ * 因为这样，StateBackend实现(子类{@code AbstractStateBackend})一般以工厂类的方式，用来创建合适的状态存储，提供到持久存储的访问，
+ * 并维护keyed和operator的数据结构。
+ * 这样的话，StateBackend可以非常轻量级(只包含配置)，这样就比较容易序列化
  * 
  * 
  * <h2>Thread Safety</h2>
+ * 线程安全
  * 
  * State backend implementations have to be thread-safe. Multiple threads may be creating
  * streams and keyed-/operator state backends concurrently.
+ * 实现子类必须是线程安全的。
+ * 多个线程可能并发的创建流和keyed-/operator的state backends
  */
 @PublicEvolving
 public interface StateBackend extends java.io.Serializable {
 
 	// ------------------------------------------------------------------------
 	//  Persistent Bytes Storage
+	//  持久化字节存储
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates a {@link CheckpointStreamFactory} that can be used to create streams
 	 * that should end up in a checkpoint.
+	 * 创建一个{@code CheckpointStreamFactory}，可以被用来创建流，这个流在checkpoint
 	 *
 	 * @param jobId              The {@link JobID} of the job for which we are creating checkpoint streams.
 	 * @param operatorIdentifier An identifier of the operator for which we create streams.
@@ -132,6 +149,7 @@ public interface StateBackend extends java.io.Serializable {
 	 * and checkpointing it.
 	 * 
 	 * <p><i>Keyed State</i> is state where each value is bound to a key.
+	 * Keyed State 是与每个key绑定的状态值
 	 * 
 	 * @param env
 	 * @param jobID

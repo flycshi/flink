@@ -27,6 +27,8 @@ public interface CheckpointStreamFactory {
 	/**
 	 * Creates an new {@link CheckpointStateOutputStream}. When the stream
 	 * is closed, it returns a state handle that can retrieve the state back.
+	 * 创建一个新的{@code CheckpointStateOutputStream}。
+	 * 当流被关闭的时候，它会返回一个state handle，可以通过这个句柄提取状态
 	 *
 	 * @param checkpointID The ID of the checkpoint.
 	 * @param timestamp The timestamp of the checkpoint.
@@ -54,13 +56,14 @@ public interface CheckpointStreamFactory {
 	 *
 	 * <p>Note: This is an abstract class and not an interface because {@link OutputStream}
 	 * is an abstract class.
+	 * 注意：因为{@code OutputStream}是一个抽象类，所以这里也是一个抽象类，而不是一个接口
 	 */
 	abstract class CheckpointStateOutputStream extends FSDataOutputStream {
 
 		/**
 		 * Closes the stream and gets a state handle that can create an input stream
 		 * producing the data written to this stream.
-		 * 关闭流并获取一个状态句柄，这个句柄可以创建一个输入流，并向其中写入数据
+		 * 关闭流并获取一个状态句柄，这个句柄可以创建一个输入流，并产生写入到这个流中的数据
 		 *
 		 * @return A state handle that can create an input stream producing the data written to this stream.
 		 * @throws IOException Thrown, if the stream cannot be closed.

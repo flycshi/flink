@@ -96,7 +96,8 @@ public abstract class AbstractStateBackend implements StateBackend, java.io.Seri
 			String operatorIdentifier) throws Exception;
 
 	// ------------------------------------------------------------------------
-	//  Loading the state backend from a configuration 
+	//  Loading the state backend from a configuration
+	//  从一个配置中加载状态后端
 	// ------------------------------------------------------------------------
 
 	/**
@@ -196,7 +197,9 @@ public abstract class AbstractStateBackend implements StateBackend, java.io.Seri
 	/**
 	 * Loads the state backend from the configuration, from the parameter 'state.backend', as defined
 	 * in {@link CoreOptions#STATE_BACKEND}. If no state backend is configures, this instantiates the
-	 * default state backend (the {@link MemoryStateBackend}). 
+	 * default state backend (the {@link MemoryStateBackend}).
+	 * 从配置中加载状态后端，依据参数'state.backend'，在{@link CoreOptions#STATE_BACKEND}定义。
+	 * 如果没有配置state.backend，就实例化默认的状态后端 MemoryStateBackend
 	 *
 	 * <p>Refer to {@link #loadStateBackendFromConfig(Configuration, ClassLoader, Logger)} for details on
 	 * how the state backend is loaded from the configuration.

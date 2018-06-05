@@ -294,6 +294,7 @@ public class FsCheckpointStreamFactory implements CheckpointStreamFactory {
 		@Override
 		public StreamStateHandle closeAndGetHandle() throws IOException {
 			// check if there was nothing ever written
+			// 检查是否没有写入任何东西
 			if (outStream == null && pos == 0) {
 				return null;
 			}
@@ -315,6 +316,7 @@ public class FsCheckpointStreamFactory implements CheckpointStreamFactory {
 							long size = -1L;
 
 							// make a best effort attempt to figure out the size
+							// 获取状态大小
 							try {
 								size = outStream.getPos();
 							} catch (Exception ignored) {}
@@ -356,6 +358,7 @@ public class FsCheckpointStreamFactory implements CheckpointStreamFactory {
 
 		private void createStream() throws IOException {
 			// make sure the directory for that specific checkpoint exists
+			// 确保指定checkpoint目录存在
 			fs.mkdirs(basePath);
 
 			Exception latestException = null;

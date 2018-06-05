@@ -39,10 +39,13 @@ import static org.apache.flink.util.Preconditions.checkArgument;
 
 /**
  * The file state backend is a state backend that stores the state of streaming jobs in a file system.
+ * 文件状态后端，是一个将流job的状态存储到一个文件系统中的StateBackend
  *
  * <p>The state backend has one core directory into which it puts all checkpoint data. Inside that
  * directory, it creates a directory per job, inside which each checkpoint gets a directory, with
  * files for each state, for example:
+ * 这个StateBackend有一个核心的目录，用来存储所有的checkpoint数据。
+ * 在这个目录内，为每个job创建一个子目录，在这个子目录内，每个checkpoint有一个目录，在这个子目录下，每个状态有一个文件
  *
  * {@code hdfs://namenode:port/flink-checkpoints/<job-id>/chk-17/6ba7b810-9dad-11d1-80b4-00c04fd430c8 }
  */
@@ -332,6 +335,8 @@ public class FsStateBackend extends AbstractStateBackend {
 	 * Checks and normalizes the checkpoint data URI. This method first checks the validity of the
 	 * URI (scheme, path, availability of a matching file system) and then normalizes the URI
 	 * to a path.
+	 * 检查并格式化checkpoint的数据uri。
+	 * 这个方法先检查uri的有效性，再格式化成一个path
 	 * 
 	 * <p>If the URI does not include an authority, but the file system configured for the URI has an
 	 * authority, then the normalized path will include this authority.
