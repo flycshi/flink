@@ -36,12 +36,15 @@ import java.io.IOException;
  * A {@link AbstractStateBackend} that stores all its data and checkpoints in memory and has no
  * capabilities to spill to disk. Checkpoints are serialized and the serialized data is
  * transferred
+ * 存储所有的数据和checkpoint在内存中，并且没有能力刷到硬盘。
+ * checkpoint被序列化，并且序列化的数据被转换过。
  */
 public class MemoryStateBackend extends AbstractStateBackend {
 
 	private static final long serialVersionUID = 4109305377809414635L;
 
-	/** The default maximal size that the snapshotted memory state may have (5 MiBytes) */
+	/** The default maximal size that the snapshotted memory state may have (5 MiBytes).
+	 *  快照内存状态默认的最大值 */
 	private static final int DEFAULT_MAX_STATE_SIZE = 5 * 1024 * 1024;
 
 	/** The maximal size that the snapshotted memory state may have */
