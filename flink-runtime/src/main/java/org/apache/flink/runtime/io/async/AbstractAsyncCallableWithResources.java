@@ -24,12 +24,15 @@ import java.io.IOException;
 
 /**
  * This abstract class encapsulates the lifecycle and execution strategy for asynchronous operations that use resources.
+ * 这个抽象类为使用资源的异步操作封装了生命周期和执行策略
  *
  * @param <V> return type of the asynchronous call.
+ *            异步调用的类型
  */
 public abstract class AbstractAsyncCallableWithResources<V> implements StoppableCallbackCallable<V> {
 
-	/** Tracks if the stop method was called on this object. */
+	/** Tracks if the stop method was called on this object.
+	 *  跟踪stop方法是否被调用过 */
 	private volatile boolean stopped;
 
 	/** Tracks if call method was executed (only before stop calls). */
@@ -45,6 +48,7 @@ public abstract class AbstractAsyncCallableWithResources<V> implements Stoppable
 
 	/**
 	 * This method implements the strategy for the actual IO operation:
+	 * 这个方法实现了真实io操作的策略
 	 * <p>
 	 * 1) Acquire resources asynchronously and atomically w.r.t stopping.
 	 * 2) Performs the operation
@@ -68,10 +72,12 @@ public abstract class AbstractAsyncCallableWithResources<V> implements Stoppable
 
 				called = true;
 				// Get resources in async part, atomically w.r.t. stopping.
+				// 异步获取资源
 				acquireResources();
 			}
 
 			// The main work is performed here.
+			// 主要的工作在这里
 			result = performOperation();
 
 		} catch (Exception ex) {

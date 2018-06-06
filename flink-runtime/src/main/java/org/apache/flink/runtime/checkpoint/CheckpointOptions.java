@@ -27,6 +27,7 @@ import org.apache.flink.runtime.jobgraph.tasks.StatefulTask;
 
 /**
  * Options for performing the checkpoint.
+ * 执行checkpoint的选项
  *
  * <p>The {@link CheckpointProperties} are related and cover properties that
  * are only relevant at the {@link CheckpointCoordinator}. These options are

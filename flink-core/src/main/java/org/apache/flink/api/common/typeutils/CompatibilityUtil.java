@@ -30,11 +30,14 @@ public class CompatibilityUtil {
 	/**
 	 * Resolves the final compatibility result of two serializers by taking into account compound information,
 	 * including the preceding serializer, the preceding serializer's configuration snapshot, and the new serializer.
+	 * 通过考虑复合信息(包括前面的序列化器、前面的序列化器的配置快照和新的序列化器)来解析两个序列化器的最终兼容性结果。
 	 *
 	 * The final result is determined as follows:
 	 *   1. If there is no configuration snapshot of the preceding serializer,
 	 *      assumes the new serializer to be compatible.
+	 *      如果前面序列化器没有配置快照，则假设新的序列化器是兼容的
 	 *   2. Confront the configuration snapshot with the new serializer.
+	 *      使用新的序列化器处理配置快照。
 	 *   3. If the result is compatible, just return that as the result.
 	 *   4. If not compatible and requires migration, check if the preceding serializer is valid.
 	 *      If yes, use that as the convert deserializer for state migration.

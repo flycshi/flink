@@ -142,6 +142,7 @@ final public class ArrayListSerializer<T> extends TypeSerializer<ArrayList<T>> {
 
 	// --------------------------------------------------------------------------------------------
 	// Serializer configuration snapshotting & compatibility
+	// 序列器配置快照和兼容
 	// --------------------------------------------------------------------------------------------
 
 	@Override

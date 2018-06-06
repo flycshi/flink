@@ -165,6 +165,7 @@ public abstract class AbstractStateBackend implements StateBackend, java.io.Seri
 				factoryClassName = "org.apache.flink.contrib.streaming.state.RocksDBStateBackendFactory";
 				// fall through to the 'default' case that uses reflection to load the backend
 				// that way we can keep RocksDB in a separate module
+				// 通过反射机制来加载后端，这样就可以让RocksDB在一个独立的模块中
 
 			default:
 				if (logger != null) {

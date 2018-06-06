@@ -24,6 +24,7 @@ import org.apache.flink.api.common.typeutils.TypeSerializer;
 
 /**
  * Configuration snapshot of a serializer for collection types.
+ * 集合类型的序列化器的配置快照。
  *
  * @param <T> Type of the element.
  */

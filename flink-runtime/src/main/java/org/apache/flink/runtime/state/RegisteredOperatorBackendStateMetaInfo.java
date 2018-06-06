@@ -30,6 +30,8 @@ import java.util.Objects;
  * 复合元数据，用于操作符后端的已注册状态。
  * 其中包含状态名、分配模式和状态分区序列化器
  *
+ * 已经注册的操作符的后端状态元数据信息
+ *
  * @param <S> Type of the state.
  */
 public class RegisteredOperatorBackendStateMetaInfo<S> {
@@ -118,6 +120,7 @@ public class RegisteredOperatorBackendStateMetaInfo<S> {
 
 	/**
 	 * A consistent snapshot of a {@link RegisteredOperatorBackendStateMetaInfo}.
+	 * 一致性快照
 	 */
 	public static class Snapshot<S> {
 

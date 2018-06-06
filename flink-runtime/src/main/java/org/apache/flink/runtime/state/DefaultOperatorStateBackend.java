@@ -211,6 +211,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 	// -------------------------------------------------------------------------------------------
 	//  Snapshot and restore
+	//  快照和恢复
 	// -------------------------------------------------------------------------------------------
 
 	@Override
@@ -230,6 +231,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 				new HashMap<>(registeredStates.size());
 
 		// eagerly create deep copies of the list states in the sync phase, so that we can use them in the async writing
+		// 最好在同步阶段创建列表状态的深层副本，以便我们可以在异步处理中使用它们
 		ClassLoader snapshotClassLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(userClassloader);
 		try {
@@ -245,6 +247,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 		}
 
 		// implementation of the async IO operation, based on FutureTask
+		// 基于FutureTask，实现异步IO操作
 		final AbstractAsyncCallableWithResources<OperatorStateHandle> ioCallable =
 			new AbstractAsyncCallableWithResources<OperatorStateHandle>() {
 
@@ -431,6 +434,13 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 	 * Implementation of operator list state.
 	 * 操作符列表状态的实现。
 	 *
+	 * <p>
+	 * 可分区列表状态
+	 * 通过{@code stateMetaInfo}来存储这个state的元数据信息，包括状态名称、分发模式、序列化器等
+	 * 通过{@code internalList}作为内存元素的存储list
+	 * {@code internalListCopySerializer}是{@code internalList}的序列化器，可以进行深度拷贝
+	 * </p>
+	 *
 	 * @param <S> the type of an operator state partition.  操作符状态分区的类型
 	 */
 	static final class PartitionableListState<S> implements ListState<S> {
@@ -449,6 +459,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 		/**
 		 * A serializer that allows to perfom deep copies of internalList
+		 * 可以用来对{@link internalList}进行深层拷贝的序列化器
 		 */
 		private final ArrayListSerializer<S> internalListCopySerializer;
 
@@ -507,6 +518,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 
 		public long[] write(FSDataOutputStream out) throws IOException {
 
+			// 用来记录每个分区状态在流中的起始位置
 			long[] partitionOffsets = new long[internalList.size()];
 
 			DataOutputView dov = new DataOutputViewStreamWrapper(out);
@@ -598,6 +610,7 @@ public class DefaultOperatorStateBackend implements OperatorStateBackend {
 		return partitionableListState;
 	}
 
+	/** 从流中读出状态数据 */
 	private static <S> void deserializeStateValues(
 		PartitionableListState<S> stateListForName,
 		FSDataInputStream in,

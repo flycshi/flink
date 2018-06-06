@@ -196,28 +196,39 @@ public abstract class TypeSerializer<T> implements Serializable {
 	 * Ensure compatibility of this serializer with a preceding serializer that was registered for serialization of
 	 * the same managed state (if any - this method is only relevant if this serializer is registered for
 	 * serialization of managed state).
+	 * 确保这个序列化器与之前为同一托管状态的序列化注册的序列化器的兼容性
+	 * (如果有的话——这个方法只在该序列化器注册为托管状态的序列化时才有用)。
 	 *
 	 * The compatibility check in this method should be performed by inspecting the preceding serializer's configuration
 	 * snapshot. The method may reconfigure the serializer (if required and possible) so that it may be compatible,
 	 * or provide a signaling result that informs Flink that state migration is necessary before continuing to use
 	 * this serializer.
+	 * 此方法中的兼容性检查，应该通过检查前面的序列化器的配置快照来执行。
+	 * 该方法可以重新配置序列化器(如果需要和可能的话)，以便它可以兼容，或者提供一个信号结果，
+	 * 通知Flink在继续使用这个序列化器之前需要进行状态迁移。
 	 *
 	 * <p>The result can be one of the following:
 	 * <ul>
 	 *     <li>{@link CompatibilityResult#compatible()}: this signals Flink that this serializer is compatible, or
 	 *     has been reconfigured to be compatible, to continue reading previous data, and that the
 	 *     serialization schema remains the same. No migration needs to be performed.</li>
+	 *     这表明这个序列化器是兼容的，或者已经重新配置为兼容的，以继续读取以前的数据，并且序列化模式保持不变。
+	 *     不需要执行迁移
 	 *
 	 *     <li>{@link CompatibilityResult#requiresMigration(TypeDeserializer)}: this signals Flink that
 	 *     migration needs to be performed, because this serializer is not compatible, or cannot be reconfigured to be
 	 *     compatible, for previous data. Furthermore, in the case that the preceding serializer cannot be found or
 	 *     restored to read the previous data to perform the migration, the provided convert deserializer can be
 	 *     used as a fallback resort.</li>
+	 *     这表明需要执行迁移，因为这个序列化器不兼容，或者不能为以前的数据重新配置为兼容。
+	 *     此外，如果无法找到或恢复前面的序列化器来读取前一个数据以执行迁移，则提供的转换反序列化器可以用作回退解决方案
 	 *
 	 *     <li>{@link CompatibilityResult#requiresMigration()}: this signals Flink that migration needs to be
 	 *     performed, because this serializer is not compatible, or cannot be reconfigured to be compatible, for
 	 *     previous data. If the preceding serializer cannot be found (either its implementation changed or it was
 	 *     removed from the classpath) then the migration will fail due to incapability to read previous data.</li>
+	 *     这表明需要执行迁移，因为这个序列化器不兼容，或者不能重新配置为兼容以前的数据。
+	 *     如果无法找到前面的序列化器(要么改变了它的实现，要么从类路径中删除)，那么由于无法读取以前的数据，迁移将失败
 	 * </ul>
 	 *
 	 * @see CompatibilityResult

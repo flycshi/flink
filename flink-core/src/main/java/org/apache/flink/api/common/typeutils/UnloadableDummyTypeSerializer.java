@@ -29,6 +29,7 @@ import java.util.Arrays;
 /**
  * Dummy TypeSerializer to avoid that data is lost when checkpointing again a serializer for which we encountered
  * a {@link ClassNotFoundException} or {@link InvalidClassException}.
+ * 虚拟类型序列化器，为了避免检查序列化时遇到{@link ClassNotFoundException}或{@link InvalidClassException}时，导致数据丢失
  */
 public class UnloadableDummyTypeSerializer<T> extends TypeSerializer<T> {
 

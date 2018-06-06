@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * A {@link Future} that is always done and will just yield the object that was given at creation
  * time.
+ * 总是处于完成状态的Future，并在创建时指定对象。
  *
  * @param <T> The type of object in this {@code Future}.
  */

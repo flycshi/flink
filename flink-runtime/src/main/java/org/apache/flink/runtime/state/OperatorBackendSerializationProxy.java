@@ -30,6 +30,7 @@ import java.util.List;
 /**
  * Serialization proxy for all meta data in operator state backends. In the future we might also requiresMigration the actual state
  * serialization logic here.
+ * 在操作符状态后端对所有元数据进行序列化代理。在将来，我们还可能需要对这里的实际的状态序列化逻辑进行需求。
  */
 public class OperatorBackendSerializationProxy extends VersionedIOReadableWritable {
 
