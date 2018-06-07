@@ -143,6 +143,8 @@ public abstract class TypeInformation<T> implements Serializable {
 	 * Optional method for giving Flink's type extraction system information about the mapping
 	 * of a generic type parameter to the type information of a subtype. This information is necessary
 	 * in cases where type information should be deduced from an input type.
+	 * 可选的方法，为Flink类型提取系统提供这样信息，有关泛型类型参数映射到子类型的类型信息的。
+	 * 在需要从输入类型推断类型信息的情况下，这些信息是必需的
 	 *
 	 * For instance, a method for a {@link Tuple2} would look like this:
 	 * <code>
@@ -212,6 +214,7 @@ public abstract class TypeInformation<T> implements Serializable {
 
 	/**
 	 * Creates a TypeInformation for the type described by the given class.
+	 * 为给定的class描述的类型创建一个 TypeInformation
 	 * 
 	 * <p>This method only works for non-generic types. For generic types, use the
 	 * {@link #of(TypeHint)} method.

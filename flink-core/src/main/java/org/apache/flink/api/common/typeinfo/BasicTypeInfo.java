@@ -108,6 +108,7 @@ public class BasicTypeInfo<T> extends TypeInformation<T> implements AtomicType<T
 	/**
 	 * Returns whether this type should be automatically casted to
 	 * the target type in an arithmetic operation.
+	 * 返回该类型是否应该在算术操作中自动转换为目标类型
 	 */
 	@PublicEvolving
 	public boolean shouldAutocastTo(BasicTypeInfo<?> to) {

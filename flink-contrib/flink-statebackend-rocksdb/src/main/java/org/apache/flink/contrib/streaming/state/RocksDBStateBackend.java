@@ -111,7 +111,8 @@ public class RocksDBStateBackend extends AbstractStateBackend {
 	/** The options factory to create the RocksDB options in the cluster. */
 	private OptionsFactory optionsFactory;
 
-	/** Whether we already lazily initialized our local storage directories. */
+	/** Whether we already lazily initialized our local storage directories.
+	 *  是否已经延迟初始化本地存储目录. */
 	private transient boolean isInitialized = false;
 
 	/** True if incremental checkpointing is enabled. */
@@ -230,8 +231,10 @@ public class RocksDBStateBackend extends AbstractStateBackend {
 		this.jobId = env.getJobID();
 
 		// initialize the paths where the local RocksDB files should be stored
+		// 初始化应该存储本地RocksDB文件的路径
 		if (configuredDbBasePaths == null) {
 			// initialize from the temp directories
+			// 从临时目录初始化
 			initializedDbBasePaths = env.getIOManager().getSpillingDirectories();
 		}
 		else {
@@ -299,6 +302,8 @@ public class RocksDBStateBackend extends AbstractStateBackend {
 
 		// first, make sure that the RocksDB JNI library is loaded
 		// we do this explicitly here to have better error handling
+		// 首先，确保RocksDB JNI library已经加载
+		// 在这里明确的执行这个动作，是为了更好的处理error
 		String tempDir = env.getTaskManagerInfo().getTmpDirectories()[0];
 		ensureRocksDBIsLoaded(tempDir);
 
@@ -343,12 +348,16 @@ public class RocksDBStateBackend extends AbstractStateBackend {
 	 * Sets the paths across which the local RocksDB database files are distributed on the local
 	 * file system. Setting these paths overrides the default behavior, where the
 	 * files are stored across the configured temp directories.
+	 * 设置本地RocksDB数据库文件在本地文件系统上分布的路径。
+	 * 设置这些路径覆盖默认行为，其中文件存储在配置的临时目录中。
 	 *
 	 * <p>Each distinct state will be stored in one path, but when the state backend creates
 	 * multiple states, they will store their files on different paths.
+	 * 每个独立的状态将存储在一个路径中，但是当状态后端创建多个状态时，它们将在不同的路径上存储文件
 	 *
 	 * <p>Passing {@code null} to this function restores the default behavior, where the configured
 	 * temp directories will be used.
+	 * 将{@code null}传递给此函数将恢复默认行为，其中将使用配置的临时目录。
 	 *
 	 * @param paths The paths across which the local RocksDB database files will be spread.
 	 */

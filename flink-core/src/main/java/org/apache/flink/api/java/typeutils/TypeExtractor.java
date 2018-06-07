@@ -854,11 +854,13 @@ public class TypeExtractor {
 			TypeInformation<IN1> in1Type, TypeInformation<IN2> in2Type) {
 
 		// check if type information can be created using a type factory
+		// check类型信息是否可以使用一个类型工厂来创建
 		final TypeInformation<OUT> typeFromFactory = createTypeInfoFromFactory(t, typeHierarchy, in1Type, in2Type);
 		if (typeFromFactory != null) {
 			return typeFromFactory;
 		}
 		// check if type is a subclass of tuple
+		// check类型是否是一个tuple的子类
 		else if (isClassType(t) && Tuple.class.isAssignableFrom(typeToClass(t))) {
 			Type curT = t;
 
@@ -903,6 +905,7 @@ public class TypeExtractor {
 		}
 		// type depends on another type
 		// e.g. class MyMapper<E> extends MapFunction<String, E>
+		// 依赖其他类型的类型，比如 类 MyMapper<E> extends MapFunction<String, E>
 		else if (t instanceof TypeVariable) {
 			Type typeVar = materializeTypeVariable(typeHierarchy, (TypeVariable<?>) t);
 
@@ -923,6 +926,7 @@ public class TypeExtractor {
 			}
 		}
 		// arrays with generics
+		// 泛型的数组
 		else if (t instanceof GenericArrayType) {
 			GenericArrayType genericArray = (GenericArrayType) t;
 
@@ -949,10 +953,12 @@ public class TypeExtractor {
 			}
 		}
 		// objects with generics are treated as Class first
+		// 具有泛型的对象，首先被当成class
 		else if (t instanceof ParameterizedType) {
 			return (TypeInformation<OUT>) privateGetForClass(typeToClass(t), typeHierarchy, (ParameterizedType) t, in1Type, in2Type);
 		}
 		// no tuple, no TypeVariable, no generic type
+		// 其他
 		else if (t instanceof Class) {
 			return privateGetForClass((Class<OUT>) t, typeHierarchy);
 		}
@@ -1206,6 +1212,7 @@ public class TypeExtractor {
 
 	/**
 	 * Creates type information using a factory if for this type or super types. Returns null otherwise.
+	 * 为该类型或超类型使用工厂创建类型信息。否则返回null。
 	 */
 	@SuppressWarnings("unchecked")
 	private <IN1, IN2, OUT> TypeInformation<OUT> createTypeInfoFromFactory(
@@ -1219,6 +1226,7 @@ public class TypeExtractor {
 		final Type factoryDefiningType = factoryHierarchy.get(factoryHierarchy.size() - 1);
 
 		// infer possible type parameters from input
+		// 从输入中推断可能的类型参数。
 		final Map<String, TypeInformation<?>> genericParams;
 		if (factoryDefiningType instanceof ParameterizedType) {
 			genericParams = new HashMap<>();
@@ -1594,6 +1602,7 @@ public class TypeExtractor {
 
 	/**
 	 * Traverses the type hierarchy up until a type information factory can be found.
+	 * 向上遍历类型层次结构，直到找到类型信息工厂
 	 *
 	 * @param typeHierarchy hierarchy to be filled while traversing up
 	 * @param t type for which a factory needs to be found

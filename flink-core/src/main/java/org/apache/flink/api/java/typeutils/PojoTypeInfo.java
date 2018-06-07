@@ -46,11 +46,16 @@ import static org.apache.flink.util.Preconditions.checkState;
 /**
  * TypeInformation for "Java Beans"-style types. Flink refers to them as POJOs,
  * since the conditions are slightly different from Java Beans.
+ * “Java bean”类型的类型信息。Flink将它们称为pojo，因为这些条件与Java bean稍有不同。
  * A type is considered a FLink POJO type, if it fulfills the conditions below.
+ * 满足如下条件，就认为是一个flink POJO 类型
  * <ul>
  *   <li>It is a public class, and standalone (not a non-static inner class)</li>
+ *   一个public类，单例，不是静态内部类
  *   <li>It has a public no-argument constructor.</li>
+ *   具有一个public的无参构造器
  *   <li>All fields are either public, or have public getters and setters.</li>
+ *   所有字段要么是public，要么是具有get和set方法
  * </ul>
  * 
  * @param <T> The type represented by this type information.

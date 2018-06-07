@@ -275,6 +275,8 @@ public class TypeExtractionUtils {
 
 	/**
 	 * Checks if a type can be converted to a Class. This is true for ParameterizedType and Class.
+	 * 检查类型是否可以转换为类。
+	 * 对于参数类型和类来说，这是正确的。
 	 */
 	public static boolean isClassType(Type t) {
 		return t instanceof Class<?> || t instanceof ParameterizedType;

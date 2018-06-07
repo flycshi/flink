@@ -26,10 +26,13 @@ import org.apache.flink.api.common.typeutils.TypeComparator;
  * An atomic type is a type that is treated as one indivisible unit and where the entire type acts
  * as a key. The atomic type defines the method to create a comparator for this type as a key.
  * Example atomic types are the basic types (int, long, String, ...) and comparable custom classes.
- * 一个原子类型是一个被看做不可分单元的一个类型
+ * 原子类型是一种被当作一个不可分割的单元，并且整个类型作为键的类型。
+ * 原子类型定义了为该类型创建比较器作为键的方法。
+ * 示例原子类型是基本类型(int、long、String、…)和可比较的自定义类。
  * <p>
  * In contrast to atomic types are composite types, where the type information is aware of the individual
  * fields and individual fields may be used as a key.
+ * 与原子类型相反的是复合类型，其中类型信息知道单个字段，而单个字段可以用作键。
  */
 @Public
 public interface AtomicType<T> {
