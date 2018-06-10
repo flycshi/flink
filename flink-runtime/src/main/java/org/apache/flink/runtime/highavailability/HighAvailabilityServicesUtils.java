@@ -77,18 +77,23 @@ public class HighAvailabilityServicesUtils {
 			case NONE:
 				final Tuple2<String, Integer> hostnamePort = getJobManagerAddress(configuration);
 
+				// akka.tcp://flink@localhost:6123/user/jobmanager
 				final String jobManagerRpcUrl = AkkaRpcServiceUtils.getRpcUrl(
 					hostnamePort.f0,
 					hostnamePort.f1,
 					JobMaster.JOB_MANAGER_NAME,
 					addressResolution,
 					configuration);
+
+				// akka.tcp://flink@localhost:6123/user/resourcemanager
 				final String resourceManagerRpcUrl = AkkaRpcServiceUtils.getRpcUrl(
 					hostnamePort.f0,
 					hostnamePort.f1,
 					ResourceManager.RESOURCE_MANAGER_NAME,
 					addressResolution,
 					configuration);
+
+				// akka.tcp://flink@localhost:6123/user/dispatcher
 				final String dispatcherRpcUrl = AkkaRpcServiceUtils.getRpcUrl(
 					hostnamePort.f0,
 					hostnamePort.f1,
@@ -116,6 +121,7 @@ public class HighAvailabilityServicesUtils {
 	/**
 	 * Returns the JobManager's hostname and port extracted from the given
 	 * {@link Configuration}.
+	 * 从给定的配置中提取出 JobManager 的主机名和端口号
 	 *
 	 * @param configuration Configuration to extract the JobManager's address from
 	 * @return The JobManager's hostname and port

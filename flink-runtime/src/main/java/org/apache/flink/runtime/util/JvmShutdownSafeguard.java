@@ -35,7 +35,8 @@ import static org.apache.flink.util.Preconditions.checkArgument;
  */
 public class JvmShutdownSafeguard extends Thread {
 
-	/** Default delay to wait after clean shutdown was stared, before forcibly terminating the JVM */  
+	/** Default delay to wait after clean shutdown was stared, before forcibly terminating the JVM
+	 *  在清理关闭程序启动后，强制关闭jvm前，默认的等待延迟时间 */
 	private static final long DEFAULT_DELAY = 5000L;
 
 	/** The exit code returned by the JVM process if it is killed by the safeguard */

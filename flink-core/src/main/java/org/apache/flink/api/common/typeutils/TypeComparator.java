@@ -193,6 +193,7 @@ public abstract class TypeComparator<T> implements Serializable {
 	
 	/**
 	 * Checks whether the data type supports the creation of a normalized key for comparison.
+	 * 检查数据类型是否支持创建规范化键用于比较
 	 * 
 	 * @return True, if the data type supports the creation of a normalized key for comparison, false otherwise.
 	 */
@@ -229,11 +230,16 @@ public abstract class TypeComparator<T> implements Serializable {
 	 * Writes a normalized key for the given record into the target byte array, starting at the specified position
 	 * and writing exactly the given number of bytes. Note that the comparison of the bytes is treating the bytes
 	 * as unsigned bytes: {@code int byteI = bytes[i] & 0xFF;}
+	 * 将给定记录的规范化键写入目标字节数组中，从指定位置开始，并写入指定的字节数。
+	 * 注意，字节的比较是将字节处理为无符号字节:{@code int byteI = bytes[i] & 0xFF;}
 	 * <p>
 	 * If the meaningful part of the normalized key takes less than the given number of bytes, than it must be padded.
 	 * Padding is typically required for variable length data types, such as strings. The padding uses a special
 	 * character, either {@code 0} or {@code 0xff}, depending on whether shorter values are sorted to the beginning or
-	 * the end. 
+	 * the end.
+	 * 如果规范化密钥的有意义部分所占用的字节数小于给定的字节数，则必须将其填充。
+	 * 变量长度数据类型(如字符串)通常需要填充。
+	 * 填充使用一个特殊的字符，{@code 0}或{@code 0xff}，这取决于较短的值是按开头还是结尾排序的。
 	 * <p>
 	 * This method is similar to {@link org.apache.flink.types.NormalizableKey#copyNormalizedKey(MemorySegment, int, int)}. In the case that
 	 * multiple fields of a record contribute to the normalized key, it is crucial that the fields align on the

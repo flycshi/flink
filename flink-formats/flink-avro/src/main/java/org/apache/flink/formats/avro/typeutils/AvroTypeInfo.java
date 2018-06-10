@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Special type information to generate a special AvroTypeInfo for Avro POJOs (implementing SpecificRecordBase, the typed Avro POJOs)
+ * 特定的类型信息，用来为Avro POJO产生特定的AvroTypeInfo
  *
  * <p>Proceeding: It uses a regular pojo type analysis and replaces all {@code GenericType<CharSequence>} with a {@code GenericType<avro.Utf8>}.
  * All other types used by Avro are standard Java types.

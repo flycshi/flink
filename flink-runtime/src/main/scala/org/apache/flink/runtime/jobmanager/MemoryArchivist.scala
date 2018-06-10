@@ -43,6 +43,10 @@ import scala.concurrent.future
  * Actor which stores terminated Flink jobs. The number of stored Flink jobs is set by max_entries.
  * If this number is exceeded, the oldest job will be discarded. One can interact with the actor by
  * the following messages:
+  * 用来存储已经终止的flink任务Actor。
+  * 存储的flink任务的数量通过max_entries设置。
+  * 如果超过这个值，老的job就会被丢弃。
+  * 可以通过以下消息与这个actor交互
  *
  *  - [[ArchiveExecutionGraph]] archives the attached [[ExecutionGraph]]
  *
@@ -73,6 +77,8 @@ class MemoryArchivist(
   /*
    * Map of execution graphs belonging to recently started jobs with the time stamp of the last
    * received job event. The insert order is preserved through a LinkedHashMap.
+   * 属于最近启动的作业的执行图的映射，带有最近接收的作业事件的时间戳。
+   * 插入顺序通过LinkedHashMap保存。
    */
   protected val graphs = mutable.LinkedHashMap[JobID, ArchivedExecutionGraph]()
 

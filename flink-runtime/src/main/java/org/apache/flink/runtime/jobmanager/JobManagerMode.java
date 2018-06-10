@@ -26,7 +26,7 @@ public enum JobManagerMode {
 	/**
 	 * Causes the JobManager to operate in single user mode and
 	 * start a local embedded TaskManager.
-	 * 使JobManager以单个用户模式运行，并启动本地嵌入式任务管理器。
+	 * 使JobManager以单个用户模式运行，并启动本地嵌入式TaskManager。
 	 */
 	LOCAL,
 

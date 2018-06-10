@@ -136,8 +136,9 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 
 	/**
 	 * Map which contains the workers from which we know that they have been successfully started in a container.
-	 * 包含了我们知道他们已经成功地从一个容器中启动的worker的map。
 	 * This notification is sent by the JM when a TM tries to register at it.
+	 * Map包含我们所知道的在容器中已经成功启动的工人。
+	 * 此通知由JM在TM尝试注册时发送
 	 * 当一个 TaskManager 尝试注册时, 这个通知是由 JobManager 发送的
 	 */
 	private final Map<ResourceID, WorkerType> startedWorkers;
@@ -646,12 +647,14 @@ public abstract class FlinkResourceManager<WorkerType extends ResourceIDRetrieva
 		int numWorkersPendingRegistration = getNumWorkersPendingRegistration();
 
 		// sanity checks
+		// 双重校验
 		Preconditions.checkState(numWorkersPending >= 0,
 			"Number of pending workers should never be below 0.");
 		Preconditions.checkState(numWorkersPendingRegistration >= 0,
 			"Number of pending workers pending registration should never be below 0.");
 
 		// see how many workers we want, and whether we have enough
+		// 看下我们需要多少个worker，以及我们是否有足够多的worker了
 		int allAvailableAndPending = startedWorkers.size() +
 			numWorkersPending + numWorkersPendingRegistration;
 

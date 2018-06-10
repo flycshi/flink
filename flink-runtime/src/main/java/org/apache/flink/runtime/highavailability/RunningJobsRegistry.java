@@ -31,7 +31,7 @@ import java.io.IOException;
  * job is still running), or whether the job has already finished successfully (in case of a
  * finite job) and the leader has only been granted leadership because the previous leader
  * quit cleanly after the job was finished.
- * 这个注册表用在有多个主节点的HA模式下,用来决定一个新的leader是否需要视图恢复某个job(因为工作仍在运行),
+ * 这个注册表用在有多个主节点的HA模式下,用来决定一个新的leader是否需要试图恢复某个job(因为工作仍在运行),
  * 或者这份工作是否已经成功完成(在有限任务的情况下),
  * 以及leader只是被授予了领导权, 因为前一个leader在job完成后,已经做了清理工作。
  * 

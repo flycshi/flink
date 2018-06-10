@@ -29,6 +29,10 @@ import java.lang.reflect.Field;
  * This class is for the serialization of java.lang.reflect.Field, which doesn't implement Serializable, therefore
  * readObject/writeObject need to be implemented in classes where there is a field of type java.lang.reflect.Field.
  * The two static methods in this class are to be called from these readObject/writeObject methods.
+ * 这个类用于 java.lang.reflect.Field 的序列化, Field 它没有实现 Serializable 接口。
+ * 有一个字段类型为 java.lang.reflect.Field 的类, 需要实现 readObject/writeObject 方法。
+ * 该类中的两个静态方法将从 readObject/writeObject 方法中调用。
+ *
  */
 @Internal
 public class FieldSerializer {

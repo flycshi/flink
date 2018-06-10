@@ -55,6 +55,7 @@ public class HighAvailabilityOptions {
 
 	/**
 	 * File system path (URI) where Flink persists metadata in high-availability setups
+	 * Flink在HA设置中保存元数据的文件系统路径(URI)
 	 */
 	public static final ConfigOption<String> HA_STORAGE_PATH =
 			key("high-availability.storageDir")

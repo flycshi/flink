@@ -354,6 +354,7 @@ public class EnvironmentInformation {
 	/**
 	 * Revision information encapsulates information about the source code revision of the Flink
 	 * code.
+	 * 封装了flink源码的修改信息
 	 */
 	public static class RevisionInformation {
 		

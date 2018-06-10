@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 /**
  * Utility actors that monitors other actors and kills the JVM upon
  * actor termination.
+ * 工具类的actor，用来监视其他actor，在监视的actor终止是kill掉jvm
  */
 public class ProcessReaper extends UntypedActor {
 

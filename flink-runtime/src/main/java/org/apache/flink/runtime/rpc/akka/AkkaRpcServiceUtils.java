@@ -174,6 +174,7 @@ public class AkkaRpcServiceUtils {
 
 		final String hostPort = NetUtils.unresolvedHostAndPortToNormalizedString(hostname, port);
 
+		// 样例    akka.tcp://flink@10.12.136.20:9098/user/jobmanager 或者 akka.ssl.tcp://flink@10.12.136.20:9098/user/jobmanager
 		return String.format("%s://flink@%s/user/%s", protocolPrefix, hostPort, endpointName);
 	}
 

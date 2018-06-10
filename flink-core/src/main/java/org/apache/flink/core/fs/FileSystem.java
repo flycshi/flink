@@ -319,6 +319,7 @@ public abstract class FileSystem {
 		LOCK.lock();
 		try {
 			// make sure file systems are re-instantiated after re-configuration
+			// 确保在重新配置后对文件系统进行了重新初始化
 			CACHE.clear();
 			FS_FACTORIES.clear();
 
@@ -997,6 +998,7 @@ public abstract class FileSystem {
 		final ArrayList<FileSystemFactory> list = new ArrayList<>();
 
 		// by default, we always have the local file system factory
+		// 默认的，总是具有本地文件系统工厂
 		list.add(new LocalFileSystemFactory());
 
 		LOG.debug("Loading extension file systems via services");
@@ -1007,6 +1009,7 @@ public abstract class FileSystem {
 
 			// we explicitly use an iterator here (rather than for-each) because that way
 			// we can catch errors in individual service instantiations
+			// 我们在这里显式地使用迭代器(而不是for-each)，因为这样可以捕获单个服务实例化中的错误
 
 			//noinspection WhileLoopReplaceableByForEach
 			while (iter.hasNext()) {

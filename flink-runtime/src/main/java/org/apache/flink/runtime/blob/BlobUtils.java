@@ -49,26 +49,31 @@ import static org.apache.flink.util.StringUtils.isNullOrWhitespaceOnly;
 
 /**
  * Utility class to work with blob data.
+ * 处理 blob 数据的工具类
  */
 public class BlobUtils {
 
 	/**
 	 * Algorithm to be used for calculating the BLOB keys.
+	 * 用来计算 blob key 的算法
 	 */
 	private static final String HASHING_ALGORITHM = "SHA-1";
 
 	/**
 	 * The prefix of all BLOB files stored by the BLOB server.
+	 * blob server 存储的所有 blob 文件的前缀
 	 */
 	private static final String BLOB_FILE_PREFIX = "blob_";
 
 	/**
 	 * The prefix of all job-specific directories created by the BLOB server.
+	 * blob server 创建的所有的job专属目录的前缀
 	 */
 	static final String JOB_DIR_PREFIX = "job_";
 
 	/**
 	 * The prefix of all job-unrelated directories created by the BLOB server.
+	 * blob server创建的所有没有job关联的目录的前缀
 	 */
 	static final String NO_JOB_DIR_PREFIX = "no_job";
 

@@ -61,6 +61,8 @@ import static java.util.Objects.requireNonNull;
  * Specialized Flink Resource Manager implementation for YARN clusters. It is started as the
  * YARN ApplicationMaster and implements the YARN-specific logic for container requests and failure
  * monitoring.
+ * 针对yarn集群实现的特定的 flink resource mananger 。
+ * 它启动成一个 yarn ApplicationMater，实现了yarn上特定的逻辑，用力容器申请和失败监控
  */
 public class YarnFlinkResourceManager extends FlinkResourceManager<RegisteredYarnWorkerNode> {
 

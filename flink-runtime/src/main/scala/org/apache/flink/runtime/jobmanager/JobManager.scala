@@ -1980,6 +1980,7 @@ object JobManager {
 
   /**
    * Entry point (main method) to run the JobManager in a standalone fashion.
+    * 单例模式运行JobManager的入口
    *
    * @param args The command line arguments.
    */
@@ -1987,6 +1988,7 @@ object JobManager {
     // startup checks and logging
     EnvironmentInformation.logEnvironmentInfo(LOG.logger, "JobManager", args)
     SignalHandler.register(LOG.logger)
+    // 添加强制关闭jvm的hook
     JvmShutdownSafeguard.installAsShutdownHook(LOG.logger)
 
     // parsing the command line arguments
@@ -2116,9 +2118,10 @@ object JobManager {
       ioExecutor,
       AddressResolution.NO_ADDRESS_RESOLUTION)
 
+    /** metric 注册中心 */
     val metricRegistry = new MetricRegistryImpl(
       MetricRegistryConfiguration.fromConfiguration(configuration))
-
+    // 在 metric 注册中心中设置一个 metric 查询服务
     metricRegistry.startQueryService(jobManagerSystem, null)
 
     /** 启动JobManager的各组件actor */
@@ -2145,6 +2148,7 @@ object JobManager {
     }
 
     // block until everything is shut down
+    // 阻塞直到关闭一切
     jobManagerSystem.awaitTermination()
 
     webMonitorOption.foreach{
@@ -2181,6 +2185,7 @@ object JobManager {
   /**
     * Starts and runs the JobManager with all its components trying to bind to
     * a port in the specified range.
+    * 启动并运行JobManager，其所有组件都尝试绑定到指定的端口范围中的一个端口上
     *
     * @param configuration The configuration object for the JobManager.
     * @param executionMode The execution mode in which to run. Execution mode LOCAL will spawn an
@@ -2200,6 +2205,7 @@ object JobManager {
       */
     val result = AkkaUtils.retryOnBindException({
       // Try all ports in the range until successful
+      // 在给定端口范围内，直到找出一个可以成功绑定的端口为止
       val socket = NetUtils.createSocketFromPorts(
         listeningPortRange,
         new NetUtils.SocketFactory {
@@ -2234,6 +2240,7 @@ object JobManager {
 
   /**
     * Starts the JobManager actor system.
+    * 启动 JobManager 的actor system
     *
     * @param configuration Configuration to use for the job manager actor system
     * @param externalHostname External hostname to bind to
@@ -2246,6 +2253,7 @@ object JobManager {
       port: Int): ActorSystem = {
 
     // Bring up the job manager actor system first, bind it to the given address.
+    // 先把 JobManager 的 actor system 启动起来，并绑定到给定的地址
     val jobManagerSystem = BootstrapTools.startActorSystem(
       configuration,
       externalHostname,
@@ -2261,6 +2269,7 @@ object JobManager {
   }
 
   /** Starts the JobManager and all its components including the WebMonitor.
+    * 启动JobManager，以及其所有的组件，包括 WebMonitor
     *
     * @param configuration The configuration object for the JobManager
     * @param executionMode The execution mode in which to run. Execution mode LOCAL with spawn an
@@ -2325,6 +2334,7 @@ object JobManager {
 
     try {
       // bring up the job manager actor
+      // 启动JobManager这个actor
       LOG.info("Starting JobManager actor")
       val (jobManager, archive) = startJobManagerActors(
         configuration,
@@ -2350,6 +2360,7 @@ object JobManager {
         "JobManager_Process_Reaper")
 
       // bring up a local task manager, if needed
+      // 如果是本地模式，则启动本地 TaskManager
       if (executionMode == JobManagerMode.LOCAL) {
         LOG.info("Starting embedded TaskManager for JobManager's LOCAL execution mode")
 
@@ -2415,6 +2426,7 @@ object JobManager {
   /**
    * Loads the configuration, execution mode and the listening address from the provided command
    * line arguments.
+    * 从提供的命令行参数中解析出配置、执行模式、监听地址
    *
    * @param args command line arguments
    * @return Quadruple of configuration, execution mode and an optional listening address

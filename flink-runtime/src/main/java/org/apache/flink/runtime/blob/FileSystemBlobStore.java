@@ -41,6 +41,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * Blob store backed by {@link FileSystem}.
  *
  * <p>This is used in addition to the local blob storage for high availability.
+ *    除了本地blob存储之外，它还用于高可用性
  */
 public class FileSystemBlobStore implements BlobStoreService {
 

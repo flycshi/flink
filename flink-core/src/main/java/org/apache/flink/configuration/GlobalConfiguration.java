@@ -65,6 +65,7 @@ public final class GlobalConfiguration {
 
 	/**
 	 * Loads the configuration files from the specified directory.
+	 * 从指定的目录加载配置文件
 	 * <p>
 	 * YAML files are supported as configuration files.
 	 *
@@ -133,8 +134,11 @@ public final class GlobalConfiguration {
 
 	/**
 	 * Loads a YAML-file of key-value pairs.
+	 * 加载一个 yaml 文件中的 key-value 对
 	 * <p>
 	 * Colon and whitespace ": " separate key and value (one per line). The hash tag "#" starts a single-line comment.
+	 * 冒号和空格 分割key和value(一行一对)
+	 * #开头表示一行注释
 	 * <p>
 	 * Example:
 	 * 

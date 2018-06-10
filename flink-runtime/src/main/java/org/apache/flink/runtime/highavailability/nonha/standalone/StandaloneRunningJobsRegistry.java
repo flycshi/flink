@@ -27,6 +27,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /**
  * A registry for running jobs, not-highly available.
+ * 管理running job的注册器，非ha模式
  */
 public class StandaloneRunningJobsRegistry implements RunningJobsRegistry {
 

@@ -86,6 +86,8 @@ public abstract class CompositeType<T> extends TypeInformation<T> {
 	/**
 	 * Returns the type of the (nested) field at the given field expression position.
 	 * Wildcards are not allowed.
+	 * 获取在给定字段描述位置的(内嵌)字段的类型。
+	 * 通配符是不允许的。
 	 *
 	 * @param fieldExpression The field expression for which the field of which the type is returned.
 	 * @return The type of the field at the given field expression.
