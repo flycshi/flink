@@ -39,6 +39,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * Utility class that contains helper methods to manipulating {@link KeySelector} for streaming.
+ * 包含用于操作用于流的{@link KeySelector}的辅助方法的实用工具类。
  */
 @Internal
 public final class KeySelectorUtil {

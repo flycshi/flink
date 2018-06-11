@@ -56,6 +56,7 @@ public abstract class Keys<T> {
 
 	/**
 	 * Check if two sets of keys are compatible to each other (matching types, key counts)
+	 * check两个key的结合是否彼此兼容(类型、key的数量)
 	 */
 	public boolean areCompatible(Keys<?> other) throws IncompatibleKeysException {
 
@@ -76,6 +77,7 @@ public abstract class Keys<T> {
 
 	// --------------------------------------------------------------------------------------------
 	//  Specializations for expression-based / extractor-based grouping
+	//  针对基于表达式/提取器的分组的专门子类
 	// --------------------------------------------------------------------------------------------
 	
 	

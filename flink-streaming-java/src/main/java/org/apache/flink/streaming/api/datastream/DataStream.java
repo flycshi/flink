@@ -141,7 +141,7 @@ import java.util.List;
  * </pre>
  *
  * {@code DataStream}作为一个数据集，则需要在其上进行各种数据操作，如{@code map}、{@code reduce}等，
- * 因此{@code DataStream}提供了很多数据操作的API，通过这些API可以{@code DataStream}转换为新的{@code DataStream}。
+ * 因此{@code DataStream}提供了很多数据操作的API，通过这些API可以将{@code DataStream}转换为新的{@code DataStream}。
  *
  * @param <T> The type of the elements in this stream.
  */
