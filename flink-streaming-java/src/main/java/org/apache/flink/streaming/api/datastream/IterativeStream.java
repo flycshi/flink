@@ -31,6 +31,7 @@ import java.util.Collection;
 
 /**
  * The iterative data stream represents the start of an iteration in a {@link DataStream}.
+ * 迭代数据流表示{@link DataStream}中迭代的开始
  *
  * @param <T> Type of the elements in this Stream
  */
@@ -38,6 +39,7 @@ import java.util.Collection;
 public class IterativeStream<T> extends SingleOutputStreamOperator<T> {
 
 	// We store these so that we can create a co-iteration if we need to
+	// 我们将这些存储起来，以便在需要时创建一个联合迭代
 	private DataStream<T> originalInput;
 	private long maxWaitTime;
 

@@ -26,6 +26,8 @@ public final class KeyGroupRangeAssignment {
 	/**
 	 * The default lower bound for max parallelism if nothing was configured by the user. We have this so allow users
 	 * some degree of scale-up in case they forgot to configure maximum parallelism explicitly.
+	 * 如果用户没有配置任何内容，则最大并行度的默认下界。
+	 * 我们有了这个功能，用户可以在忘记显式地配置最大并行性的情况下进行一定程度的扩展。
 	 */
 	public static final int DEFAULT_LOWER_BOUND_MAX_PARALLELISM = 1 << 7;
 
