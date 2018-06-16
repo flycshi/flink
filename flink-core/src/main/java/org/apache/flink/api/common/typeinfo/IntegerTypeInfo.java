@@ -29,6 +29,7 @@ import static org.apache.flink.util.Preconditions.checkArgument;
 
 /**
  * Type information for numeric integer primitive types: int, long, byte, short, character.
+ * 整型的 type info
  */
 @Public
 public class IntegerTypeInfo<T> extends NumericTypeInfo<T> {

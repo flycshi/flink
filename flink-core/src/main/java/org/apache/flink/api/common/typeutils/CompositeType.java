@@ -110,6 +110,9 @@ public abstract class CompositeType<T> extends TypeInformation<T> {
 	/**
 	 * Generic implementation of the comparator creation. Composite types are supplying the infrastructure
 	 * to create the actual comparators
+	 * 比较器创建的通用实现。
+	 * 复合类型提供了创建实际比较器的基础设施。
+	 *
 	 * @return The comparator
 	 */
 	@PublicEvolving

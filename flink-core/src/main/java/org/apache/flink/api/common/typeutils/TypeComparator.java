@@ -306,6 +306,11 @@ public abstract class TypeComparator<T> implements Serializable {
 	/**
 	 * Extracts the key fields from a record. This is for use by the PairComparator to provide
 	 * interoperability between different record types. Note, that at least one key should be extracted.
+	 * 从记录中提取key字段。
+	 * 这是供PairComparator使用的，用于提供不同record类型之间的互操作性。
+	 * 注意，至少应该提取一个键。
+	 *
+	 *
 	 * @param record The record that contains the key(s)
 	 * @param target The array to write the key(s) into.
 	 * @param index The offset of the target array to start writing into.

@@ -29,6 +29,8 @@ import java.io.IOException;
  * A utility class that is used to bridge a {@link TypeSerializer} and {@link TypeDeserializer}.
  * It either wraps a type deserializer or serializer, and can only ever be used for deserialization
  * (i.e. only read-related methods is functional).
+ * 用于桥接{@link TypeSerializer}和{@link TypeDeserializer}的实用工具类。
+ * 它可以封装类型反序列化器或序列化器，并且只能用于反序列化(也就是说，只有与读取相关的方法才具有功能)。
  *
  * <p>Methods related to deserialization are directly forwarded to the wrapped deserializer or serializer,
  * while serialization methods are masked and not intended for use.

@@ -29,6 +29,8 @@ import java.util.Arrays;
  * This is the abstract base class for {@link IOReadableWritable} which allows to differentiate between serialization
  * versions. Concrete subclasses should typically override the {@link #write(DataOutputView)} and
  * {@link #read(DataInputView)}, thereby calling super to ensure version checking.
+ * 这是{@link IOReadableWritable}的抽象基类，它允许区分序列化版本
+ * 具体的子类通常应该覆盖{@link #write(DataOutputView)}和{@link #read(DataInputView)}，从而调用super来确保版本检查
  */
 @Internal
 public abstract class VersionedIOReadableWritable implements IOReadableWritable, Versioned {
@@ -49,6 +51,8 @@ public abstract class VersionedIOReadableWritable implements IOReadableWritable,
 	/**
 	 * Returns the found serialization version. If this instance was not read from serialized bytes
 	 * but simply instantiated, then the current version is returned.
+	 * 返回找到的序列化版本。
+	 * 如果该实例不是从序列化的字节读取，而是简单地实例化，则返回当前版本。
 	 *
 	 * @return the read serialization version, or the current version if the instance was not read from bytes.
 	 */

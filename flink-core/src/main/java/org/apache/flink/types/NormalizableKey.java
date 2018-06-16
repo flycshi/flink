@@ -30,10 +30,17 @@ import org.apache.flink.core.memory.MemorySegment;
  * If two corresponding byte values are not equal, the lower byte value indicates the lower key.
  * If both normalized keys are byte-wise identical, the actual key may have to be looked at to
  * determine which one is actually lower.
+ * 可规范化键的基本接口。
+ * 可规范化的键可以创建一个二进制表示，其本身是按字节进行比较的。
+ * 对两个规范化键进行字节比较，直到对所有字节进行比较，或者在相应位置上的两个字节不相等。
+ * 如果两个对应的字节值不相等，则较低的字节值表示较低的键值。
+ * 如果两个规范化键都是字节相同的，那么可能需要查看实际的键来确定哪个键更低。
  * <p>
  * The latter depends on whether the normalized key covers the entire key or is just a prefix of the
  * key. A normalized key is considered a prefix, if its length is less than the maximal normalized
  * key length.
+ * 后者取决于规范化键是否覆盖整个键，或者仅仅是键的前缀。
+ * 如果规范化密钥的长度小于最大的规范化密钥长度，则将其视为前缀
  */
 @Public
 public interface NormalizableKey<T> extends Comparable<T>, Key<T> {
