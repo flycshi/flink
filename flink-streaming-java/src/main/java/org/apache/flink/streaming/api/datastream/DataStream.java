@@ -851,25 +851,32 @@ public class DataStream<T> {
 	/**
 	 * Assigns timestamps to the elements in the data stream and periodically creates
 	 * watermarks to signal event time progress.
+	 * 将时间戳分配给数据流中的元素，并周期性地创建水印以显示事件的时间进度
 	 *
 	 * <p>This method creates watermarks periodically (for example every second), based
 	 * on the watermarks indicated by the given watermark generator. Even when no new elements
 	 * in the stream arrive, the given watermark generator will be periodically checked for
 	 * new watermarks. The interval in which watermarks are generated is defined in
 	 * {@link ExecutionConfig#setAutoWatermarkInterval(long)}.
+	 * 该方法基于给定的水印生成器所指示的水印，周期性地(例如每秒钟)创建水印。
+	 * 即使流中没有新元素到达，给定的水印生成器也会定期检查新的水印。
+	 * 生成水印的时间间隔在{@link ExecutionConfig#setAutoWatermarkInterval(long)}中定义。
 	 *
 	 * <p>Use this method for the common cases, where some characteristic over all elements
 	 * should generate the watermarks, or where watermarks are simply trailing behind the
 	 * wall clock time by a certain amount.
+	 * 对于一些常见的情况，比如所有元素的某个特性都应该生成水印，或者是水印只是在墙上的时钟时间后面拖了一定的时间
 	 *
 	 * <p>For the second case and when the watermarks are required to lag behind the maximum
 	 * timestamp seen so far in the elements of the stream by a fixed amount of time, and this
 	 * amount is known in advance, use the
 	 * {@link BoundedOutOfOrdernessTimestampExtractor}.
+	 * 对于第二种情况，当需要将水印滞后于流元素中到目前为止所看到的最大时间戳一段时间时，并且该时间标记提前已知时，请使用
 	 *
 	 * <p>For cases where watermarks should be created in an irregular fashion, for example
 	 * based on certain markers that some element carry, use the
 	 * {@link AssignerWithPunctuatedWatermarks}.
+	 * 对于需要以不规则方式创建水印的情况，例如基于某些元素所携带的某些标记，使用
 	 *
 	 * @param timestampAndWatermarkAssigner The implementation of the timestamp assigner and
 	 *                                      watermark generator.

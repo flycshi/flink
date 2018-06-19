@@ -37,11 +37,15 @@ public interface TimestampAssigner<T> extends Function {
 
 	/**
 	 * Assigns a timestamp to an element, in milliseconds since the Epoch.
+	 * 为一个元素分配时间戳，时间戳从纪元开始的毫秒数
 	 *
 	 * <p>The method is passed the previously assigned timestamp of the element.
 	 * That previous timestamp may have been assigned from a previous assigner,
 	 * by ingestion time. If the element did not carry a timestamp before, this value is
 	 * {@code Long.MIN_VALUE}.
+	 * 该方法将被传递元素先前分配的时间戳。
+	 * 之前的时间戳可能是通过摄入时间从以前的转让人那里分配的。
+	 * 如果元素之前没有携带时间戳，则该值为{@code Long.MIN_VALUE}
 	 *
 	 * @param element The element that the timestamp is wil be assigned to.
 	 * @param previousElementTimestamp The previous internal timestamp of the element,
