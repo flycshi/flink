@@ -29,9 +29,11 @@ import java.util.List;
 
 /**
  * This transformation represents a change of partitioning of the input elements.
+ * 描述一个输入元素的分区变化
  *
  * <p>This does not create a physical operation, it only affects how upstream operations are
  * connected to downstream operations.
+ * 这里不会创建一个物理的操作，它只影响上游和下游的连接关系
  *
  * @param <T> The type of the elements that result from this {@code PartitionTransformation}
  */

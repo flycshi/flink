@@ -47,10 +47,12 @@ import java.util.List;
 public class SlidingProcessingTimeWindows extends WindowAssigner<Object, TimeWindow> {
 	private static final long serialVersionUID = 1L;
 
+	// 窗口长度
 	private final long size;
 
 	private final long offset;
 
+	// 窗口每次滑动的长度
 	private final long slide;
 
 	private SlidingProcessingTimeWindows(long size, long slide, long offset) {
