@@ -27,6 +27,7 @@ import static org.apache.flink.util.Preconditions.checkState;
 
 /**
  * Wrapper for pooled {@link MemorySegment} instances.
+ * 包装类
  */
 public class Buffer {
 

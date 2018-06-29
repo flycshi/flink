@@ -49,21 +49,27 @@ import static org.apache.flink.util.Preconditions.checkState;
 class LocalBufferPool implements BufferPool {
 	private static final Logger LOG = LoggerFactory.getLogger(LocalBufferPool.class);
 
-	/** Global network buffer pool to get buffers from. */
+	/** Global network buffer pool to get buffers from.
+	 * 用来获取buffers的全局网络buffer池 */
 	private final NetworkBufferPool networkBufferPool;
 
-	/** The minimum number of required segments for this pool */
+	/** The minimum number of required segments for this pool
+	 * 为这个pool申请的最小数据量的segments */
 	private final int numberOfRequiredMemorySegments;
 
 	/**
 	 * The currently available memory segments. These are segments, which have been requested from
 	 * the network buffer pool and are currently not handed out as Buffer instances.
+	 * 当前有效的 memory segments 。
+	 * 这些segments，都是从network buffer pool申请到，并且当前还没有作为buffer实例被分发出去
 	 */
 	private final ArrayDeque<MemorySegment> availableMemorySegments = new ArrayDeque<MemorySegment>();
 
 	/**
 	 * Buffer availability listeners, which need to be notified when a Buffer becomes available.
 	 * Listeners can only be registered at a time/state where no Buffer instance was available.
+	 * 监听有效buffer的listeners，当一个buffer变的有效时，其会被通知。
+	 * listeners只能当没有buffer实例有效时才能被注册
 	 */
 	private final ArrayDeque<BufferListener> registeredListeners = new ArrayDeque<>();
 
@@ -264,6 +270,7 @@ class LocalBufferPool implements BufferPool {
 
 	/**
 	 * Destroy is called after the produce or consume phase of a task finishes.
+	 * 在一个任务的生产和消费周期完成之后，再调用destroy
 	 */
 	@Override
 	public void lazyDestroy() {

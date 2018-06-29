@@ -136,6 +136,9 @@ public class NetworkBufferPool implements BufferPoolFactory {
 		// Adds the segment back to the queue, which does not immediately free the memory
 		// however, since this happens when references to the global pool are also released,
 		// making the availableMemorySegments queue and its contained object reclaimable
+		// 将段添加回队列，不会立即释放内存
+		// 然而，由于这发生在也发布了对全局池的引用时，
+		// 使availableMemorySegments队列及其包含的对象可回收
 		availableMemorySegments.add(segment);
 	}
 
@@ -325,14 +328,18 @@ public class NetworkBufferPool implements BufferPoolFactory {
 	}
 
 	// Must be called from synchronized block
+	// 必须从同步块中调用
 	private void redistributeBuffers() throws IOException {
 		assert Thread.holdsLock(factoryLock);
 
 		// All buffers, which are not among the required ones
+		// 还没有被申请掉的 MemorySegment 的数量
 		final int numAvailableMemorySegment = totalNumberOfMemorySegments - numTotalRequiredBuffers;
 
 		if (numAvailableMemorySegment == 0) {
 			// in this case, we need to redistribute buffers so that every pool gets its minimum
+			// 这种情况下，也就是可用的buffers数量变为0的时候
+			// 我们需要重新分配下buffers，让每个pool只持有最小数量的buffers
 			for (LocalBufferPool bufferPool : allBufferPools) {
 				bufferPool.setNumBuffers(bufferPool.getNumberOfRequiredMemorySegments());
 			}
@@ -345,6 +352,10 @@ public class NetworkBufferPool implements BufferPoolFactory {
 		 * an unlimited buffer pool can take is numAvailableMemorySegment, for limited buffer pools
 		 * it may be less. Based on this and the sum of all these values (totalCapacity), we build
 		 * a ratio that we use to distribute the buffers.
+		 * 由于缓冲池可能是有限的，让我们根据每个缓冲池的容量来分配可用 MemorySegment 。
+		 * 即无限缓冲池可以占用的最大segment的数量是 numAvailableMemorySegment ，
+		 * 而对于有限的缓冲池来说，它可能更少。
+		 * 基于这个和所有这些值(totalCapacity)的总和，我们构建了一个分配缓冲区的比率
 		 */
 
 		long totalCapacity = 0; // long to avoid int overflow
