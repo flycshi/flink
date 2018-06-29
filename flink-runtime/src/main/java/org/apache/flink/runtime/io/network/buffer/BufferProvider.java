@@ -22,9 +22,11 @@ import java.io.IOException;
 
 /**
  * A buffer provider to request buffers from in a synchronous or asynchronous fashion.
+ * 提供同步或者异步申请buffer
  *
  * <p>The data producing side (result partition writers) request buffers in a synchronous fashion,
  * whereas the input side requests asynchronously.
+ * 数据生成端(结果分区写入者)以同步方式请求缓冲区，而输入端以异步方式请求
  */
 public interface BufferProvider {
 

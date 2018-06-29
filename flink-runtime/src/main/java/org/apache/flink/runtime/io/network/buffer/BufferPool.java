@@ -22,6 +22,7 @@ import java.io.IOException;
 
 /**
  * A dynamically sized buffer pool.
+ * 动态调整的buffer池
  */
 public interface BufferPool extends BufferProvider, BufferRecycler {
 

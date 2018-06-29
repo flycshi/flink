@@ -22,12 +22,14 @@ import java.io.IOException;
 
 /**
  * A factory for buffer pools.
+ * buffer pools 工厂
  */
 public interface BufferPoolFactory {
 
 	/**
 	 * Tries to create a buffer pool, which is guaranteed to provide at least the number of required
 	 * buffers.
+	 * 尝试创建一个buffer pool，该pool被授权提供要求数量的buffers
 	 *
 	 * <p> The buffer pool is of dynamic size with at least <tt>numRequiredBuffers</tt> buffers.
 	 *

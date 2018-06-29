@@ -28,8 +28,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.fail;
 
 /**

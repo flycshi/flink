@@ -32,6 +32,7 @@ import static org.apache.flink.util.Preconditions.checkState;
 
 /**
  * A version of the {@link IOManager} that uses asynchronous I/O.
+ * 使用异步io的一个IOManager版本
  */
 public class IOManagerAsync extends IOManager implements UncaughtExceptionHandler {
 	

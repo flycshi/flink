@@ -25,6 +25,7 @@ public interface BufferRecycler {
 	/**
 	 * Recycles the {@link MemorySegment} to its original {@link BufferPool}
 	 * instance.
+	 * 将{@link MemorySegment}回收到它的原始{@link BufferPool}实例
 	 *
 	 * @param memorySegment The memory segment to be recycled.
 	 */

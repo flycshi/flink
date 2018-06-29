@@ -42,10 +42,13 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
 /**
  * The NetworkBufferPool is a fixed size pool of {@link MemorySegment} instances
  * for the network stack.
+ * 一个具有固定数量的{@code MemorySegment}实例的网络栈
  *
  * The NetworkBufferPool creates {@link LocalBufferPool}s from which the individual tasks draw
  * the buffers for the network data transfer. When new local buffer pools are created, the
  * NetworkBufferPool dynamically redistributes the buffers between the pools.
+ * NetworkBufferPool创建{@link LocalBufferPool}，每个任务从{@code LocalBufferPool}中为网络数据传输申请缓冲区。
+ * 当创建新的本地缓冲池时，NetworkBufferPool 动态地重新分配缓冲池之间的缓冲区。
  */
 public class NetworkBufferPool implements BufferPoolFactory {
 

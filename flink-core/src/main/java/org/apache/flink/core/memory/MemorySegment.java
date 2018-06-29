@@ -77,6 +77,9 @@ import java.nio.ReadOnlyBufferException;
  * 以下是一个{@link HeapMemorySegment#putLongBigEndian(int, long)}函数在即时编译器下产生的例子。
  * 请注意，此代码实现了字节顺序交换和重新解释cast访问，以从字节数组获得一个长整型。
  *
+ *
+ * LITTLE_ENDIAN 小端低低 ， 就是低字节放在低位
+ *
  * <p><pre>
  * [Verified Entry Point]
  *   0x00007fc403e19920: sub    $0x18,%rsp

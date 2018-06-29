@@ -32,12 +32,15 @@ import static org.apache.flink.util.Preconditions.checkState;
 /**
  * A buffer pool used to manage a number of {@link Buffer} instances from the
  * {@link NetworkBufferPool}.
+ * 一个buffer pool用来管理来自{@code NetworkBufferPool}的buffer
  * <p>
  * Buffer requests are mediated to the network buffer pool to ensure dead-lock
  * free operation of the network stack by limiting the number of buffers per
  * local buffer pool. It also implements the default mechanism for buffer
  * recycling, which ensures that every buffer is ultimately returned to the
  * network buffer pool.
+ * 缓冲区请求被传递到网络缓冲池，以通过限制每个本地缓冲池的缓冲区数量来确保网络堆栈的死锁自由操作。
+ * 它还实现了缓冲区回收的默认机制，该机制确保最终将每个缓冲区返回到网络缓冲池。
  *
  * <p> The size of this pool can be dynamically changed at runtime ({@link #setNumBuffers(int)}. It
  * will then lazily return the required number of buffers to the {@link NetworkBufferPool} to
