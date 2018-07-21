@@ -148,7 +148,8 @@ public abstract class StreamExecutionEnvironment {
 
 	protected boolean isChainingEnabled = true;
 
-	/** The state backend used for storing k/v state and state snapshots. */
+	/** The state backend used for storing k/v state and state snapshots.
+	 *  用来存储k/v状态和状态快照的状态后端服务 */
 	private AbstractStateBackend defaultStateBackend;
 
 	/** The time characteristic used by the data streams. */

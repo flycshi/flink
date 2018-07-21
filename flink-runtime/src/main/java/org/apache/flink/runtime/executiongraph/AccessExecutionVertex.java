@@ -22,6 +22,7 @@ import org.apache.flink.runtime.taskmanager.TaskManagerLocation;
 
 /**
  * Common interface for the runtime {@link ExecutionVertex} and {@link ArchivedExecutionVertex}.
+ * 公共接口
  */
 public interface AccessExecutionVertex {
 	/**

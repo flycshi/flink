@@ -1264,7 +1264,7 @@ class JobManager(
         // because this makes sure that the uploaded jar files are removed in case of
         // unsuccessful
         /**
-          * 重要：我们需要确保类库注册时第一步操作，因为这可以确保在不成功的情况下，可以清除上传的jar包
+          * 重要：我们需要确保类库注册是第一步操作，因为这可以确保在不成功的情况下，可以清除上传的jar包
           *
           * 将job所需jar包相关信息注册到library管理器中, 如果注册失败, 则抛出JobSubmissionException异常
           */

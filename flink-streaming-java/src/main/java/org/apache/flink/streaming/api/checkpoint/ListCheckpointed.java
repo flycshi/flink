@@ -31,22 +31,32 @@ import java.util.List;
  * It can be used in a similar way as the deprecated {@link Checkpointed} interface, but
  * supports <b>list-style state redistribution</b> for cases when the parallelism of the
  * transformation is changed.
+ * 这个接口可以被那些想在checkpoint中存储状态的函数实现。
+ * 它与被废弃的{@link Checkpointed}接口使用方式相似，但是支持list-style状态重新分配，比如在并行度发生变化时。
  *
  * <p>Implementing this interface is a shortcut for obtaining the default {@code ListState}
  * from the {@link OperatorStateStore}. Using the {@code OperatorStateStore} directly gives
  * more flexible options to use operator state, for example controlling the serialization
  * of the state objects, or have multiple named states.
+ * 实现这个接口是从{@link OperatorStateStore}中获取默认的{@code ListState}的快捷方式。
+ * 直接使用{@code OperatorStateStore}，可以提供更灵活的选项来使用操作符状态，比如，控制状态对象的序列化，或者多个被命名的状态。
  *
  * <h2>State Redistribution</h2>
+ * 状态重分配
  * State redistribution happens when the parallelism of the operator is changed.
  * State redistribution of <i>operator state</i> (to which category the state handled by this
  * interface belongs) always goes through a checkpoint, so it appears
  * to the transformation functions like a failure/recovery combination, where recovery happens
  * with a different parallelism.
+ * 当操作符的并行度变化时会发生状态重分配。
+ * 操作符状态重新分配(这个接口持有的状态归属哪个类别)，总是要经过一个checkpoint，因此对于transformation函数来说，
+ * 它就像一个失败/恢复组合，只是恢复时的并行度变化了。
  *
  * <p>Conceptually, the state in the checkpoint is the concatenated list of all lists
  * returned by the parallel transformation function instances. When restoring from a checkpoint,
  * the list is divided into sub-lists that are assigned to each parallel function instance.
+ * 从概念上讲，检查点中的状态是由并行transformation函数实例返回的所有列表的连接列表。
+ * 当从检查点恢复时，列表被划分为给每个并行函数实例分配的子列表
  *
  * <p>The following sketch illustrates the state redistribution.The function runs with parallelism
  * <i>3</i>. The first two parallel instance of the function return lists with two state elements,
