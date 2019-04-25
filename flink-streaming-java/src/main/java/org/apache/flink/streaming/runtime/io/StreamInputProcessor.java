@@ -200,6 +200,7 @@ public class StreamInputProcessor<IN> {
 						continue;
 					} else {
 						// now we can do the actual processing
+						// 这里，真正执行处理逻辑的地方
 						StreamRecord<IN> record = recordOrMark.asRecord();
 						synchronized (lock) {
 							numRecordsIn.inc();
